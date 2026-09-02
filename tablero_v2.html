@@ -1361,118 +1361,301 @@
             <!-- Header Banner -->
             <div class="main-card rounded-2xl p-6 border relative overflow-hidden">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl brand-gradient flex items-center justify-center text-white text-xl shadow-lg shadow-[#e20039]/30">
-                            <i class="fas fa-building-columns"></i>
-                        </div>
-                        <div>
-                            <span class="brand-badge bg-[#fee2e2] text-[#b91f38] dark:bg-[#e20039]/20 dark:text-[#ff4c60] font-mono mb-1">Grupo Asegurador</span>
-                            <h2 class="text-xl md:text-2xl font-bold txt-primary">Grupo Asegurador La Segunda</h2>
-                            <p class="text-xs txt-muted">Desempeño consolidado de las 4 empresas integrantes del Grupo Económico.</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs txt-muted">Cuota de Mercado Consolidada</p>
-                        <p class="text-2xl font-bold font-mono text-[#e20039]" id="ls-kpi-mkt-share">- %</p>
-                    </div>
-                </div>
-
-                <!-- 4 Companies Grid Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6" id="ls-companies-grid">
-                    <!-- Populated dynamically: Generales, ART, Personas, Retiro -->
-                </div>
-            </div>
-
-            <!-- Group Subramo Breakdown -->
-            <div class="main-card rounded-2xl p-5 border">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                        <i class="fas fa-sitemap text-[#e20039]"></i> Apertura por Ramos del Grupo La Segunda
-                    </h3>
-                    <button onclick="exportTableToCSV('tbl-ls-subramos', 'grupo_la_segunda_ramos.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                        <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
-                    </button>
-                </div>
-                <div class="overflow-x-auto rounded-xl border max-h-[380px]">
-                    <table class="w-full text-left border-collapse data-table text-xs">
-                        <thead class="sticky top-0">
-                            <tr>
-                                <th class="p-2.5">Empresa / Razón Social</th>
-                                <th class="p-2.5">Subramo</th>
-                                <th class="p-2.5 text-right">Primas ($M)</th>
-                                <th class="p-2.5 text-right">Siniestros ($M)</th>
-                                <th class="p-2.5 text-right">Siniestralidad %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbl-ls-subramos-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================================================================== -->
-        <!-- TAB 6: SEGUROS DE PERSONAS                                           -->
-        <!-- ==================================================================== -->
-        <section id="tab-personas" class="tab-content space-y-6 hidden">
-            <!-- Header -->
-            <div class="main-card rounded-2xl p-6 border">
-                <h2 class="text-xl md:text-2xl font-bold txt-primary">Seguros de Personas &bull; Gestión y Suscripción</h2>
-                <p class="text-xs txt-muted mt-1">Análisis especializado para Vida, Accidentes Personales, Sepelio y Salud.</p>
-            </div>
-
-            <!-- Interactive Branch Simulator with Checkboxes -->
-            <div class="main-card rounded-2xl p-5 border">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                                <i class="fas fa-sliders text-[#3ac792]"></i> Simulador Dinámico de Mercado por Ramos
-                            </h3>
-                            <button onclick="exportTableToCSV('tbl-personas-sim', 'simulador_personas.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#e20039] text-white uppercase">Brandbook La Segunda</span>
+                            <span class="text-xs txt-muted font-mono" id="ls-period-desc">Consolidado Oficial SSN</span>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold txt-primary">Grupo Asegurador La Segunda &bull; Análisis Integral</h2>
+                        <p class="text-xs txt-muted mt-1">Desempeño consolidado y apertura por ramos de las 4 empresas del Grupo: Generales (0317), ART (0618), Personas (0117) y Retiro (0436).</p>
+                    </div>
+
+                    <!-- 4 Summary KPI Badges -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <div class="subtle-card px-3.5 py-2.5 rounded-xl text-center border">
+                            <div class="text-[10px] txt-muted font-bold uppercase tracking-wider">Patrimoniales</div>
+                            <div id="ls-kpi-tot-generales" class="text-sm font-extrabold text-[#4183ca] font-mono">-</div>
+                        </div>
+                        <div class="subtle-card px-3.5 py-2.5 rounded-xl text-center border">
+                            <div class="text-[10px] txt-muted font-bold uppercase tracking-wider">ART</div>
+                            <div id="ls-kpi-tot-art" class="text-sm font-extrabold text-[#3ac792] font-mono">-</div>
+                        </div>
+                        <div class="subtle-card px-3.5 py-2.5 rounded-xl text-center border">
+                            <div class="text-[10px] txt-muted font-bold uppercase tracking-wider">Personas & Retiro</div>
+                            <div id="ls-kpi-tot-personas" class="text-sm font-extrabold text-[#f8cc59] font-mono">-</div>
+                        </div>
+                        <div class="subtle-card px-3.5 py-2.5 rounded-xl text-center border border-[#e20039]/40 bg-rose-50/50 dark:bg-rose-950/20">
+                            <div class="text-[10px] text-[#e20039] font-bold uppercase tracking-wider">Total Grupo</div>
+                            <div id="ls-kpi-tot-grupo" class="text-sm font-extrabold text-[#e20039] font-mono">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-APARTADO 1: COMPOSICIÓN DEL GRUPO -->
+            <div class="space-y-4">
+                <h3 class="text-base font-bold txt-primary flex items-center gap-2">
+                    <i class="fas fa-building text-[#e20039]"></i> 1. Composición y Cuota de las Empresas del Grupo
+                </h3>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Table: Empresas del Grupo -->
+                    <div class="lg:col-span-7 subtle-card p-5 rounded-2xl border">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-xs font-bold txt-muted uppercase tracking-wider">Empresas Consolidadas</h4>
+                            <button onclick="exportTableToCSV('ls-table-empresas', 'empresas_la_segunda.csv')" class="btn-export" title="Exportar Tabla a CSV">
                                 <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
                             </button>
                         </div>
-                        <span class="text-xs font-mono txt-muted" id="sp-sim-total-badge">Total Mercado Seleccionado: Calculando...</span>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left data-table font-mono" id="ls-table-empresas">
+                                <thead class="uppercase text-[10px] sticky-header">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Razón Social / Entidad</th>
+                                        <th class="py-2.5 px-3 text-right">Primas ($M)</th>
+                                        <th class="py-2.5 px-3 text-right">Siniestralidad %</th>
+                                        <th class="py-2.5 px-3 text-right">% s/Grupo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ls-table-empresas-body">
+                                    <!-- Dynamic JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <!-- Checkboxes & Quick Selectors -->
-                    <div class="flex flex-wrap items-center gap-3 text-xs bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border">
-                        <span class="text-[10px] font-bold uppercase tracking-wider txt-muted mr-1">Ramos:</span>
-                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
-                            <input type="checkbox" id="chk-sp-vida" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Vida (2.03)</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
-                            <input type="checkbox" id="chk-sp-ap" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Accidentes Personales (2.01)</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
-                            <input type="checkbox" id="chk-sp-sepelio" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Sepelio (2.05)</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
-                            <input type="checkbox" id="chk-sp-salud" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Salud (2.02)</span>
-                        </label>
+                    <!-- Donut Chart: Empresas -->
+                    <div class="lg:col-span-5 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
+                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-2">Distribución de Primas por Razón Social</h4>
+                        <div class="relative w-full max-w-[280px] h-[240px]">
+                            <canvas id="ls-chart-empresas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-APARTADO 2: APERTURA POR RAMO -->
+            <div class="space-y-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                <h3 class="text-base font-bold txt-primary flex items-center gap-2">
+                    <i class="fas fa-layer-group text-[#4183ca]"></i> 2. Apertura Detallada por Ramos de Actividad
+                </h3>
+
+                <!-- SECCIÓN A: TOTAL DE PATRIMONIALES & ART -->
+                <div class="subtle-card p-5 rounded-2xl border">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                        <h4 class="text-sm font-bold txt-primary flex items-center gap-2">
+                            <i class="fas fa-shield-halved text-[#4183ca]"></i> Seguros Patrimoniales y Riesgos del Trabajo &bull; <span id="ls-subtitle-patrimoniales" class="text-[#4183ca] font-mono">$ 0 M</span>
+                        </h4>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] txt-muted font-sans font-medium">Ordenado por volumen de primas</span>
+                            <button onclick="exportTableToCSV('ls-table-patrimoniales', 'patrimoniales_la_segunda.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                                <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-h-[380px]">
+                        <table class="w-full text-xs text-left data-table font-mono" id="ls-table-patrimoniales">
+                            <thead class="uppercase text-[10px] sticky-header">
+                                <tr>
+                                    <th class="py-2.5 px-3 text-center w-12">#</th>
+                                    <th class="py-2.5 px-3">Ramo / Cobertura</th>
+                                    <th class="py-2.5 px-3 text-right">Primas ($M)</th>
+                                    <th class="py-2.5 px-3 text-right">% s/Patrimoniales</th>
+                                    <th class="py-2.5 px-3 text-right">% s/Total Grupo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ls-table-patrimoniales-body">
+                                <!-- Dynamic JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-xl border max-h-[440px]">
-                    <table class="w-full text-left border-collapse data-table text-xs" id="tbl-personas-sim">
-                        <thead class="sticky top-0">
-                            <tr>
-                                <th class="p-2.5 w-12 text-center">Pos.</th>
-                                <th class="p-2.5">Aseguradora (Razón Social)</th>
-                                <th class="p-2.5 text-right w-44">Primas Ramos ($M)</th>
-                                <th class="p-2.5 text-right w-28">Cuota %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbl-personas-sim-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+                <!-- SECCIÓN B: TOTAL DE PERSONAS & RETIRO -->
+                <div class="subtle-card p-5 rounded-2xl border">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                        <h4 class="text-sm font-bold txt-primary flex items-center gap-2">
+                            <i class="fas fa-heart-pulse text-[#3ac792]"></i> Seguros de Personas y Retiro &bull; <span id="ls-subtitle-personas" class="text-[#3ac792] font-mono">$ 0 M</span>
+                        </h4>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[11px] txt-muted font-sans font-medium">Desglose por coberturas</span>
+                            <button onclick="exportTableToCSV('ls-table-personas', 'personas_retiro_la_segunda.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                                <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-h-[380px]">
+                        <table class="w-full text-xs text-left data-table font-mono" id="ls-table-personas">
+                            <thead class="uppercase text-[10px] sticky-header">
+                                <tr>
+                                    <th class="py-2.5 px-3 text-center w-12">#</th>
+                                    <th class="py-2.5 px-3">Ramo / Cobertura</th>
+                                    <th class="py-2.5 px-3 text-right">Primas ($M)</th>
+                                    <th class="py-2.5 px-3 text-right">% s/Total Personas</th>
+                                    <th class="py-2.5 px-3 text-right">% s/Total Grupo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ls-table-personas-body">
+                                <!-- Dynamic JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="tab-personas" class="tab-content space-y-6 hidden">
+            <!-- Header -->
+            <div class="main-card rounded-2xl p-6 border">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#3ac792] text-white uppercase">Mercado de Seguros de Personas</span>
+                            <span class="text-xs txt-muted font-mono" id="sp-period-desc">Bases Oficiales SSN</span>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold txt-primary">Seguros de Personas &bull; Gestión, Ratios y Simulación</h2>
+                        <p class="text-xs txt-muted mt-1">Análisis especializado de Vida, Accidentes Personales, Sepelio y Salud con indicadores técnicos de gestión.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: INDICADORES DE GESTIÓN • SEGUROS DE PERSONAS -->
+            <div class="main-card rounded-2xl p-5 border space-y-4">
+                <h3 class="text-base font-bold txt-primary flex items-center gap-2">
+                    <i class="fas fa-heart-pulse text-[#4183ca]"></i> 1. Indicadores de Gestión &bull; Seguros de Personas
+                </h3>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Table: Ratios Personas -->
+                    <div class="lg:col-span-7 subtle-card p-5 rounded-2xl border">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left data-table font-mono" id="tbl-sp-personas">
+                                <thead class="uppercase text-[10px] sticky-header">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Indicador Contable / Técnico</th>
+                                        <th class="py-2.5 px-3 text-right">Total Mercado Personas</th>
+                                        <th class="py-2.5 px-3 text-right text-[#e20039]">La Segunda Personas</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbl-sp-personas-body">
+                                    <!-- Dynamic JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Bar Chart: Personas Ratios -->
+                    <div class="lg:col-span-5 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
+                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-2">Comparativo Visual &bull; Ratios Personas (%)</h4>
+                        <div class="relative w-full h-[260px]">
+                            <canvas id="sp-chart-personas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: INDICADORES DE GESTIÓN • SEGUROS DE RETIRO -->
+            <div class="main-card rounded-2xl p-5 border space-y-4">
+                <h3 class="text-base font-bold txt-primary flex items-center gap-2">
+                    <i class="fas fa-piggy-bank text-[#f8cc59]"></i> 2. Indicadores de Gestión &bull; Seguros de Retiro
+                </h3>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Table: Ratios Retiro -->
+                    <div class="lg:col-span-7 subtle-card p-5 rounded-2xl border">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left data-table font-mono" id="tbl-sp-retiro">
+                                <thead class="uppercase text-[10px] sticky-header">
+                                    <tr>
+                                        <th class="py-2.5 px-3">Indicador de Solvencia / Rendimiento</th>
+                                        <th class="py-2.5 px-3 text-right">Exclusivas de Retiro</th>
+                                        <th class="py-2.5 px-3 text-right text-[#e20039]">La Segunda Retiro</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbl-sp-retiro-body">
+                                    <!-- Dynamic JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Bar Chart: Retiro Ratios -->
+                    <div class="lg:col-span-5 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
+                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-2">Comparativo Visual &bull; Ratios Retiro (%)</h4>
+                        <div class="relative w-full h-[260px]">
+                            <canvas id="sp-chart-retiro"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: PRIMAS EMITIDAS POR RAMOS Y SIMULADOR DE MERCADO -->
+            <div class="main-card rounded-2xl p-5 border space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-base font-bold txt-primary flex items-center gap-2">
+                            <i class="fas fa-layer-group text-[#e20039]"></i> 3. Primas Emitidas por Ramos y Simulador de Mercado
+                        </h3>
+                        <p class="text-xs txt-muted mt-0.5">Seleccione los ramos a incluir para recalcular el mercado y ranking en tiempo real.</p>
+                        <span class="text-xs font-mono text-[#e20039] font-bold" id="sp-primas-total-badge">Total Mercado Seleccionado: Calculando...</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="selectAllSpCheckboxes(true)" class="px-3 py-1.5 text-xs font-bold bg-[#4183ca]/15 text-[#4183ca] border border-[#4183ca]/30 rounded-xl hover:bg-[#4183ca]/25 transition flex items-center gap-1.5">
+                            <i class="fas fa-check-square"></i> <span>Seleccionar Todos</span>
+                        </button>
+                        <button onclick="selectAllSpCheckboxes(false)" class="px-3 py-1.5 text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center gap-1.5">
+                            <i class="fas fa-square"></i> <span>Deseleccionar Todos</span>
+                        </button>
+                        <button onclick="exportTableToCSV('tbl-personas-sim', 'ranking_simulador_personas.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Checkbox Filters -->
+                <div class="flex flex-wrap items-center gap-3 text-xs bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border">
+                    <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
+                        <input type="checkbox" id="chk-sp-vida" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
+                        <span>Vida (2.03)</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
+                        <input type="checkbox" id="chk-sp-ap" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
+                        <span>Accidentes Personales (2.01)</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
+                        <input type="checkbox" id="chk-sp-sepelio" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
+                        <span>Sepelio (2.05)</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
+                        <input type="checkbox" id="chk-sp-salud" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
+                        <span>Salud (2.02)</span>
+                    </label>
+                </div>
+
+                <!-- Table & Chart Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Table -->
+                    <div class="lg:col-span-7 overflow-x-auto rounded-xl border max-h-[440px]">
+                        <table class="w-full text-left border-collapse data-table text-xs font-mono" id="tbl-personas-sim">
+                            <thead class="sticky top-0">
+                                <tr>
+                                    <th class="p-2.5 w-14 text-center">Rank</th>
+                                    <th class="p-2.5">Aseguradora (Entidad)</th>
+                                    <th class="p-2.5 text-right w-44">Primas Emitidas ($M)</th>
+                                    <th class="p-2.5 text-right w-28">Part. %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-personas-sim-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Bar Chart -->
+                    <div class="lg:col-span-5 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
+                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-2 flex items-center gap-2">
+                            <i class="fas fa-chart-bar text-[#e20039]"></i> Top Aseguradoras en Ramos Seleccionados
+                        </h4>
+                        <div class="relative w-full h-[320px]">
+                            <canvas id="chart-sp-primas-ramos"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -3602,55 +3785,330 @@
             }
         }
 
-        // --- TAB 5: LA SEGUNDA ---
+        // --- TAB 5: LA SEGUNDA (MONOGRAFÍA CONSOLIDADA DETALLADA) ---
         function renderLaSegundaTab(pData) {
-            const ls = pData.la_segunda;
-            document.getElementById('ls-kpi-mkt-share').innerText = fmtPct(ls.share_mercado);
+            if (!pData) return;
+            const lsCodes = ['0317', '0618', '0117', '0436'];
+            const compList = lsCodes.map(c => (pData.companies_by_code || {})[c]).filter(Boolean);
 
-            const grid = document.getElementById('ls-companies-grid');
-            if (grid) {
-                grid.innerHTML = '';
-                ls.companies.forEach(c => {
-                    const card = document.createElement('div');
-                    card.className = "p-4 rounded-xl subtle-card border flex flex-col justify-between";
-                    card.innerHTML = `
-                        <div>
-                            <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">Cód. ${c.cod_cia}</span>
-                            <h4 class="font-bold text-xs txt-primary mt-2">${c.razon_social}</h4>
-                            <p class="text-[11px] txt-muted">${c.tipo_entidad}</p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t space-y-1.5 text-xs font-mono">
-                            <div class="flex justify-between"><span>Primas:</span><span class="font-bold">${fmtARS(c.primas_emitidas)}</span></div>
-                            <div class="flex justify-between"><span>Siniestralidad:</span><span class="font-bold text-rose-500">${fmtPct(c.loss_ratio)}</span></div>
-                            <div class="flex justify-between"><span>Res. Neto:</span><span class="font-bold ${c.resultado_neto >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${fmtARS(c.resultado_neto)}</span></div>
-                        </div>
+            const totGrupo = compList.reduce((a, b) => a + (b.primas_emitidas || 0), 0);
+            const cGen = compList.find(c => c.cod_cia === '0317') || { primas_emitidas: 0 };
+            const cArt = compList.find(c => c.cod_cia === '0618') || { primas_emitidas: 0 };
+            const cPers = compList.find(c => c.cod_cia === '0117') || { primas_emitidas: 0 };
+            const cRet = compList.find(c => c.cod_cia === '0436') || { primas_emitidas: 0 };
+
+            const totPatrim = (cGen.primas_emitidas || 0) + (cArt.primas_emitidas || 0);
+            const totPersRet = (cPers.primas_emitidas || 0) + (cRet.primas_emitidas || 0);
+
+            const pDesc = document.getElementById('ls-period-desc');
+            if (pDesc) pDesc.innerText = pData.period_label || pData.periodo;
+
+            const kpiTotG = document.getElementById('ls-kpi-tot-grupo');
+            const kpiTotGen = document.getElementById('ls-kpi-tot-generales');
+            const kpiTotArt = document.getElementById('ls-kpi-tot-art');
+            const kpiTotPers = document.getElementById('ls-kpi-tot-personas');
+
+            if (kpiTotG) kpiTotG.innerText = '$ ' + (totGrupo / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M';
+            if (kpiTotGen) kpiTotGen.innerText = '$ ' + (cGen.primas_emitidas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M';
+            if (kpiTotArt) kpiTotArt.innerText = '$ ' + (cArt.primas_emitidas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M';
+            if (kpiTotPers) kpiTotPers.innerText = '$ ' + (totPersRet / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M';
+
+            const subPat = document.getElementById('ls-subtitle-patrimoniales');
+            const subPer = document.getElementById('ls-subtitle-personas');
+            if (subPat) subPat.innerText = '$ ' + (totPatrim / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M';
+            if (subPer) subPer.innerText = '$ ' + (totPersRet / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M';
+
+            // 1. Table: Empresas del Grupo
+            const tbodyEmpresas = document.getElementById('ls-table-empresas-body');
+            if (tbodyEmpresas) {
+                let empHtml = '';
+                compList.forEach(c => {
+                    const pctGrupo = totGrupo > 0 ? (c.primas_emitidas / totGrupo) * 100 : 0;
+                    empHtml += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                            <td class="py-2.5 px-3 font-sans font-semibold txt-primary flex items-center gap-2">
+                                <i class="fas fa-building text-[#e20039]"></i>
+                                <span>${c.razon_social}</span>
+                                <span class="text-[10px] text-slate-400 font-mono">(${c.cod_cia})</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-right font-bold text-[#e20039]">$ ${(c.primas_emitidas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                            <td class="py-2.5 px-3 text-right font-mono">${fmtPct(c.loss_ratio)}</td>
+                            <td class="py-2.5 px-3 text-right font-bold txt-primary">${pctGrupo.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                        </tr>
                     `;
-                    grid.appendChild(card);
                 });
+                empHtml += `
+                    <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-t-2 border-[#e20039] font-bold">
+                        <td class="py-3 px-3 font-sans text-sm text-[#e20039] uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-shield-halved"></i> TOTAL GRUPO LA SEGUNDA</td>
+                        <td class="py-3 px-3 text-right font-mono text-base text-[#e20039] font-extrabold">$ ${(totGrupo / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                        <td class="py-3 px-3 text-right font-mono txt-muted">-</td>
+                        <td class="py-3 px-3 text-right font-mono text-base text-[#e20039] font-extrabold">100,00%</td>
+                    </tr>
+                `;
+                tbodyEmpresas.innerHTML = empHtml;
             }
 
-            const tbody = document.getElementById('tbl-ls-subramos-body');
-            if (tbody) {
-                tbody.innerHTML = '';
-                ls.companies.forEach(c => {
+            // Donut Chart: Empresas
+            renderLaSegundaDonut(compList, totGrupo);
+
+            // 2. Table: Patrimoniales & ART
+            const tbodyPatrim = document.getElementById('ls-table-patrimoniales-body');
+            if (tbodyPatrim) {
+                const patrimComps = compList.filter(c => c.cod_cia === '0317' || c.cod_cia === '0618');
+                const patrimSubramos = [];
+                patrimComps.forEach(c => {
                     (c.subramos || []).forEach(r => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="p-2.5 font-semibold">${c.razon_social}</td>
-                            <td class="p-2.5 font-mono text-[11px]">${r.desc_subramo}</td>
-                            <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                            <td class="p-2.5 text-right font-mono text-rose-500">${(r.siniestros / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                            <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r['siniestralidad_%'])}</td>
-                        `;
-                        tbody.appendChild(tr);
+                        if ((r.primas || 0) > 0) patrimSubramos.push(r);
                     });
+                });
+                patrimSubramos.sort((a, b) => (b.primas || 0) - (a.primas || 0));
+
+                let patHtml = '';
+                patrimSubramos.forEach((r, idx) => {
+                    const pPct = totPatrim > 0 ? (r.primas / totPatrim) * 100 : 0;
+                    const gPct = totGrupo > 0 ? (r.primas / totGrupo) * 100 : 0;
+                    patHtml += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                            <td class="py-2 px-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
+                            <td class="py-2 px-3 font-sans font-semibold txt-primary">
+                                <span>${r.desc_subramo || '-'}</span>
+                                <span class="text-[10px] text-slate-400 font-mono ml-1">(${r.cod_subramo || '-'})</span>
+                            </td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-[#4183ca]">$ ${(r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                            <td class="py-2 px-3 text-right font-mono">${pPct.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold text-slate-500 dark:text-slate-400">${gPct.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                        </tr>
+                    `;
+                });
+                tbodyPatrim.innerHTML = patHtml || '<tr><td colspan="5" class="text-center py-6 text-slate-400">Sin datos de subramos patrimoniales.</td></tr>';
+            }
+
+            // 3. Table: Personas & Retiro
+            const tbodyPers = document.getElementById('ls-table-personas-body');
+            if (tbodyPers) {
+                const persComps = compList.filter(c => c.cod_cia === '0117' || c.cod_cia === '0436');
+                const persSubramos = [];
+                persComps.forEach(c => {
+                    (c.subramos || []).forEach(r => {
+                        if ((r.primas || 0) > 0) persSubramos.push(r);
+                    });
+                });
+                persSubramos.sort((a, b) => (b.primas || 0) - (a.primas || 0));
+
+                let perHtml = '';
+                persSubramos.forEach((r, idx) => {
+                    const pPct = totPersRet > 0 ? (r.primas / totPersRet) * 100 : 0;
+                    const gPct = totGrupo > 0 ? (r.primas / totGrupo) * 100 : 0;
+                    perHtml += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                            <td class="py-2 px-3 text-center text-slate-400 font-mono text-xs">${idx + 1}</td>
+                            <td class="py-2 px-3 font-sans font-semibold txt-primary">
+                                <span>${r.desc_subramo || '-'}</span>
+                                <span class="text-[10px] text-slate-400 font-mono ml-1">(${r.cod_subramo || '-'})</span>
+                            </td>
+                            <td class="py-2 px-3 text-right font-mono font-bold text-[#3ac792]">$ ${(r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                            <td class="py-2 px-3 text-right font-mono">${pPct.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                            <td class="py-2 px-3 text-right font-mono font-semibold text-slate-500 dark:text-slate-400">${gPct.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                        </tr>
+                    `;
+                });
+                tbodyPers.innerHTML = perHtml || '<tr><td colspan="5" class="text-center py-6 text-slate-400">Sin datos de subramos de personas y retiro.</td></tr>';
+            }
+        }
+
+        function renderLaSegundaDonut(compList, totGrupo) {
+            const ctx = document.getElementById('ls-chart-empresas');
+            if (!ctx || !compList || compList.length === 0) return;
+
+            const labels = compList.map(c => c.razon_social.replace(' SOCIEDAD ANONIMA', '').replace(' COOPERATIVA LIMITADA DE SEGUROS GENERALES', ''));
+            const dataVals = compList.map(c => (c.primas_emitidas || 0) / 1e6);
+            const colors = ['#e20039', '#3ac792', '#4183ca', '#f8cc59'];
+
+            if (chartInstances['ls-empresas']) chartInstances['ls-empresas'].destroy();
+
+            chartInstances['ls-empresas'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataVals,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M (${totGrupo > 0 ? ((ctx.raw * 1e6 / totGrupo) * 100).toFixed(1) : 0}%)`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- TAB 6: PERSONAS (SUITE INTEGRAL SSN & RATIOS) ---
+        function selectAllSpCheckboxes(state) {
+            ['chk-sp-vida', 'chk-sp-ap', 'chk-sp-sepelio', 'chk-sp-salud'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.checked = state;
+            });
+            renderPersonasSimulator();
+        }
+
+        function renderPersonasTab(pData) {
+            if (!pData) return;
+            const pDesc = document.getElementById('sp-period-desc');
+            if (pDesc) pDesc.innerText = pData.period_label || pData.periodo;
+
+            // 1. Ratios Contables Oficiales de Personas (Total Mercado vs La Segunda Personas)
+            renderPersonasRatios(pData);
+
+            // 2. Ratios Contables Oficiales de Retiro (Exclusivas Retiro vs La Segunda Retiro)
+            renderRetiroRatios(pData);
+
+            // 3. Simulador Dinámico de Ramos
+            renderPersonasSimulator();
+        }
+
+        function renderPersonasRatios(pData) {
+            const supp = (window.INSURANCE_DATA_V2 && window.INSURANCE_DATA_V2.supplementary_data) || {};
+            const oldSp = supp.ssn_seg_personas || {};
+            const ratiosList = oldSp.personas || [];
+
+            const tbody = document.getElementById('tbl-sp-personas-body');
+            if (tbody && ratiosList.length > 0) {
+                let html = '';
+                ratiosList.forEach(r => {
+                    const name = r.indicador || r.indicator || '-';
+                    const valMkt = r.mercado !== undefined ? r.mercado : (r.total !== undefined ? r.total : 0);
+                    const valL2 = r.l2 !== undefined ? r.l2 : (r.ls !== undefined ? r.ls : 0);
+                    html += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                            <td class="py-2.5 px-3 font-sans font-semibold txt-primary">${name}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold">${Number(valMkt).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${Number(valL2).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            }
+
+            // Bar Chart: Personas Ratios
+            const ctx = document.getElementById('sp-chart-personas');
+            if (ctx && ratiosList.length > 0) {
+                if (chartInstances['sp-ratios-personas']) chartInstances['sp-ratios-personas'].destroy();
+                const labels = ratiosList.map(r => {
+                    const str = r.indicador || r.indicator || '';
+                    return str.split('/')[0].trim().replace(' (%)', '');
+                });
+                const dTotal = ratiosList.map(r => r.mercado !== undefined ? r.mercado : r.total);
+                const dLs = ratiosList.map(r => r.l2 !== undefined ? r.l2 : r.ls);
+
+                const isDark = document.documentElement.classList.contains('dark');
+                chartInstances['sp-ratios-personas'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Total Mercado Personas', data: dTotal, backgroundColor: '#4183ca', borderRadius: 4 },
+                            { label: 'La Segunda Personas', data: dLs, backgroundColor: '#e20039', borderRadius: 4 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                                ticks: { callback: v => v + '%', font: { family: 'JetBrains Mono', size: 10 } }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Sora', size: 10, weight: '600' } } },
+                            tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw.toFixed(2)}%` } }
+                        }
+                    }
                 });
             }
         }
 
-        // --- TAB 6: PERSONAS SIMULATOR ---
-        function renderPersonasTab(pData) {
-            renderPersonasSimulator();
+        function renderRetiroRatios(pData) {
+            const supp = (window.INSURANCE_DATA_V2 && window.INSURANCE_DATA_V2.supplementary_data) || {};
+            const oldSp = supp.ssn_seg_personas || {};
+            const ratiosList = oldSp.retiro || [];
+
+            const tbody = document.getElementById('tbl-sp-retiro-body');
+            if (tbody && ratiosList.length > 0) {
+                let html = '';
+                ratiosList.forEach(r => {
+                    const name = r.indicador || r.indicator || '-';
+                    const valMkt = r.mercado !== undefined ? r.mercado : (r.total !== undefined ? r.total : 0);
+                    const valL2 = r.l2 !== undefined ? r.l2 : (r.ls !== undefined ? r.ls : 0);
+                    html += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
+                            <td class="py-2.5 px-3 font-sans font-semibold txt-primary">${name}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold">${Number(valMkt).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${Number(valL2).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            }
+
+            // Bar Chart: Retiro Ratios
+            const ctx = document.getElementById('sp-chart-retiro');
+            if (ctx && ratiosList.length > 0) {
+                if (chartInstances['sp-ratios-retiro']) chartInstances['sp-ratios-retiro'].destroy();
+                const labels = ratiosList.map(r => {
+                    const str = r.indicador || r.indicator || '';
+                    return str.split('/')[0].trim().replace(' (%)', '');
+                });
+                const dTotal = ratiosList.map(r => r.mercado !== undefined ? r.mercado : r.total);
+                const dLs = ratiosList.map(r => r.l2 !== undefined ? r.l2 : r.ls);
+
+                const isDark = document.documentElement.classList.contains('dark');
+                chartInstances['sp-ratios-retiro'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Exclusivas de Retiro', data: dTotal, backgroundColor: '#f8cc59', borderRadius: 4 },
+                            { label: 'La Segunda Retiro', data: dLs, backgroundColor: '#e20039', borderRadius: 4 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                                ticks: { callback: v => v + '%', font: { family: 'JetBrains Mono', size: 10 } }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Sora', size: 10, weight: '600' } } },
+                            tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw.toFixed(2)}%` } }
+                        }
+                    }
+                });
+            }
         }
 
         function renderPersonasSimulator() {
@@ -3681,7 +4139,10 @@
             const simList = Object.values(simMap).sort((a, b) => b.primas - a.primas);
             const totSim = simList.reduce((a, b) => a + b.primas, 0);
 
-            const totalBadge = document.getElementById('sp-sim-total-badge');
+            // Assign true rank
+            simList.forEach((r, idx) => { r.rank = idx + 1; });
+
+            const totalBadge = document.getElementById('sp-primas-total-badge');
             if (totalBadge) {
                 totalBadge.innerHTML = `Total Mercado Seleccionado: <strong class="text-[#e20039]">$ ${(totSim / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M</strong> &bull; ${simList.length} Compañías Activas`;
             }
@@ -3691,23 +4152,80 @@
                 tbody.innerHTML = '';
                 if (simList.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">No hay ramos seleccionados. Marque al menos una casilla arriba para calcular el ranking.</td></tr>';
+                    if (chartInstances['sp-primas-ramos']) { chartInstances['sp-primas-ramos'].destroy(); }
                     return;
                 }
 
-                simList.forEach((r, idx) => {
+                // Show top 25 + highlight La Segunda
+                simList.slice(0, 50).forEach((r) => {
+                    const isL2 = (r.razon_social || '').toUpperCase().includes('SEGUNDA');
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
+                    tr.className = isL2 ? "bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]" : "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
                     const primasM = (r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
                     const cuotaPct = totSim > 0 ? ((r.primas / totSim) * 100).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '0,00%';
                     tr.innerHTML = `
-                        <td class="p-2.5 text-center font-mono font-bold text-slate-500">${idx + 1}</td>
-                        <td class="p-2.5 font-semibold txt-primary">${r.razon_social}</td>
+                        <td class="p-2.5 text-center font-mono font-bold ${isL2 ? 'text-[#e20039]' : 'text-slate-500'}">#${r.rank}</td>
+                        <td class="p-2.5 font-semibold ${isL2 ? 'text-[#e20039] font-bold' : 'txt-primary'} flex items-center gap-1.5">
+                            ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                            <span>${r.razon_social}</span>
+                        </td>
                         <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${primasM}</td>
                         <td class="p-2.5 text-right font-mono font-bold">${cuotaPct}</td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
+
+            // Top 10 Bar Chart
+            renderPersonasTopChart(simList, totSim);
+        }
+
+        function renderPersonasTopChart(simList, totSim) {
+            const ctx = document.getElementById('chart-sp-primas-ramos');
+            if (!ctx || !simList || simList.length === 0) return;
+
+            const top10 = simList.slice(0, 10);
+            const labels = top10.map(c => c.razon_social.length > 25 ? c.razon_social.substring(0, 25) + '...' : c.razon_social);
+            const dataVals = top10.map(c => c.primas / 1e6);
+
+            const isDark = document.documentElement.classList.contains('dark');
+            if (chartInstances['sp-primas-ramos']) chartInstances['sp-primas-ramos'].destroy();
+
+            chartInstances['sp-primas-ramos'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Primas Emitidas ($M)',
+                        data: dataVals,
+                        backgroundColor: '#e20039',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                            ticks: { callback: v => '$ ' + v.toLocaleString('es-AR') + ' M', font: { family: 'JetBrains Mono', size: 10 } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M (${totSim > 0 ? ((ctx.raw * 1e6 / totSim) * 100).toFixed(2) : 0}%)`
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // --- TAB 7: RETIRO (SUITE COMPLETA SSN) ---
