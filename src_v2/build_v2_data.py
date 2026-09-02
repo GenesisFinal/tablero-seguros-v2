@@ -533,6 +533,86 @@ def process_single_period(period_code):
             "entities_count": g['entities_count']
         })
 
+    # Strategic matrix for segments / insurer types
+    segments_agg = {}
+    for c in companies_dict.values():
+        tipo = c.get('tipo_entidad', 'Otras')
+        if tipo not in segments_agg:
+            segments_agg[tipo] = {
+                "tipo_entidad": tipo,
+                "entities_count": 0,
+                "primas_emitidas": 0.0,
+                "primas_devengadas": 0.0,
+                "siniestros": 0.0,
+                "resultado_tecnico": 0.0,
+                "resultado_financiero": 0.0,
+                "resultado_neto": 0.0,
+                "inversiones": 0.0,
+                "activo": 0.0,
+                "patrimonio_neto": 0.0
+            }
+        s = segments_agg[tipo]
+        s["entities_count"] += 1
+        s["primas_emitidas"] += float(c.get('primas_emitidas', 0.0))
+        s["primas_devengadas"] += float(c.get('primas_devengadas', 0.0))
+        s["siniestros"] += float(c.get('siniestros', 0.0))
+        s["resultado_tecnico"] += float(c.get('resultado_tecnico', 0.0))
+        s["resultado_financiero"] += float(c.get('resultado_financiero', 0.0))
+        s["resultado_neto"] += float(c.get('resultado_neto', 0.0))
+        s["inversiones"] += float(c.get('inversiones', 0.0))
+        s["activo"] += float(c.get('activo', 0.0))
+        s["patrimonio_neto"] += float(c.get('patrimonio_neto', 0.0))
+
+    strategic_matrix_segments = []
+    for tipo, s in segments_agg.items():
+        m_tec = (s["resultado_tecnico"] / s["primas_devengadas"] * 100.0) if s["primas_devengadas"] > 0 else 0.0
+        roi = (s["resultado_financiero"] / s["inversiones"] * 100.0) if s["inversiones"] > 0 else 0.0
+        loss_r = (s["siniestros"] / s["primas_devengadas"] * 100.0) if s["primas_devengadas"] > 0 else 0.0
+        mkt_sh = (s["primas_emitidas"] / tot_emit * 100.0) if tot_emit > 0 else 0.0
+        
+        if m_tec >= 0 and roi >= 0:
+            quad = "Q1_LIDERES"
+            quad_lbl = "Ganadoras Integrales (Técnico + / Financiero +)"
+        elif m_tec < 0 and roi >= 0:
+            quad = "Q2_DEP_FIN"
+            quad_lbl = "Dependencia Financiera (Técnico - / Financiero +)"
+        elif m_tec >= 0 and roi < 0:
+            quad = "Q3_ESP_TEC"
+            quad_lbl = "Especialistas Técnicos (Técnico + / Financiero -)"
+        else:
+            quad = "Q4_RIESGO"
+            quad_lbl = "En Riesgo Operativo (Técnico - / Financiero -)"
+
+        comb = (s["siniestros"] + (s["primas_emitidas"] - s["primas_devengadas"])) / s["primas_devengadas"] * 100.0 if s["primas_devengadas"] > 0 else 100.0
+
+        item = {
+            "id": "SEG_" + tipo.upper().replace(" ", "_").replace("/", "_"),
+            "cod_cia": "SEG_" + tipo[:4].upper(),
+            "razon_social": tipo,
+            "short_name": tipo,
+            "tipo_entidad": "Segmentos Consolidados",
+            "entities_count": s["entities_count"],
+            "x": round(max(-150.0, min(150.0, m_tec)), 2),
+            "y": round(max(-60.0, min(120.0, roi)), 2),
+            "margen_tecnico": round(m_tec, 2),
+            "roi_inversiones": round(roi, 2),
+            "primas_emitidas": round(s["primas_emitidas"], 2),
+            "primas_devengadas": round(s["primas_devengadas"], 2),
+            "resultado_tecnico": round(s["resultado_tecnico"], 2),
+            "resultado_financiero": round(s["resultado_financiero"], 2),
+            "resultado_neto": round(s["resultado_neto"], 2),
+            "inversiones": round(s["inversiones"], 2),
+            "patrimonio_neto": round(s["patrimonio_neto"], 2),
+            "activo": round(s["activo"], 2),
+            "loss_ratio": round(loss_r, 2),
+            "combined_ratio": round(comb, 2),
+            "market_share": round(mkt_sh, 2),
+            "quadrant": quad,
+            "quadrant_label": quad_lbl
+        }
+        strategic_matrix_segments.append(item)
+    strategic_matrix_segments.sort(key=lambda x: x["primas_emitidas"], reverse=True)
+
     # 5. Rankings
     rankings = compute_rankings_for_df(df_raw, df_summary, groups_dict)
 
@@ -556,6 +636,7 @@ def process_single_period(period_code):
         "macro_productos": macro_productos,
         "strategic_matrix": strategic_matrix,
         "strategic_matrix_groups": strategic_matrix_groups,
+        "strategic_matrix_segments": strategic_matrix_segments,
         "companies_by_code": companies_dict,
         "companies": list(companies_dict.values()),
         "groups_by_id": groups_dict,

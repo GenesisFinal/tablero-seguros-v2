@@ -2602,11 +2602,35 @@
             });
         }
 
-        // --- TAB: MATRIZ ESTRATÉGICA (CON PLOTLY.JS INTERACTIVO: BOX ZOOM, PAN, AUTOSCALE) ---
+        // --- TAB: MATRIZ ESTRATÉGICA (CON PLOTLY.JS INTERACTIVO Y CONSOLIDACIÓN POR SEGMENTOS) ---
         let activeMatrizFocus = 'ALL';
+
+        function switchMatrizMode(modeVal) {
+            const sel = document.getElementById('select-matriz-segment');
+            if (sel) {
+                sel.value = modeVal;
+            }
+            updateMatrizModePills(modeVal);
+            onMatrizSegmentChange(modeVal);
+        }
+
+        function updateMatrizModePills(modeVal) {
+            document.querySelectorAll('.btn-matriz-mode').forEach(b => {
+                b.className = "btn-matriz-mode px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5";
+            });
+            let activeBtnId = 'btn-matriz-mode-individual';
+            if (modeVal === 'SEGMENTOS') activeBtnId = 'btn-matriz-mode-segmentos';
+            else if (modeVal === 'GRUPOS') activeBtnId = 'btn-matriz-mode-grupos';
+
+            const activeBtn = document.getElementById(activeBtnId);
+            if (activeBtn) {
+                activeBtn.className = "btn-matriz-mode px-3 py-1.5 rounded-lg bg-[#e20039] text-white shadow-sm transition-all flex items-center gap-1.5";
+            }
+        }
 
         function onMatrizSegmentChange(segVal) {
             activeMatrizFocus = 'ALL';
+            updateMatrizModePills(segVal);
             updateMatrizFocusDropdown(segVal);
             if (!window.INSURANCE_DATA_V2 || !currentPeriod) return;
             renderStrategicMatrixTab(window.INSURANCE_DATA_V2.periods_data[currentPeriod]);
@@ -2618,6 +2642,89 @@
             highlightMatrizTableRow(focusVal);
         }
 
+        function getConsolidatedSegments(pData) {
+            if (pData.strategic_matrix_segments && pData.strategic_matrix_segments.length > 0) {
+                return pData.strategic_matrix_segments;
+            }
+            // Dynamic fallback computation
+            const companies = listCompanies(pData);
+            const totEmit = companies.reduce((a, b) => a + (b.primas_emitidas || 0), 0);
+            const segmentsAgg = {};
+            companies.forEach(c => {
+                const tipo = c.tipo_entidad || 'Otras';
+                if (!segmentsAgg[tipo]) {
+                    segmentsAgg[tipo] = {
+                        tipo_entidad: tipo,
+                        entities_count: 0,
+                        primas_emitidas: 0,
+                        primas_devengadas: 0,
+                        siniestros: 0,
+                        resultado_tecnico: 0,
+                        resultado_financiero: 0,
+                        resultado_neto: 0,
+                        inversiones: 0,
+                        activo: 0,
+                        patrimonio_neto: 0
+                    };
+                }
+                const s = segmentsAgg[tipo];
+                s.entities_count += 1;
+                s.primas_emitidas += (c.primas_emitidas || 0);
+                s.primas_devengadas += (c.primas_devengadas || 0);
+                s.siniestros += (c.siniestros || 0);
+                s.resultado_tecnico += (c.resultado_tecnico || 0);
+                s.resultado_financiero += (c.resultado_financiero || 0);
+                s.resultado_neto += (c.resultado_neto || 0);
+                s.inversiones += (c.inversiones || 0);
+                s.activo += (c.activo || 0);
+                s.patrimonio_neto += (c.patrimonio_neto || 0);
+            });
+
+            const result = [];
+            Object.keys(segmentsAgg).forEach(tipo => {
+                const s = segmentsAgg[tipo];
+                const mTec = s.primas_devengadas > 0 ? (s.resultado_tecnico / s.primas_devengadas) * 100 : 0;
+                const roi = s.inversiones > 0 ? (s.resultado_financiero / s.inversiones) * 100 : 0;
+                const lossR = s.primas_devengadas > 0 ? (s.siniestros / s.primas_devengadas) * 100 : 0;
+                const mktSh = totEmit > 0 ? (s.primas_emitidas / totEmit) * 100 : 0;
+                const comb = s.primas_devengadas > 0 ? (s.siniestros + (s.primas_emitidas - s.primas_devengadas)) / s.primas_devengadas * 100 : 100;
+
+                let quad = 'Q4_RIESGO';
+                let quadLbl = 'En Riesgo Operativo (Técnico - / Financiero -)';
+                if (mTec >= 0 && roi >= 0) { quad = 'Q1_LIDERES'; quadLbl = 'Ganadoras Integrales (Técnico + / Financiero +)'; }
+                else if (mTec < 0 && roi >= 0) { quad = 'Q2_DEP_FIN'; quadLbl = 'Dependencia Financiera (Técnico - / Financiero +)'; }
+                else if (mTec >= 0 && roi < 0) { quad = 'Q3_ESP_TEC'; quadLbl = 'Especialistas Técnicos (Técnico + / Financiero -)'; }
+
+                result.push({
+                    id: 'SEG_' + tipo.toUpperCase().replace(/[^A-Z0-9]/g, '_'),
+                    cod_cia: 'SEG_' + tipo.substring(0, 4).toUpperCase(),
+                    razon_social: tipo,
+                    short_name: tipo,
+                    tipo_entidad: 'Segmentos Consolidados',
+                    entities_count: s.entities_count,
+                    x: Math.round(Math.max(-150, Math.min(150, mTec)) * 100) / 100,
+                    y: Math.round(Math.max(-60, Math.min(120, roi)) * 100) / 100,
+                    margen_tecnico: Math.round(mTec * 100) / 100,
+                    roi_inversiones: Math.round(roi * 100) / 100,
+                    primas_emitidas: Math.round(s.primas_emitidas),
+                    primas_devengadas: Math.round(s.primas_devengadas),
+                    resultado_tecnico: Math.round(s.resultado_tecnico),
+                    resultado_financiero: Math.round(s.resultado_financiero),
+                    resultado_neto: Math.round(s.resultado_neto),
+                    inversiones: Math.round(s.inversiones),
+                    patrimonio_neto: Math.round(s.patrimonio_neto),
+                    activo: Math.round(s.activo),
+                    loss_ratio: Math.round(lossR * 100) / 100,
+                    combined_ratio: Math.round(comb * 100) / 100,
+                    market_share: Math.round(mktSh * 100) / 100,
+                    quadrant: quad,
+                    quadrant_label: quadLbl
+                });
+            });
+            result.sort((a, b) => b.primas_emitidas - a.primas_emitidas);
+            return result;
+        }
+
         function updateMatrizFocusDropdown(segVal) {
             if (!window.INSURANCE_DATA_V2 || !currentPeriod) return;
             const pData = window.INSURANCE_DATA_V2.periods_data[currentPeriod];
@@ -2627,7 +2734,16 @@
                 { value: 'ALL', label: 'Ninguno (Ver Todas)', subtext: 'Visualizar todas las burbujas' }
             ];
 
-            if (segVal === 'GRUPOS') {
+            if (segVal === 'SEGMENTOS') {
+                const segs = getConsolidatedSegments(pData);
+                segs.forEach(s => {
+                    items.push({
+                        value: s.id || s.cod_cia,
+                        label: `[Segmento] ${s.razon_social} (${s.entities_count} aseg.)`,
+                        subtext: `Cuadrante: ${s.quadrant} &bull; Primas: ${fmtARS(s.primas_emitidas)}`
+                    });
+                });
+            } else if (segVal === 'GRUPOS') {
                 const grps = (pData.strategic_matrix_groups || []).slice().sort((a, b) => a.razon_social.localeCompare(b.razon_social));
                 grps.forEach(g => {
                     items.push({
@@ -2666,16 +2782,29 @@
 
         function renderStrategicMatrixTab(pData) {
             const seg = document.getElementById('select-matriz-segment')?.value || 'ALL';
+            const isSegmentos = seg === 'SEGMENTOS';
             const isGrupos = seg === 'GRUPOS';
-            const matrix = isGrupos ? (pData.strategic_matrix_groups || []) : (pData.strategic_matrix || []);
-            const filtered = (isGrupos || seg === 'ALL') ? matrix : matrix.filter(c => c.tipo_entidad === seg);
+
+            let matrix = [];
+            if (isSegmentos) {
+                matrix = getConsolidatedSegments(pData);
+            } else if (isGrupos) {
+                matrix = pData.strategic_matrix_groups || [];
+            } else {
+                matrix = pData.strategic_matrix || [];
+            }
+
+            const filtered = (isSegmentos || isGrupos || seg === 'ALL') ? matrix : matrix.filter(c => c.tipo_entidad === seg);
             
             const q1 = filtered.filter(c => c.quadrant === 'Q1_LIDERES').length;
             const q2 = filtered.filter(c => c.quadrant === 'Q2_DEP_FIN').length;
             const q3 = filtered.filter(c => c.quadrant === 'Q3_ESP_TEC').length;
             const q4 = filtered.filter(c => c.quadrant === 'Q4_RIESGO').length;
 
-            const unit = isGrupos ? 'Grupos' : 'Aseguradoras';
+            let unit = 'Aseguradoras';
+            if (isSegmentos) unit = 'Segmentos';
+            else if (isGrupos) unit = 'Grupos';
+
             document.getElementById('matriz-kpi-q1').innerText = `${q1} ${unit}`;
             document.getElementById('matriz-kpi-q2').innerText = `${q2} ${unit}`;
             document.getElementById('matriz-kpi-q3').innerText = `${q3} ${unit}`;
@@ -2683,7 +2812,7 @@
 
             updateMatrizFocusDropdown(seg);
             renderStrategicMatrixChart();
-            renderStrategicMatrixTable(filtered, isGrupos);
+            renderStrategicMatrixTable(filtered, isGrupos, isSegmentos);
         }
 
         function renderStrategicMatrixChart() {
