@@ -175,6 +175,75 @@ def get_period_label(p_str):
         pass
     return p_str
 
+
+def aggregate_standard_branches(market_subramos):
+    """
+    Agrupa los 48 subramos contables SSN en los 10 ramos oficiales estandarizados:
+    1. Automóviles (Automotores + Motos + TPP)
+    2. Riesgos del Trabajo (ART)
+    3. Vida Colectivo (Colectivo + Saldo Deudor + Obligatorios)
+    4. Vida Individual
+    5. Retiro (Colectivo + Individual + Rentas)
+    6. Accidentes Personales (Colectivo + Individual + Acc. Pasajeros)
+    7. Salud (Colectivo + Individual)
+    8. Sepelio (Colectivo + Individual)
+    9. Agropecuarios y Forestales (Granizo + Ganado + Otros)
+    10. Otros Riesgos Patrimoniales (Incendio, Integral, RC, Caución, Robo, Técnico, etc.)
+    """
+    b_map = {
+        "ramo_automotores": 0.0,
+        "ramo_art": 0.0,
+        "ramo_vida_colectivo": 0.0,
+        "ramo_vida_individual": 0.0,
+        "ramo_retiro": 0.0,
+        "ramo_accidentes_personales": 0.0,
+        "ramo_salud": 0.0,
+        "ramo_sepelio": 0.0,
+        "ramo_agro": 0.0,
+        "ramo_otros_patrimoniales": 0.0
+    }
+    
+    for s in market_subramos:
+        cod = str(s.get('cod_subramo', ''))
+        desc = str(s.get('desc_subramo', '')).lower()
+        p = float(s.get('primas', 0.0))
+        
+        # 1. Automotores / Motos / TPP
+        if cod.startswith('1.030.') or cod.startswith('1.180.') or cod.startswith('1.040.'):
+            b_map["ramo_automotores"] += p
+        # 2. ART
+        elif cod.startswith('1.050.'):
+            b_map["ramo_art"] += p
+        # 3. Vida Colectivo
+        elif cod in ('2.030.02', '2.030.04', '2.030.05') or ('vida' in desc and 'colect' in desc) or ('saldo deudor' in desc):
+            b_map["ramo_vida_colectivo"] += p
+        # 4. Vida Individual
+        elif cod == '2.030.01' or ('vida' in desc and 'indiv' in desc):
+            b_map["ramo_vida_individual"] += p
+        # 5. Retiro
+        elif cod.startswith('2.060.') or cod.startswith('2.070.') or 'retiro' in desc:
+            b_map["ramo_retiro"] += p
+        # 6. Accidentes Personales
+        elif cod.startswith('2.010.') or cod.startswith('1.120.') or 'acc. personales' in desc or 'acc. a pasaj' in desc:
+            b_map["ramo_accidentes_personales"] += p
+        # 7. Salud
+        elif cod.startswith('2.020.') or 'salud' in desc:
+            b_map["ramo_salud"] += p
+        # 8. Sepelio
+        elif cod.startswith('2.050.') or 'sepelio' in desc:
+            b_map["ramo_sepelio"] += p
+        # 9. Agropecuarios y Forestales
+        elif cod.startswith('1.070.') or 'agrop' in desc:
+            b_map["ramo_agro"] += p
+        # 10. Otros Patrimoniales
+        else:
+            b_map["ramo_otros_patrimoniales"] += p
+
+    for k in b_map:
+        b_map[k] = round(b_map[k], 2)
+        
+    return b_map
+
 def compute_rankings_for_df(df_raw, df_summary, groups_dict):
     total_mkt_primas = float(df_summary['primas_emitidas'].sum())
     rankings = {}
@@ -821,11 +890,8 @@ def build_all_v2_datasets():
         cur_data = periods_data[p]
         me = cur_data["macro_entidades"]
         
-        # Branch totals
-        branch_map = {}
-        for b in cur_data.get("primas_por_ramo", []):
-            b_name = b.get("ramo", "")
-            branch_map[b_name] = round(float(b.get("primas", 0)), 2)
+        # Standard 10 Branches totals
+        branch_map = aggregate_standard_branches(cur_data.get("market_subramos", []))
 
         # Groups totals
         groups_map = {}
@@ -837,9 +903,7 @@ def build_all_v2_datasets():
         if has_prev:
             prev_p_data = periods_data[prev_p]
             prev_me = prev_p_data["macro_entidades"]
-            prev_branch_map = {}
-            for b in prev_p_data.get("primas_por_ramo", []):
-                prev_branch_map[b.get("ramo", "")] = round(float(b.get("primas", 0)), 2)
+            prev_branch_map = aggregate_standard_branches(prev_p_data.get("market_subramos", []))
             prev_groups_map = {}
             for g in prev_p_data.get("strategic_matrix_groups", []):
                 prev_groups_map[g.get("id", "")] = round(float(g.get("primas_emitidas", 0)), 2)

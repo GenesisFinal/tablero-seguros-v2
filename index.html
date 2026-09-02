@@ -794,26 +794,29 @@
                                 <i class="fas fa-layer-group"></i>
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Métrica / Desglose:</span>
-                                <select id="select-evolucion-metric" onchange="renderEvolucionTab()" class="ui-select text-xs font-bold min-w-[230px]" title="Seleccionar Métrica">
-                                    <optgroup label="Totales y Segmentos">
+                                <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Métrica / Ramo / Grupo:</span>
+                                <select id="select-evolucion-metric" onchange="renderEvolucionTab()" class="ui-select text-xs font-bold min-w-[240px]" title="Seleccionar Métrica">
+                                    <optgroup label="🏛️ Totales y Segmentos Consolidados">
                                         <option value="total_mercado" selected>Total Mercado Asegurador</option>
-                                        <option value="multi_segmentos">Comparativa Multi-Segmento (Todas las líneas)</option>
+                                        <option value="multi_segmentos">Comparativa Multi-Segmento (4 Ramos Principales)</option>
                                         <option value="patrimoniales">Patrimoniales y Mixtas</option>
                                         <option value="art">Riesgos del Trabajo (ART)</option>
                                         <option value="personas">Seguros de Personas</option>
                                         <option value="retiro">Seguros de Retiro</option>
                                     </optgroup>
-                                    <optgroup label="Principales Ramos de Seguros">
-                                        <option value="ramo_Automotores">Ramo: Automotores</option>
-                                        <option value="ramo_Riesgos del Trabajo (ART)">Ramo: Riesgos del Trabajo (ART)</option>
-                                        <option value="ramo_Vida Colectivo">Ramo: Vida Colectivo</option>
-                                        <option value="ramo_Vida Individual">Ramo: Vida Individual</option>
-                                        <option value="ramo_Retiro Colectivo">Ramo: Retiro</option>
-                                        <option value="ramo_Agropecuario y Forestal">Ramo: Agropecuario y Forestal</option>
-                                        <option value="ramo_Incendio">Ramo: Incendio / Integral</option>
+                                    <optgroup label="📋 Ramos Oficiales SSN">
+                                        <option value="ramo_automotores">🚗 Automóviles (Automotores + Motos)</option>
+                                        <option value="ramo_art">👷 Riesgos del Trabajo (ART)</option>
+                                        <option value="ramo_vida_colectivo">👥 Vida Colectivo & Saldo Deudor</option>
+                                        <option value="ramo_vida_individual">👤 Vida Individual</option>
+                                        <option value="ramo_retiro">🏦 Seguros de Retiro</option>
+                                        <option value="ramo_accidentes_personales">🩹 Accidentes Personales (Col. + Ind.)</option>
+                                        <option value="ramo_salud">🩺 Seguros de Salud</option>
+                                        <option value="ramo_sepelio">🕯️ Seguros de Sepelio</option>
+                                        <option value="ramo_agro">🌾 Agropecuarios y Forestales</option>
+                                        <option value="ramo_otros_patrimoniales">🏢 Otros Riesgos Patrimoniales</option>
                                     </optgroup>
-                                    <optgroup label="Grupos Aseguradores Líderes">
+                                    <optgroup label="👥 Grupos Aseguradores Líderes">
                                         <option value="grupo_la_segunda">Grupo La Segunda</option>
                                         <option value="grupo_sancor">Grupo Sancor Seguros</option>
                                         <option value="grupo_federacion_patronal">Federación Patronal</option>
@@ -2972,11 +2975,10 @@
             else if (metricKey === 'personas') val = metricsObj.personas || 0;
             else if (metricKey === 'retiro') val = metricsObj.retiro || 0;
             else if (metricKey.startsWith('ramo_')) {
-                const rName = metricKey.replace('ramo_', '');
-                val = (metricsObj.branches && metricsObj.branches[rName]) ? metricsObj.branches[rName] : 0;
+                val = (metricsObj.branches && metricsObj.branches[metricKey] !== undefined) ? metricsObj.branches[metricKey] : 0;
             } else if (metricKey.startsWith('grupo_')) {
                 const gId = metricKey.replace('grupo_', '');
-                val = (metricsObj.groups && metricsObj.groups[gId]) ? metricsObj.groups[gId] : 0;
+                val = (metricsObj.groups && metricsObj.groups[gId] !== undefined) ? metricsObj.groups[gId] : 0;
             }
             return isConstante ? (val * deflator) : val;
         }
@@ -3083,7 +3085,7 @@
                 varRealEl.className = `text-xl font-bold font-mono mt-1 ${lastRealVarPct >= 0 ? 'text-blue-500' : 'text-rose-500'}`;
             }
 
-            // Render Comparative Chart
+            // Render Comparative Bar Chart
             renderEvolucionComparativeChart(qLabels, curVals, prevVals, ej, metric, isConstante);
 
             // Render Table
@@ -3129,51 +3131,48 @@
                     datasets.push({
                         label: `${s.label} (${ej.short_label})`,
                         data: sCurVals,
-                        borderColor: s.color,
                         backgroundColor: s.color,
-                        borderWidth: 3,
-                        tension: 0.3
+                        borderRadius: 6,
+                        borderSkipped: false
                     });
                     datasets.push({
-                        label: `${s.label} (${prevEjLabel} - YoY)`,
+                        label: `${s.label} (${prevEjLabel} YoY)`,
                         data: sPrevVals,
-                        borderColor: s.color,
-                        backgroundColor: s.color,
-                        borderWidth: 2,
-                        borderDash: [5, 5],
-                        tension: 0.3
+                        backgroundColor: s.color + '66', // 40% opacity
+                        borderRadius: 6,
+                        borderSkipped: false
                     });
                 });
             } else {
+                // Grouped Comparative Bars: Ejercicio Actual vs Ejercicio Anterior
                 datasets = [
                     {
                         label: `${metricText} — ${ej.label}`,
                         data: curData,
-                        borderColor: '#e20039',
-                        backgroundColor: 'rgba(226, 0, 57, 0.1)',
-                        borderWidth: 3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        fill: false,
-                        tension: 0.25
+                        backgroundColor: '#e20039',
+                        borderColor: '#b8002e',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.65
                     },
                     {
                         label: `${metricText} — ${prevEjLabel} (Mismo Período Desfasado 1 Año)`,
                         data: prevData,
+                        backgroundColor: '#94a3b8',
                         borderColor: '#64748b',
-                        backgroundColor: 'rgba(100, 116, 139, 0.1)',
-                        borderWidth: 2.5,
-                        borderDash: [6, 6],
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        fill: false,
-                        tension: 0.25
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.65
                     }
                 ];
             }
 
             chartInstances['evolucion-comparative'] = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: datasets
