@@ -1425,43 +1425,48 @@
             <!-- Interactive Branch Simulator with Checkboxes -->
             <div class="main-card rounded-2xl p-5 border">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                    <div class="flex items-center gap-2">
-                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                            <i class="fas fa-sliders text-[#3ac792]"></i> Simulador Dinámico de Mercado por Ramos
-                        </h3>
-                        <button onclick="exportTableToCSV('tbl-personas-sim', 'simulador_personas.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
-                        </button>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
+                                <i class="fas fa-sliders text-[#3ac792]"></i> Simulador Dinámico de Mercado por Ramos
+                            </h3>
+                            <button onclick="exportTableToCSV('tbl-personas-sim', 'simulador_personas.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                                <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                            </button>
+                        </div>
+                        <span class="text-xs font-mono txt-muted" id="sp-sim-total-badge">Total Mercado Seleccionado: Calculando...</span>
                     </div>
-                    <!-- Checkboxes -->
-                    <div class="flex flex-wrap items-center gap-3 text-xs">
-                        <label class="flex items-center gap-1.5 cursor-pointer">
+
+                    <!-- Checkboxes & Quick Selectors -->
+                    <div class="flex flex-wrap items-center gap-3 text-xs bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border">
+                        <span class="text-[10px] font-bold uppercase tracking-wider txt-muted mr-1">Ramos:</span>
+                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
                             <input type="checkbox" id="chk-sp-vida" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Vida</span>
+                            <span>Vida (2.03)</span>
                         </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer">
+                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
                             <input type="checkbox" id="chk-sp-ap" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Accidentes Personales</span>
+                            <span>Accidentes Personales (2.01)</span>
                         </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer">
+                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
                             <input type="checkbox" id="chk-sp-sepelio" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Sepelio</span>
+                            <span>Sepelio (2.05)</span>
                         </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer">
+                        <label class="flex items-center gap-1.5 cursor-pointer font-semibold">
                             <input type="checkbox" id="chk-sp-salud" checked onchange="renderPersonasSimulator()" class="rounded text-[#e20039] focus:ring-0">
-                            <span>Salud</span>
+                            <span>Salud (2.02)</span>
                         </label>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-xl border max-h-[420px]">
-                    <table class="w-full text-left border-collapse data-table text-xs">
+                <div class="overflow-x-auto rounded-xl border max-h-[440px]">
+                    <table class="w-full text-left border-collapse data-table text-xs" id="tbl-personas-sim">
                         <thead class="sticky top-0">
                             <tr>
                                 <th class="p-2.5 w-12 text-center">Pos.</th>
-                                <th class="p-2.5">Aseguradora</th>
-                                <th class="p-2.5 text-right">Primas Ramos Seleccionados ($M)</th>
-                                <th class="p-2.5 text-right">Cuota %</th>
+                                <th class="p-2.5">Aseguradora (Razón Social)</th>
+                                <th class="p-2.5 text-right w-44">Primas Ramos ($M)</th>
+                                <th class="p-2.5 text-right w-28">Cuota %</th>
                             </tr>
                         </thead>
                         <tbody id="tbl-personas-sim-body">
@@ -1713,17 +1718,17 @@
         }
 
         function fmtARS(val) {
-            if (val === null || val === undefined || isNaN(val)) return '$ 0';
+            if (val === null || val === undefined || isNaN(val)) return '$ 0,0';
             const v = Number(val);
-            if (Math.abs(v) >= 1e12) return '$ ' + (v / 1e12).toFixed(2) + ' B';
-            if (Math.abs(v) >= 1e9) return '$ ' + (v / 1e9).toFixed(1) + ' MM';
-            if (Math.abs(v) >= 1e6) return '$ ' + (v / 1e6).toFixed(1) + ' M';
-            return '$ ' + v.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+            if (Math.abs(v) >= 1e12) return '$ ' + (v / 1e12).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' B';
+            if (Math.abs(v) >= 1e9) return '$ ' + (v / 1e9).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' MM';
+            if (Math.abs(v) >= 1e6) return '$ ' + (v / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' M';
+            return '$ ' + v.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
         }
 
-        function fmtPct(val) {
-            if (val === null || val === undefined || isNaN(val)) return '0.0%';
-            return Number(val).toFixed(2) + '%';
+        function fmtPct(val, decimals = 2) {
+            if (val === null || val === undefined || isNaN(val)) return '0,00%';
+            return Number(val).toLocaleString('es-AR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + '%';
         }
 
         let currentTabId = 'primas';
@@ -1968,8 +1973,8 @@
                     tr.innerHTML = `
                         <td class="p-2.5 font-mono text-[11px]">${r.cod_subramo}</td>
                         <td class="p-2.5 font-semibold">${r.desc_subramo}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                        <td class="p-2.5 text-right font-mono text-rose-500">${(r.siniestros / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono text-rose-500">${(r.siniestros / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                         <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r['siniestralidad_%'])}</td>
                     `;
                     tbody.appendChild(tr);
@@ -2586,7 +2591,7 @@
                         </div>
                     </td>
                     <td class="p-2.5 txt-muted text-[11px]">${c.tipo_entidad}${c.entities_count ? ` (${c.entities_count} Cías)` : ''}</td>
-                    <td class="p-2.5 text-right font-mono">${(c.primas_emitidas / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${(c.primas_emitidas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                     <td class="p-2.5 text-right font-mono font-bold ${c.x >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${fmtPct(c.x)}</td>
                     <td class="p-2.5 text-right font-mono font-bold ${c.y >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${fmtPct(c.y)}</td>
                     <td class="p-2.5 text-right font-mono">${fmtPct(c.combined_ratio)}</td>
@@ -3064,10 +3069,10 @@
                     <td class="p-2.5 font-bold">${r.qNum}</td>
                     <td class="p-2.5 font-semibold txt-secondary">${r.corte}</td>
                     <td class="p-2.5 font-mono font-bold">${r.currPeriod}</td>
-                    <td class="p-2.5 text-right font-mono font-bold ${isAvailable ? 'text-[#e20039]' : 'txt-muted'}">${isAvailable ? (r.currVal / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 }) : '-'}</td>
+                    <td class="p-2.5 text-right font-mono font-bold ${isAvailable ? 'text-[#e20039]' : 'txt-muted'}">${isAvailable ? (r.currVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '-'}</td>
                     <td class="p-2.5 font-mono txt-muted">${r.prevPeriod}</td>
-                    <td class="p-2.5 text-right font-mono txt-secondary">${r.prevVal !== null ? (r.prevVal / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 }) : '-'}</td>
-                    <td class="p-2.5 text-right font-mono font-bold ${r.growthM >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${r.growthM !== null ? (r.growthM / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 }) : '-'}</td>
+                    <td class="p-2.5 text-right font-mono txt-secondary">${r.prevVal !== null ? (r.prevVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '-'}</td>
+                    <td class="p-2.5 text-right font-mono font-bold ${r.growthM >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${r.growthM !== null ? (r.growthM / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '-'}</td>
                     <td class="p-2.5 text-center">${badge}</td>
                 `;
                 tbody.appendChild(tr);
@@ -3244,7 +3249,7 @@
                 const kpiYoY = document.getElementById('flash-kpi-yoy');
 
                 const modeLabel = mensualMode === 'constante' ? '(Constante IPC)' : '(Corriente)';
-                if (kpiVal) kpiVal.innerText = `$ ${(latestMonth.total_mercado || 0).toLocaleString('es-AR', { maximumFractionDigits: 1 })} M`;
+                if (kpiVal) kpiVal.innerText = `$ ${(latestMonth.total_mercado || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`;
                 if (kpiDate) kpiDate.innerText = `Mes de ${latestMonth.date || `${latestMonth.month}/${latestMonth.year}`} ${modeLabel}`;
                 if (kpiMoM && latestMonth.var_mensual !== null) {
                     const isPos = latestMonth.var_mensual >= 0;
@@ -3273,9 +3278,9 @@
 
                 tr.innerHTML = `
                     <td class="p-2.5 font-bold font-mono">${h.date || `${h.month}/${h.year}`}</td>
-                    <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${(h.total_mercado || 0).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">$ ${(h.total_patrimoniales || 0).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">$ ${(h.total_personas || 0).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${(h.total_mercado || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">$ ${(h.total_patrimoniales || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">$ ${(h.total_personas || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                     <td class="p-2.5 text-right">${badgeM}</td>
                     <td class="p-2.5 text-right">${badgeY}</td>
                 `;
@@ -3387,7 +3392,7 @@
                     tr.innerHTML = `
                         <td class="p-2.5 text-center font-bold font-mono">${r.posicion}</td>
                         <td class="p-2.5 font-semibold">${r.entidad}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.prima / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono">${(r.prima / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                         <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r.participacion)}</td>
                         <td class="p-2.5 text-center">
                             <button onclick="inspectCompany('${r.cod_cia || r.id}')" class="px-2 py-1 rounded subtle-card hover:bg-[#e20039] hover:text-white transition-all text-[11px]">
@@ -3497,8 +3502,8 @@
                     tr.innerHTML = `
                         <td class="p-2.5 font-mono text-[11px]">${r.cod_subramo}</td>
                         <td class="p-2.5 font-semibold">${r.desc_subramo}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                        <td class="p-2.5 text-right font-mono text-rose-500">${(r.siniestros / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono text-rose-500">${(r.siniestros / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                         <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r['siniestralidad_%'])}</td>
                     `;
                     tbody.appendChild(tr);
@@ -3542,8 +3547,8 @@
                         tr.innerHTML = `
                             <td class="p-2.5 font-semibold">${c.razon_social}</td>
                             <td class="p-2.5 font-mono text-[11px]">${r.desc_subramo}</td>
-                            <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                            <td class="p-2.5 text-right font-mono text-rose-500">${(r.siniestros / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                            <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                            <td class="p-2.5 text-right font-mono text-rose-500">${(r.siniestros / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                             <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r['siniestralidad_%'])}</td>
                         `;
                         tbody.appendChild(tr);
@@ -3560,6 +3565,7 @@
         function renderPersonasSimulator() {
             if (!window.INSURANCE_DATA_V2 || !currentPeriod) return;
             const pData = window.INSURANCE_DATA_V2.periods_data[currentPeriod];
+            if (!pData) return;
 
             const activePrefixes = [];
             if (document.getElementById('chk-sp-vida')?.checked) activePrefixes.push('2.03');
@@ -3567,32 +3573,46 @@
             if (document.getElementById('chk-sp-sepelio')?.checked) activePrefixes.push('2.05');
             if (document.getElementById('chk-sp-salud')?.checked) activePrefixes.push('2.02');
 
+            const compList = pData.companies || Object.values(pData.companies_by_code || {});
             const simMap = {};
-            pData.companies.forEach(c => {
+            compList.forEach(c => {
                 let pSum = 0;
                 (c.subramos || []).forEach(r => {
-                    if (activePrefixes.some(pfx => r.cod_subramo.startsWith(pfx))) {
-                        pSum += r.primas;
+                    if (r.cod_subramo && activePrefixes.some(pfx => r.cod_subramo.startsWith(pfx))) {
+                        pSum += (r.primas || 0);
                     }
                 });
                 if (pSum > 0) {
-                    simMap[c.cod_cia] = { razon_social: c.razon_social, primas: pSum };
+                    simMap[c.cod_cia] = { cod_cia: c.cod_cia, razon_social: c.razon_social, primas: pSum };
                 }
             });
 
             const simList = Object.values(simMap).sort((a, b) => b.primas - a.primas);
             const totSim = simList.reduce((a, b) => a + b.primas, 0);
 
+            const totalBadge = document.getElementById('sp-sim-total-badge');
+            if (totalBadge) {
+                totalBadge.innerHTML = `Total Mercado Seleccionado: <strong class="text-[#e20039]">$ ${(totSim / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M</strong> &bull; ${simList.length} Compañías Activas`;
+            }
+
             const tbody = document.getElementById('tbl-personas-sim-body');
             if (tbody) {
                 tbody.innerHTML = '';
+                if (simList.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-400 italic">No hay ramos seleccionados. Marque al menos una casilla arriba para calcular el ranking.</td></tr>';
+                    return;
+                }
+
                 simList.forEach((r, idx) => {
                     const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition";
+                    const primasM = (r.primas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+                    const cuotaPct = totSim > 0 ? ((r.primas / totSim) * 100).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%' : '0,00%';
                     tr.innerHTML = `
-                        <td class="p-2.5 text-center font-mono font-bold">${idx + 1}</td>
-                        <td class="p-2.5 font-semibold">${r.razon_social}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.primas / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                        <td class="p-2.5 text-right font-mono font-bold">${fmtPct((r.primas / totSim) * 100)}</td>
+                        <td class="p-2.5 text-center font-mono font-bold text-slate-500">${idx + 1}</td>
+                        <td class="p-2.5 font-semibold txt-primary">${r.razon_social}</td>
+                        <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${primasM}</td>
+                        <td class="p-2.5 text-right font-mono font-bold">${cuotaPct}</td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -3610,7 +3630,7 @@
                     tr.innerHTML = `
                         <td class="p-2.5 text-center font-mono font-bold">${r.posicion}</td>
                         <td class="p-2.5 font-semibold">${r.entidad}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.prima / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono">${(r.prima / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                         <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r.participacion)}</td>
                     `;
                     tbodyP.appendChild(tr);
@@ -3666,7 +3686,7 @@
                     tr.innerHTML = `
                         <td class="p-2.5 font-mono text-[11px]">${r.cod_cuenta}</td>
                         <td class="p-2.5 font-semibold">${r.desc_cuenta}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.importe / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono">${(r.importe / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
                         <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r.porcentaje)}</td>
                     `;
                     tbody.appendChild(tr);
