@@ -1674,6 +1674,22 @@
         let activeMacroMode = 'productos'; // 'productos' (Subramos puros) vs 'entidades' (Por Compañía)
         let mensualMode = 'corriente'; // 'corriente' | 'constante' | 'comparativa'
 
+        // Dataset normalization helper for compact serialization
+        function normalizeDataset() {
+            if (!window.INSURANCE_DATA_V2 || !window.INSURANCE_DATA_V2.periods_data) return;
+            Object.keys(window.INSURANCE_DATA_V2.periods_data).forEach(p => {
+                const pData = window.INSURANCE_DATA_V2.periods_data[p];
+                if (pData) {
+                    if (!pData.companies && pData.companies_by_code) {
+                        pData.companies = Object.values(pData.companies_by_code);
+                    }
+                    if (!pData.groups && pData.groups_by_id) {
+                        pData.groups = Object.values(pData.groups_by_id);
+                    }
+                }
+            });
+        }
+
         // Theme management
         function initTheme() {
             const saved = localStorage.getItem('theme_v2') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -1730,31 +1746,15 @@
                 activeBtn.className = "nav-tab px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 bg-[#e20039] text-white shadow-sm";
             }
 
-            // Render active tab content immediately after becoming visible
+            // Execute render immediately and on next animation frame to guarantee layout measurements
             renderCurrentTab();
-
-            if (tabId === 'primas') {
-                setTimeout(() => {
-                    if (window.INSURANCE_DATA_V2 && currentPeriod) {
-                        renderPrimasTab(window.INSURANCE_DATA_V2.periods_data[currentPeriod]);
-                    }
-                }, 40);
-            } else if (tabId === 'evolucion') {
-                setTimeout(() => {
-                    const isMensual = !document.getElementById('subtab-view-mensual')?.classList.contains('hidden');
-                    if (isMensual) {
-                        renderMensualFlashChart();
-                        renderMensualFlashTable();
-                    } else {
-                        renderQuarterlyChart();
-                    }
-                }, 40);
-            } else if (tabId === 'matriz' && window.Plotly) {
-                setTimeout(() => {
+            requestAnimationFrame(() => {
+                renderCurrentTab();
+                if (tabId === 'matriz' && window.Plotly) {
                     const gd = document.getElementById('chart-strategic-matrix');
                     if (gd) Plotly.Plots.resize(gd);
-                }, 60);
-            }
+                }
+            });
         }
 
         function switchEvolucionSubtab(mode) {
@@ -3766,15 +3766,14 @@
                     metaEl.innerText = `Dataset: 21 Bases Access MDB (2021-2 a 2026-2) • Actualizado: ${window.INSURANCE_DATA_V2.last_updated_human}`;
                 }
 
+                normalizeDataset();
                 let savedTab = 'primas';
                 try {
                     savedTab = localStorage.getItem('tablero_v2_active_tab') || 'primas';
                 } catch (e) {}
 
                 // Switch to saved tab with layout readiness
-                setTimeout(() => {
-                    switchTab(savedTab);
-                }, 30);
+                switchTab(savedTab);
             }
         });
     </script>
