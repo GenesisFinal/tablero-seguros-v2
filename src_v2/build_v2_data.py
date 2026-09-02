@@ -775,25 +775,29 @@ def build_all_v2_datasets():
         if q == 3:
             ej_key = f"{yr}/{yr+1}"
             pos = 1
-            q_label = f"Q1 (30-09-{yr} - 3 Meses)"
+            q_label = f"1º Trimestre (30-09-{yr} • 3 Meses)"
+            short_q = "Q1 (3 Meses)"
             prev_p = f"{yr-1}-3"
             prev_ej = f"{yr-1}/{yr}"
         elif q == 4:
             ej_key = f"{yr}/{yr+1}"
             pos = 2
-            q_label = f"Q2 (31-12-{yr} - 6 Meses)"
+            q_label = f"2º Trimestre (31-12-{yr} • 6 Meses)"
+            short_q = "Q2 (6 Meses)"
             prev_p = f"{yr-1}-4"
             prev_ej = f"{yr-1}/{yr}"
         elif q == 1:
             ej_key = f"{yr-1}/{yr}"
             pos = 3
-            q_label = f"Q3 (31-03-{yr} - 9 Meses)"
+            q_label = f"3º Trimestre (31-03-{yr} • 9 Meses)"
+            short_q = "Q3 (9 Meses)"
             prev_p = f"{yr-1}-1"
             prev_ej = f"{yr-2}/{yr-1}"
         elif q == 2:
             ej_key = f"{yr-1}/{yr}"
             pos = 4
-            q_label = f"Q4 (30-06-{yr} - 12 Meses Cierre)"
+            q_label = f"4º Trimestre (30-06-{yr} • 12 Meses Cierre)"
+            short_q = "Q4 (12M Cierre)"
             prev_p = f"{yr-1}-2"
             prev_ej = f"{yr-2}/{yr-1}"
 
@@ -801,24 +805,78 @@ def build_all_v2_datasets():
             ej_parts = ej_key.split('/')
             ejercicios_map[ej_key] = {
                 "id": ej_key,
-                "label": f"Ejercicio {ej_key}",
+                "label": f"Ejercicio {ej_key} (01-07-{ej_parts[0]} al 30-06-{ej_parts[1]})",
+                "short_label": f"Ej. {ej_key}",
                 "start_year": int(ej_parts[0]),
                 "end_year": int(ej_parts[1]),
                 "quarters": {}
             }
 
-        has_prev = prev_p in periods
+        has_prev = prev_p in periods_data
         p_ipc = PERIOD_IPC.get(p, latest_ipc)
+        prev_ipc = PERIOD_IPC.get(prev_p, p_ipc) if has_prev else p_ipc
         deflator = (latest_ipc / p_ipc) if p_ipc > 0 else 1.0
+        prev_deflator = (latest_ipc / prev_ipc) if (has_prev and prev_ipc > 0) else 1.0
+
+        cur_data = periods_data[p]
+        me = cur_data["macro_entidades"]
+        
+        # Branch totals
+        branch_map = {}
+        for b in cur_data.get("primas_por_ramo", []):
+            b_name = b.get("ramo", "")
+            branch_map[b_name] = round(float(b.get("primas", 0)), 2)
+
+        # Groups totals
+        groups_map = {}
+        for g in cur_data.get("strategic_matrix_groups", []):
+            g_id = g.get("id", "")
+            groups_map[g_id] = round(float(g.get("primas_emitidas", 0)), 2)
+
+        prev_metrics = None
+        if has_prev:
+            prev_p_data = periods_data[prev_p]
+            prev_me = prev_p_data["macro_entidades"]
+            prev_branch_map = {}
+            for b in prev_p_data.get("primas_por_ramo", []):
+                prev_branch_map[b.get("ramo", "")] = round(float(b.get("primas", 0)), 2)
+            prev_groups_map = {}
+            for g in prev_p_data.get("strategic_matrix_groups", []):
+                prev_groups_map[g.get("id", "")] = round(float(g.get("primas_emitidas", 0)), 2)
+
+            prev_metrics = {
+                "period": prev_p,
+                "period_label": prev_p_data["period_label"],
+                "ipc_index": prev_ipc,
+                "deflator_to_latest": round(prev_deflator, 4),
+                "total_mercado": prev_me["total_mercado_emitidas"],
+                "patrimoniales": prev_me["patrimoniales_emitidas"],
+                "art": prev_me["art_emitidas"],
+                "personas": prev_me["personas_emitidas"],
+                "retiro": prev_me["retiro_emitidas"],
+                "branches": prev_branch_map,
+                "groups": prev_groups_map
+            }
 
         ejercicios_map[ej_key]["quarters"][str(pos)] = {
             "period": p,
             "quarter_num": pos,
+            "short_label": short_q,
             "quarter_label": q_label,
+            "ipc_index": p_ipc,
+            "deflator_to_latest": round(deflator, 4),
+            "current_metrics": {
+                "total_mercado": me["total_mercado_emitidas"],
+                "patrimoniales": me["patrimoniales_emitidas"],
+                "art": me["art_emitidas"],
+                "personas": me["personas_emitidas"],
+                "retiro": me["retiro_emitidas"],
+                "branches": branch_map,
+                "groups": groups_map
+            },
             "prev_period": prev_p if has_prev else None,
             "prev_ejercicio": prev_ej if has_prev else None,
-            "ipc_index": p_ipc,
-            "deflator_to_latest": round(deflator, 4)
+            "prev_metrics": prev_metrics
         }
 
     # Determine latest ejercicio

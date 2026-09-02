@@ -761,132 +761,164 @@
         <!-- TAB 2: EVOLUCIÓN TEMPORAL (DUAL: TRIMESTRAL MDB vs MENSUAL FLASH)    -->
         <!-- ==================================================================== -->
         <section id="tab-evolucion" class="tab-content space-y-6 hidden">
-            <!-- Header & Subtab Switcher -->
+            <!-- Header Banner & Selectors -->
             <div class="main-card rounded-2xl p-6 border">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div>
-                        <h2 class="text-xl md:text-2xl font-bold txt-primary">Evolución Temporal del Mercado Asegurador</h2>
-                        <p class="text-xs txt-muted mt-1">Análisis longitudinal de series históricas con desglose continuo y ajuste por inflación.</p>
-                    </div>
-                    <!-- Subtab Selector -->
-                    <div class="flex items-center gap-2 subtle-card p-1.5 rounded-xl border">
-                        <button onclick="switchEvolucionSubtab('trimestral')" id="btn-subtab-trimestral" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#e20039] text-white transition-all">
-                            <i class="fas fa-database mr-1"></i> Trimestral SSN (Bases MDB 2021-2026)
-                        </button>
-                        <button onclick="switchEvolucionSubtab('mensual')" id="btn-subtab-mensual" class="px-3 py-1.5 rounded-lg text-xs font-semibold txt-muted hover:text-[#e20039] transition-all">
-                            <i class="fas fa-calendar-days mr-1"></i> Mensual (Boletín Flash)
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SUBTAB 1: EVOLUCIÓN TRIMESTRAL (21 TRIMESTRES MDB) -->
-            <div id="subtab-view-trimestral" class="space-y-6">
-                <!-- Controls & Filter by Branch / Group -->
-                <div class="main-card rounded-2xl p-5 border">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs font-semibold txt-secondary">Serie a Graficar:</span>
-                            <select id="select-trimestral-metric" onchange="renderQuarterlyChart()" class="ui-input text-xs rounded-lg px-3 py-1.5 font-semibold">
-                                <option value="total_mercado">Total Mercado vs Segmentos (Por Producto)</option>
-                                <option value="branches">Principales Ramos (Auto, ART, Vida, Retiro, Agro)</option>
-                                <option value="groups">Top Grupos Aseguradores</option>
-                            </select>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#e20039] text-white uppercase">Series Históricas SSN</span>
+                            <span class="text-xs txt-muted font-mono" id="evolucion-period-desc">Ejercicio: -</span>
                         </div>
+                        <h2 class="text-xl md:text-2xl font-bold txt-primary">Evolución Trimestral e Interanual del Mercado</h2>
+                        <p class="text-xs txt-muted mt-1">Comparativa trimestral del ejercicio contable (01/07 al 30/06) contra el mismo período desfasado un año (YoY), con ajuste por inflación IPC.</p>
+                    </div>
+
+                    <!-- Controles de Análisis de la Evolución -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- 1. Selector de Ejercicio Fiscal -->
                         <div class="flex items-center gap-2">
-                            <span class="text-xs txt-muted font-mono bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                                <i class="fas fa-check-circle mr-1"></i> 21 Trimestres Consecutivos (100% Contable)
-                            </span>
+                            <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center text-xs shadow-sm">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Ejercicio Fiscal:</span>
+                                <select id="select-evolucion-ejercicio" onchange="onEvolucionEjercicioChange(this.value)" class="ui-select text-xs font-bold min-w-[210px]" title="Seleccionar Ejercicio Fiscal">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <!-- Chart Canvas -->
-                    <div class="relative h-[360px] mt-4">
-                        <canvas id="chart-quarterly-line"></canvas>
+
+                        <!-- 2. Selector de Métrica / Segmento / Ramo -->
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center text-xs shadow-sm">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Métrica / Desglose:</span>
+                                <select id="select-evolucion-metric" onchange="renderEvolucionTab()" class="ui-select text-xs font-bold min-w-[230px]" title="Seleccionar Métrica">
+                                    <optgroup label="Totales y Segmentos">
+                                        <option value="total_mercado" selected>Total Mercado Asegurador</option>
+                                        <option value="multi_segmentos">Comparativa Multi-Segmento (Todas las líneas)</option>
+                                        <option value="patrimoniales">Patrimoniales y Mixtas</option>
+                                        <option value="art">Riesgos del Trabajo (ART)</option>
+                                        <option value="personas">Seguros de Personas</option>
+                                        <option value="retiro">Seguros de Retiro</option>
+                                    </optgroup>
+                                    <optgroup label="Principales Ramos de Seguros">
+                                        <option value="ramo_Automotores">Ramo: Automotores</option>
+                                        <option value="ramo_Riesgos del Trabajo (ART)">Ramo: Riesgos del Trabajo (ART)</option>
+                                        <option value="ramo_Vida Colectivo">Ramo: Vida Colectivo</option>
+                                        <option value="ramo_Vida Individual">Ramo: Vida Individual</option>
+                                        <option value="ramo_Retiro Colectivo">Ramo: Retiro</option>
+                                        <option value="ramo_Agropecuario y Forestal">Ramo: Agropecuario y Forestal</option>
+                                        <option value="ramo_Incendio">Ramo: Incendio / Integral</option>
+                                    </optgroup>
+                                    <optgroup label="Grupos Aseguradores Líderes">
+                                        <option value="grupo_la_segunda">Grupo La Segunda</option>
+                                        <option value="grupo_sancor">Grupo Sancor Seguros</option>
+                                        <option value="grupo_federacion_patronal">Federación Patronal</option>
+                                        <option value="grupo_provincia">Grupo Provincia</option>
+                                        <option value="grupo_san_cristobal">Grupo San Cristóbal</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 3. Selector de Ajuste por Inflación (Corrientes vs Constantes IPC) -->
+                        <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 shrink-0 mt-2 lg:mt-0">
+                            <button id="btn-evolucion-corriente" type="button" onclick="setEvolucionInflationMode('corriente')" class="px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs whitespace-nowrap shadow-sm transition-all flex items-center gap-1.5">
+                                <i class="fas fa-coins"></i> <span>Valores Corrientes (Nominal)</span>
+                            </button>
+                            <button id="btn-evolucion-constante" type="button" onclick="setEvolucionInflationMode('constante')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5">
+                                <i class="fas fa-chart-line"></i> <span>Ajustado IPC (Constante)</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Quarterly Data Table -->
-                <div class="main-card rounded-2xl p-5 border">
-                    <h3 class="font-bold text-sm txt-primary mb-3 flex items-center gap-2">
-                        <i class="fas fa-table text-[#3ac792]"></i> Matriz Histórica de 21 Trimestres ($ en Millones)
-                    </h3>
-                    <div class="overflow-x-auto rounded-xl border max-h-[380px]">
-                        <table class="w-full text-left border-collapse data-table text-xs">
-                            <thead class="sticky top-0">
-                                <tr>
-                                    <th class="p-2.5">Período</th>
-                                    <th class="p-2.5">Corte Fiscal</th>
-                                    <th class="p-2.5 text-right">Total Mercado ($M)</th>
-                                    <th class="p-2.5 text-right">Patrimoniales ($M)</th>
-                                    <th class="p-2.5 text-right">ART ($M)</th>
-                                    <th class="p-2.5 text-right">Personas ($M)</th>
-                                    <th class="p-2.5 text-right">Retiro ($M)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbl-quarterly-body">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
+                <!-- 4 Tarjetas KPI Comparativas del Ejercicio -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <div class="subtle-card rounded-2xl p-4 border">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-[#e20039]" id="kpi-evolucion-cur-title">Primas Ejercicio Actual</span>
+                        <p class="text-xl font-bold font-mono txt-primary mt-1" id="kpi-evolucion-cur-val">$ -</p>
+                        <p class="text-[10px] txt-muted font-mono" id="kpi-evolucion-cur-sub">-</p>
+                    </div>
+                    <div class="subtle-card rounded-2xl p-4 border">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500" id="kpi-evolucion-prev-title">Mismo Trimestre Año Anterior</span>
+                        <p class="text-xl font-bold font-mono txt-primary mt-1" id="kpi-evolucion-prev-val">$ -</p>
+                        <p class="text-[10px] txt-muted font-mono" id="kpi-evolucion-prev-sub">-</p>
+                    </div>
+                    <div class="subtle-card rounded-2xl p-4 border">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Variación Nominal (YoY)</span>
+                        <p class="text-xl font-bold font-mono mt-1" id="kpi-evolucion-var-nom">+0.0%</p>
+                        <p class="text-[10px] txt-muted font-mono" id="kpi-evolucion-var-nom-sub">$ -</p>
+                    </div>
+                    <div class="subtle-card rounded-2xl p-4 border">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Variación Real IPC (YoY)</span>
+                        <p class="text-xl font-bold font-mono mt-1" id="kpi-evolucion-var-real">+0.0%</p>
+                        <p class="text-[10px] txt-muted" id="kpi-evolucion-var-real-sub">Ajustado por Inflación Oficial</p>
                     </div>
                 </div>
             </div>
 
-            <!-- SUBTAB 2: EVOLUCIÓN MENSUAL (BOLETÍN FLASH) -->
-            <div id="subtab-view-mensual" class="space-y-6 hidden">
-                <!-- Notice Banner -->
-                <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 flex items-start gap-3">
-                    <i class="fas fa-circle-info text-amber-500 text-lg mt-0.5"></i>
-                    <div>
-                        <p class="text-xs font-bold text-amber-900 dark:text-amber-200">Aviso de Fuente de Datos Complementaria:</p>
-                        <p class="text-xs text-amber-800 dark:text-amber-300 mt-0.5">
-                            Esta sección presenta la serie de <strong>Producción Mensual Provisoria del Boletín Estadístico de la SSN</strong>. 
-                            A diferencia de los balances contables trimestrales de sumas y saldos (.mdb), estos valores provienen del reporte flash mensual de emisión.
-                        </p>
+            <!-- Gráfico Comparativo de la Curva Trimestral -->
+            <div class="main-card rounded-2xl p-6 border flex flex-col">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-[#e20039] flex items-center justify-center text-sm shadow-sm">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm txt-primary leading-tight" id="chart-evolucion-title">Curva de Producción Trimestral Acumulada</h3>
+                            <p class="text-[11px] txt-muted" id="chart-evolucion-subtitle">Ejercicio Seleccionado vs. Ejercicio Anterior (Mismo Trimestre desfasado 1 año)</p>
+                        </div>
+                    </div>
+                    <div class="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" id="badge-evolucion-mode">
+                        Valores Corrientes ($ ARS)
                     </div>
                 </div>
-
-                <!-- Monthly Chart -->
-                <div class="main-card rounded-2xl p-5 border">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                            <i class="fas fa-chart-line text-[#e20039]"></i> Evolución de Producción Mensual (Corriente vs Constante)
-                        </h3>
-                    </div>
-                    <div class="relative h-[340px]">
-                        <canvas id="chart-mensual-flash-line"></canvas>
-                    </div>
+                <div class="relative w-full h-[400px]">
+                    <canvas id="chart-evolucion-comparative"></canvas>
                 </div>
+            </div>
 
-                <!-- Monthly Table -->
-                <div class="main-card rounded-2xl p-5 border">
-                    <h3 class="font-bold text-sm txt-primary mb-3 flex items-center gap-2">
-                        <i class="fas fa-table text-[#4183ca]"></i> Registro Histórico Mes a Mes
-                    </h3>
-                    <div class="overflow-x-auto rounded-xl border max-h-[360px]">
-                        <table class="w-full text-left border-collapse data-table text-xs">
-                            <thead class="sticky top-0">
-                                <tr>
-                                    <th class="p-2.5">Mes / Período</th>
-                                    <th class="p-2.5 text-right">Total Mercado ($M)</th>
-                                    <th class="p-2.5 text-right">Patrimoniales ($M)</th>
-                                    <th class="p-2.5 text-right">Personas ($M)</th>
-                                    <th class="p-2.5 text-right">Var % Mensual</th>
-                                    <th class="p-2.5 text-right">Var % Interanual</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbl-mensual-flash-body">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
+            <!-- Tabla Detalle Trimestral y Comparativa Interanual -->
+            <div class="main-card rounded-2xl p-6 border">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center text-sm shadow-sm">
+                            <i class="fas fa-table-list"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm txt-primary">Tabla de Desempeño Trimestral e Interanual</h3>
+                            <p class="text-[11px] txt-muted">Valores acumulados por trimestre del ejercicio, variación nominal y variación real deflactada.</p>
+                        </div>
                     </div>
+                    <button onclick="exportTableToCSV('tbl-evolucion-body', 'evolucion_ejercicio.csv')" class="btn-export text-xs" title="Exportar CSV">
+                        <i class="fas fa-file-csv text-emerald-600"></i> <span>Exportar CSV</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-50 dark:bg-slate-800/60 txt-muted uppercase font-bold border-b border-slate-200 dark:border-slate-700/60">
+                            <tr>
+                                <th class="p-3">Trimestre del Ejercicio</th>
+                                <th class="p-3">Período Actual</th>
+                                <th class="p-3 text-right">Primas Actual ($M)</th>
+                                <th class="p-3">Período Anterior (YoY)</th>
+                                <th class="p-3 text-right">Primas Anterior ($M)</th>
+                                <th class="p-3 text-right">Var. Nominal ($M)</th>
+                                <th class="p-3 text-right">Var. Nominal (%)</th>
+                                <th class="p-3 text-right text-blue-600">Var. Real IPC (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl-evolucion-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
-
-        <!-- ==================================================================== -->
-        <!-- TAB 3: RANKINGS SSN (12 CATEGORÍAS COMPLETAS)                        -->
-        <!-- ==================================================================== -->
-        
 
         <section id="tab-rankings" class="tab-content space-y-6 hidden">
             <!-- Header & Category Selector -->
@@ -1874,7 +1906,7 @@
                 vMens.classList.add('hidden');
                 bTrim.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#e20039] text-white transition-all";
                 bMens.className = "px-3 py-1.5 rounded-lg text-xs font-semibold txt-muted hover:text-[#e20039] transition-all";
-                renderQuarterlyChart();
+                renderEvolucionTab();
             } else {
                 vTrim.classList.add('hidden');
                 vMens.classList.remove('hidden');
@@ -1882,7 +1914,7 @@
                 bTrim.className = "px-3 py-1.5 rounded-lg text-xs font-semibold txt-muted hover:text-[#e20039] transition-all";
                 setTimeout(() => {
                     renderMensualFlashChart();
-                    renderMensualFlashTable();
+                    
                 }, 30);
             }
         }
@@ -1936,16 +1968,7 @@
 
             // Render charts according to the active tab
             if (currentTabId === 'evolucion') {
-                const isMensualVisible = !document.getElementById('subtab-view-mensual')?.classList.contains('hidden');
-                if (isMensualVisible) {
-                    renderMensualFlashChart();
-                    renderMensualFlashTable();
-                } else {
-                    renderQuarterlyChart();
-                }
-            } else {
-                renderQuarterlyChart();
-                renderMensualFlashTable();
+                renderEvolucionTab();
             }
         }
 
@@ -2092,6 +2115,37 @@
 
         
         
+        
+        function populateGlobalPeriodSelect() {
+            if (!window.INSURANCE_DATA_V2) return;
+            const sel = document.getElementById('global-period-select');
+            if (!sel) return;
+
+            const ejercicios = window.INSURANCE_DATA_V2.ejercicios_fiscales || {};
+            const ejKeys = Object.keys(ejercicios).reverse();
+
+            sel.innerHTML = '';
+            ejKeys.forEach(ejKey => {
+                const ej = ejercicios[ejKey];
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = `📁 ${ej.label || 'Ejercicio ' + ejKey}`;
+                
+                const qNums = Object.keys(ej.quarters).map(Number).sort((a, b) => b - a);
+                qNums.forEach(qNum => {
+                    const qInfo = ej.quarters[String(qNum)];
+                    const opt = document.createElement('option');
+                    opt.value = qInfo.period;
+                    opt.innerText = `${qInfo.period} • ${qInfo.quarter_label || qInfo.period}`;
+                    if (qInfo.period === currentPeriod) opt.selected = true;
+                    optgroup.appendChild(opt);
+                });
+                sel.appendChild(optgroup);
+            });
+
+            if (currentPeriod) sel.value = currentPeriod;
+            populateEvolucionEjercicios();
+        }
+
         // ====================================================================
         // SEARCHABLE COMBOBOX ENGINE (LISTADO COMPLETO + FILTRADO PREDICTIVO)
         // ====================================================================
@@ -2857,128 +2911,338 @@
             });
         }
 
-        // --- TAB 2: EVOLUCIÓN TEMPORAL & SERIES HISTÓRICAS ---
-        function renderQuarterlyChart() {
-            const ctx = document.getElementById('chart-quarterly-line');
-            if (!ctx || !window.INSURANCE_DATA_V2) return;
-            const ts = window.INSURANCE_DATA_V2.quarterly_time_series;
-            if (!ts) return;
-            const metric = document.getElementById('select-trimestral-metric')?.value || 'total_mercado';
+        // --- TAB 2: EVOLUCIÓN TEMPORAL & COMPARATIVA POR EJERCICIO FISCAL (SSN 01/07 AL 30/06) ---
+        let activeEvolucionEjercicio = null;
+        let activeEvolucionInflationMode = 'corriente'; // 'corriente' or 'constante'
 
-            if (chartInstances['quarterly-line']) chartInstances['quarterly-line'].destroy();
+        function setEvolucionInflationMode(mode) {
+            activeEvolucionInflationMode = mode;
+            const btnCorr = document.getElementById('btn-evolucion-corriente');
+            const btnConst = document.getElementById('btn-evolucion-constante');
+            const badge = document.getElementById('badge-evolucion-mode');
+
+            const actCls = "px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs whitespace-nowrap shadow-sm transition-all flex items-center gap-1.5";
+            const inactCls = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5";
+
+            if (mode === 'corriente') {
+                if (btnCorr) btnCorr.className = actCls;
+                if (btnConst) btnConst.className = inactCls;
+                if (badge) badge.innerText = "Valores Corrientes (Nominal $ ARS)";
+            } else {
+                if (btnConst) btnConst.className = actCls;
+                if (btnCorr) btnCorr.className = inactCls;
+                if (badge) badge.innerText = "Valores Constantes (Ajustados IPC a Cierre)";
+            }
+            renderEvolucionTab();
+        }
+
+        function populateEvolucionEjercicios() {
+            if (!window.INSURANCE_DATA_V2) return;
+            const ejercicios = window.INSURANCE_DATA_V2.ejercicios_fiscales || {};
+            const sel = document.getElementById('select-evolucion-ejercicio');
+            if (!sel) return;
+
+            const ejKeys = Object.keys(ejercicios).reverse();
+            if (!activeEvolucionEjercicio || !ejercicios[activeEvolucionEjercicio]) {
+                activeEvolucionEjercicio = window.INSURANCE_DATA_V2.latest_ejercicio || ejKeys[0];
+            }
+
+            sel.innerHTML = '';
+            ejKeys.forEach(k => {
+                const ej = ejercicios[k];
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.innerText = ej.label || `Ejercicio ${k}`;
+                if (k === activeEvolucionEjercicio) opt.selected = true;
+                sel.appendChild(opt);
+            });
+        }
+
+        function onEvolucionEjercicioChange(ejKey) {
+            activeEvolucionEjercicio = ejKey;
+            renderEvolucionTab();
+        }
+
+        function extractMetricValue(metricsObj, metricKey, isConstante = false, deflator = 1.0) {
+            if (!metricsObj) return 0;
+            let val = 0;
+            if (metricKey === 'total_mercado') val = metricsObj.total_mercado || 0;
+            else if (metricKey === 'patrimoniales') val = metricsObj.patrimoniales || 0;
+            else if (metricKey === 'art') val = metricsObj.art || 0;
+            else if (metricKey === 'personas') val = metricsObj.personas || 0;
+            else if (metricKey === 'retiro') val = metricsObj.retiro || 0;
+            else if (metricKey.startsWith('ramo_')) {
+                const rName = metricKey.replace('ramo_', '');
+                val = (metricsObj.branches && metricsObj.branches[rName]) ? metricsObj.branches[rName] : 0;
+            } else if (metricKey.startsWith('grupo_')) {
+                const gId = metricKey.replace('grupo_', '');
+                val = (metricsObj.groups && metricsObj.groups[gId]) ? metricsObj.groups[gId] : 0;
+            }
+            return isConstante ? (val * deflator) : val;
+        }
+
+        function renderEvolucionTab() {
+            if (!window.INSURANCE_DATA_V2) return;
+            const ejercicios = window.INSURANCE_DATA_V2.ejercicios_fiscales || {};
+            if (!activeEvolucionEjercicio || !ejercicios[activeEvolucionEjercicio]) {
+                populateEvolucionEjercicios();
+            }
+
+            const ej = ejercicios[activeEvolucionEjercicio];
+            if (!ej) return;
+
+            const metric = document.getElementById('select-evolucion-metric')?.value || 'total_mercado';
+            const isConstante = activeEvolucionInflationMode === 'constante';
+
+            const descEl = document.getElementById('evolucion-period-desc');
+            if (descEl) descEl.innerText = `Ejercicio: ${ej.label}`;
+
+            // Prepare 4 Quarters data
+            const qNums = [1, 2, 3, 4];
+            const qLabels = ['1º Trim (30-09 • 3M)', '2º Trim (31-12 • 6M)', '3º Trim (31-03 • 9M)', '4º Trim (30-06 • 12M Cierre)'];
+            const curVals = [];
+            const prevVals = [];
+            const tableRows = [];
+
+            let lastCurVal = 0;
+            let lastPrevVal = 0;
+            let lastCurPeriod = '';
+            let lastPrevPeriod = '';
+            let lastNomVarPct = 0;
+            let lastRealVarPct = 0;
+
+            qNums.forEach((qNum, idx) => {
+                const qKey = String(qNum);
+                const qData = ej.quarters[qKey];
+                if (qData) {
+                    const curDeflator = qData.deflator_to_latest || 1.0;
+                    const prevDeflator = qData.prev_metrics ? (qData.prev_metrics.deflator_to_latest || 1.0) : 1.0;
+
+                    const cNom = extractMetricValue(qData.current_metrics, metric, false, 1.0);
+                    const pNom = qData.prev_metrics ? extractMetricValue(qData.prev_metrics, metric, false, 1.0) : null;
+
+                    const cReal = extractMetricValue(qData.current_metrics, metric, true, curDeflator);
+                    const pReal = qData.prev_metrics ? extractMetricValue(qData.prev_metrics, metric, true, prevDeflator) : null;
+
+                    const cDisplay = isConstante ? cReal : cNom;
+                    const pDisplay = (pNom !== null) ? (isConstante ? pReal : pNom) : null;
+
+                    curVals.push(cDisplay / 1e6);
+                    prevVals.push(pDisplay !== null ? pDisplay / 1e6 : null);
+
+                    const nomVarAbs = (pNom !== null) ? (cNom - pNom) : 0;
+                    const nomVarPct = (pNom && pNom > 0) ? ((cNom - pNom) / pNom) * 100 : 0;
+                    const realVarPct = (pReal && pReal > 0) ? ((cReal - pReal) / pReal) * 100 : 0;
+
+                    lastCurVal = cDisplay;
+                    lastPrevVal = pDisplay || 0;
+                    lastCurPeriod = qData.period;
+                    lastPrevPeriod = qData.prev_period || 'Sin dato';
+                    lastNomVarPct = nomVarPct;
+                    lastRealVarPct = realVarPct;
+
+                    tableRows.push({
+                        qLabel: qLabels[idx],
+                        curPeriod: qData.period,
+                        curVal: cDisplay,
+                        prevPeriod: qData.prev_period || '-',
+                        prevVal: pDisplay,
+                        nomVarAbs: nomVarAbs,
+                        nomVarPct: nomVarPct,
+                        realVarPct: realVarPct,
+                        hasPrev: pNom !== null
+                    });
+                } else {
+                    curVals.push(null);
+                    prevVals.push(null);
+                }
+            });
+
+            // Update Top 4 KPI Cards
+            const curValEl = document.getElementById('kpi-evolucion-cur-val');
+            const curSubEl = document.getElementById('kpi-evolucion-cur-sub');
+            const prevValEl = document.getElementById('kpi-evolucion-prev-val');
+            const prevSubEl = document.getElementById('kpi-evolucion-prev-sub');
+            const varNomEl = document.getElementById('kpi-evolucion-var-nom');
+            const varNomSubEl = document.getElementById('kpi-evolucion-var-nom-sub');
+            const varRealEl = document.getElementById('kpi-evolucion-var-real');
+
+            if (curValEl) curValEl.innerText = `$ ${(lastCurVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`;
+            if (curSubEl) curSubEl.innerText = `Corte: ${lastCurPeriod} (${isConstante ? 'Ajustado IPC' : 'Corriente'})`;
+            if (prevValEl) prevValEl.innerText = lastPrevVal > 0 ? `$ ${(lastPrevVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M` : 'N/D';
+            if (prevSubEl) prevSubEl.innerText = `Corte: ${lastPrevPeriod} (Año previo)`;
+
+            if (varNomEl) {
+                varNomEl.innerText = `${lastNomVarPct >= 0 ? '+' : ''}${lastNomVarPct.toFixed(1)}%`;
+                varNomEl.className = `text-xl font-bold font-mono mt-1 ${lastNomVarPct >= 0 ? 'text-emerald-500' : 'text-rose-500'}`;
+            }
+            if (varNomSubEl) varNomSubEl.innerText = `Nominal YoY vs ${lastPrevPeriod}`;
+
+            if (varRealEl) {
+                varRealEl.innerText = `${lastRealVarPct >= 0 ? '+' : ''}${lastRealVarPct.toFixed(1)}%`;
+                varRealEl.className = `text-xl font-bold font-mono mt-1 ${lastRealVarPct >= 0 ? 'text-blue-500' : 'text-rose-500'}`;
+            }
+
+            // Render Comparative Chart
+            renderEvolucionComparativeChart(qLabels, curVals, prevVals, ej, metric, isConstante);
+
+            // Render Table
+            renderEvolucionTable(tableRows, isConstante);
+        }
+
+        function renderEvolucionComparativeChart(labels, curData, prevData, ej, metric, isConstante) {
+            const ctx = document.getElementById('chart-evolucion-comparative');
+            if (!ctx) return;
+
+            if (chartInstances['evolucion-comparative']) {
+                chartInstances['evolucion-comparative'].destroy();
+            }
+
+            const metricSelect = document.getElementById('select-evolucion-metric');
+            const metricText = metricSelect ? metricSelect.options[metricSelect.selectedIndex].text : 'Total Mercado';
+            const ejParts = ej.id.split('/');
+            const prevEjLabel = `Ej. ${parseInt(ejParts[0])-1}/${parseInt(ejParts[1])-1}`;
 
             let datasets = [];
-            if (metric === 'total_mercado') {
-                datasets = [
-                    { label: 'Total Mercado ($M)', data: (ts.total_mercado_emitidas || []).map(v => v / 1e6), borderColor: '#e20039', backgroundColor: '#e20039', tension: 0.3 },
-                    { label: 'Patrimoniales Puras ($M)', data: (ts.patrimoniales_prod_emitidas || []).map(v => v / 1e6), borderColor: '#4183ca', backgroundColor: '#4183ca', tension: 0.3 },
-                    { label: 'ART ($M)', data: (ts.art_prod_emitidas || []).map(v => v / 1e6), borderColor: '#3ac792', backgroundColor: '#3ac792', tension: 0.3 },
-                    { label: 'Personas Total ($M)', data: (ts.personas_prod_emitidas || []).map(v => v / 1e6), borderColor: '#f8cc59', backgroundColor: '#f8cc59', tension: 0.3 },
-                    { label: 'Retiro ($M)', data: (ts.retiro_prod_emitidas || []).map(v => v / 1e6), borderColor: '#ff593e', backgroundColor: '#ff593e', tension: 0.3 }
+
+            if (metric === 'multi_segmentos') {
+                const segs = [
+                    { id: 'patrimoniales', label: 'Patrimoniales y Mixtas', color: '#4183ca' },
+                    { id: 'art', label: 'Riesgos del Trabajo (ART)', color: '#3ac792' },
+                    { id: 'personas', label: 'Seguros de Personas', color: '#f8cc59' },
+                    { id: 'retiro', label: 'Seguros de Retiro', color: '#ff593e' }
                 ];
-            } else if (metric === 'branches' && ts.branches) {
-                const b = ts.branches;
+                segs.forEach(s => {
+                    const sCurVals = [1,2,3,4].map(qNum => {
+                        const q = ej.quarters[String(qNum)];
+                        if (!q) return null;
+                        const d = isConstante ? (q.deflator_to_latest || 1.0) : 1.0;
+                        return extractMetricValue(q.current_metrics, s.id, isConstante, d) / 1e6;
+                    });
+                    const sPrevVals = [1,2,3,4].map(qNum => {
+                        const q = ej.quarters[String(qNum)];
+                        if (!q || !q.prev_metrics) return null;
+                        const d = isConstante ? (q.prev_metrics.deflator_to_latest || 1.0) : 1.0;
+                        return extractMetricValue(q.prev_metrics, s.id, isConstante, d) / 1e6;
+                    });
+
+                    datasets.push({
+                        label: `${s.label} (${ej.short_label})`,
+                        data: sCurVals,
+                        borderColor: s.color,
+                        backgroundColor: s.color,
+                        borderWidth: 3,
+                        tension: 0.3
+                    });
+                    datasets.push({
+                        label: `${s.label} (${prevEjLabel} - YoY)`,
+                        data: sPrevVals,
+                        borderColor: s.color,
+                        backgroundColor: s.color,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.3
+                    });
+                });
+            } else {
                 datasets = [
-                    { label: 'Automotores ($M)', data: (b.automotores || []).map(v => v / 1e6), borderColor: '#e20039', tension: 0.3 },
-                    { label: 'ART ($M)', data: (b.art || []).map(v => v / 1e6), borderColor: '#3ac792', tension: 0.3 },
-                    { label: 'Vida ($M)', data: (b.vida || []).map(v => v / 1e6), borderColor: '#4183ca', tension: 0.3 },
-                    { label: 'Retiro ($M)', data: (b.retiro || []).map(v => v / 1e6), borderColor: '#f8cc59', tension: 0.3 },
-                    { label: 'Agro ($M)', data: (b.agro || []).map(v => v / 1e6), borderColor: '#ff593e', tension: 0.3 }
-                ];
-            } else if (metric === 'groups' && ts.groups) {
-                const g = ts.groups;
-                datasets = [
-                    { label: 'Sancor ($M)', data: (g.sancor || []).map(v => v / 1e6), borderColor: '#e20039', tension: 0.3 },
-                    { label: 'Fed. Patronal ($M)', data: (g.federacion_patronal || []).map(v => v / 1e6), borderColor: '#4183ca', tension: 0.3 },
-                    { label: 'Provincia ($M)', data: (g.provincia || []).map(v => v / 1e6), borderColor: '#3ac792', tension: 0.3 },
-                    { label: 'San Cristóbal ($M)', data: (g.san_cristobal || []).map(v => v / 1e6), borderColor: '#f8cc59', tension: 0.3 },
-                    { label: 'La Segunda ($M)', data: (g.la_segunda || []).map(v => v / 1e6), borderColor: '#ff593e', borderWidth: 3, tension: 0.3 }
+                    {
+                        label: `${metricText} — ${ej.label}`,
+                        data: curData,
+                        borderColor: '#e20039',
+                        backgroundColor: 'rgba(226, 0, 57, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: false,
+                        tension: 0.25
+                    },
+                    {
+                        label: `${metricText} — ${prevEjLabel} (Mismo Período Desfasado 1 Año)`,
+                        data: prevData,
+                        borderColor: '#64748b',
+                        backgroundColor: 'rgba(100, 116, 139, 0.1)',
+                        borderWidth: 2.5,
+                        borderDash: [6, 6],
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: false,
+                        tension: 0.25
+                    }
                 ];
             }
 
-            chartInstances['quarterly-line'] = new Chart(ctx, {
+            chartInstances['evolucion-comparative'] = new Chart(ctx, {
                 type: 'line',
-                data: { labels: ts.period_labels || [], datasets: datasets },
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
-                    plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Sora', size: 11 } } } },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                boxWidth: 14,
+                                font: { family: 'Sora', size: 11, weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw;
+                                    if (val === null || val === undefined) return `${context.dataset.label}: N/D`;
+                                    return `${context.dataset.label}: $ ${val.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`;
+                                }
+                            }
+                        }
+                    },
                     scales: {
-                        y: { ticks: { callback: v => '$ ' + v.toLocaleString() + ' M' } }
+                        y: {
+                            ticks: {
+                                callback: function(val) {
+                                    return '$ ' + val.toLocaleString('es-AR') + ' M';
+                                }
+                            },
+                            grid: {
+                                color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
                     }
                 }
             });
         }
 
-        function renderQuarterlyTable() {
-            const tbody = document.getElementById('tbl-quarterly-body');
-            if (!tbody || !window.INSURANCE_DATA_V2) return;
-            const ts = window.INSURANCE_DATA_V2.quarterly_time_series;
-            if (!ts || !ts.periods) return;
-            tbody.innerHTML = '';
-            for (let i = ts.periods.length - 1; i >= 0; i--) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-2.5 font-bold font-mono">${ts.periods[i]}</td>
-                    <td class="p-2.5 txt-muted">${ts.period_labels ? ts.period_labels[i] : ''}</td>
-                    <td class="p-2.5 text-right font-mono font-bold">${((ts.total_mercado_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">${((ts.patrimoniales_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">${((ts.art_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">${((ts.personas_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">${((ts.retiro_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-
-        function renderMensualFlashChart() {
-            const ctx = document.getElementById('chart-mensual-flash-line');
-            if (!ctx || !window.INSURANCE_DATA_V2) return;
-            const supp = window.INSURANCE_DATA_V2.supplementary_data?.monthly_flash_series;
-            if (!supp || !supp.corriente) return;
-
-            const months = Object.keys(supp.corriente);
-            const valCorr = Object.values(supp.corriente).map(v => v.total_mercado / 1e6);
-            const valConst = supp.constante ? Object.values(supp.constante).map(v => v.total_mercado / 1e6) : [];
-
-            if (chartInstances['mensual-flash-line']) chartInstances['mensual-flash-line'].destroy();
-
-            chartInstances['mensual-flash-line'] = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [
-                        { label: 'Valores Corrientes ($M)', data: valCorr, borderColor: '#e20039', tension: 0.2 },
-                        { label: 'Valores Constantes (Ajustados IPC $M)', data: valConst, borderColor: '#4183ca', borderDash: [5, 5], tension: 0.2 }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top' } }
-                }
-            });
-        }
-
-        function renderMensualFlashTable() {
-            const tbody = document.getElementById('tbl-mensual-flash-body');
-            if (!tbody || !window.INSURANCE_DATA_V2) return;
-            const supp = window.INSURANCE_DATA_V2.supplementary_data?.monthly_flash_series;
-            if (!supp || !supp.corriente) return;
+        function renderEvolucionTable(rows, isConstante) {
+            const tbody = document.getElementById('tbl-evolucion-body');
+            if (!tbody) return;
 
             tbody.innerHTML = '';
-            const months = Object.keys(supp.corriente).reverse();
-            months.forEach(m => {
-                const c = supp.corriente[m];
+            rows.forEach(r => {
                 const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition";
+
+                const curFormatted = `$ ${(r.curVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}`;
+                const prevFormatted = r.hasPrev ? `$ ${(r.prevVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` : '<span class="text-slate-400">N/D</span>';
+                const nomAbsFormatted = r.hasPrev ? `$ ${(r.nomVarAbs / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}` : '-';
+                const nomPctFormatted = r.hasPrev ? `${r.nomVarPct >= 0 ? '+' : ''}${r.nomVarPct.toFixed(1)}%` : '-';
+                const realPctFormatted = r.hasPrev ? `${r.realVarPct >= 0 ? '+' : ''}${r.realVarPct.toFixed(1)}%` : '-';
+
                 tr.innerHTML = `
-                    <td class="p-2.5 font-bold font-mono">${m}</td>
-                    <td class="p-2.5 text-right font-mono">${(c.total_mercado / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">${(c.patrimoniales / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">${(c.personas / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">${fmtPct(c.var_mensual)}</td>
-                    <td class="p-2.5 text-right font-mono">${fmtPct(c.var_interanual)}</td>
+                    <td class="p-3 font-semibold txt-primary">${r.qLabel}</td>
+                    <td class="p-3 font-mono font-bold text-xs text-slate-500">${r.curPeriod}</td>
+                    <td class="p-3 text-right font-mono font-bold text-[#e20039]">${curFormatted}</td>
+                    <td class="p-3 font-mono text-xs text-slate-400">${r.prevPeriod}</td>
+                    <td class="p-3 text-right font-mono font-semibold">${prevFormatted}</td>
+                    <td class="p-3 text-right font-mono ${r.nomVarAbs >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${nomAbsFormatted}</td>
+                    <td class="p-3 text-right font-mono font-bold ${r.nomVarPct >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${nomPctFormatted}</td>
+                    <td class="p-3 text-right font-mono font-bold ${r.realVarPct >= 0 ? 'text-blue-500' : 'text-rose-500'}">${realPctFormatted}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -4077,20 +4341,8 @@
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             if (window.INSURANCE_DATA_V2) {
-                const periods = window.INSURANCE_DATA_V2.available_periods;
-                const sel = document.getElementById('global-period-select');
-                if (sel) {
-                    sel.innerHTML = '';
-                    periods.slice().reverse().forEach(p => {
-                        const opt = document.createElement('option');
-                        opt.value = p;
-                        const label = window.INSURANCE_DATA_V2.periods_data[p]?.period_label || p;
-                        opt.innerText = `${p} • ${label}`;
-                        sel.appendChild(opt);
-                    });
-                }
                 currentPeriod = window.INSURANCE_DATA_V2.latest_period;
-                if (sel) sel.value = currentPeriod;
+                populateGlobalPeriodSelect();
 
                 const metaEl = document.getElementById('footer-meta');
                 if (metaEl) {
