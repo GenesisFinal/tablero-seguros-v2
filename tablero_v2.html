@@ -1481,76 +1481,167 @@
         <!-- TAB 7: SEGUROS DE RETIRO                                             -->
         <!-- ==================================================================== -->
         <section id="tab-retiro" class="tab-content space-y-6 hidden">
-            <!-- Header -->
             <div class="main-card rounded-2xl p-6 border">
-                <h2 class="text-xl md:text-2xl font-bold txt-primary">Seguros de Retiro &bull; Reservas Matemáticas y Primas</h2>
-                <p class="text-xs txt-muted mt-1">Compromisos técnicos, carteras de ahorro, rentas y población de asegurados.</p>
-            </div>
-
-            <!-- Financial Table: Primas de Retiro -->
-            <div class="main-card rounded-2xl p-5 border">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                        <i class="fas fa-money-bill-transfer text-[#f8cc59]"></i> Producción y Primas Emitidas en Retiro ($M)
-                    </h3>
-                    <button onclick="exportTableToCSV('tbl-retiro-primas', 'primas_seguros_retiro.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                        <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
-                    </button>
-                </div>
-                <div class="overflow-x-auto rounded-xl border max-h-[380px]">
-                    <table class="w-full text-left border-collapse data-table text-xs">
-                        <thead class="sticky top-0">
-                            <tr>
-                                <th class="p-2.5 w-12 text-center">Pos.</th>
-                                <th class="p-2.5">Compañía de Retiro</th>
-                                <th class="p-2.5 text-right">Total Primas ($M)</th>
-                                <th class="p-2.5 text-right">Part. %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbl-retiro-primas-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Non-Monetary Section: Asegurados / Vidas Físicas -->
-            <div class="main-card rounded-2xl p-5 border space-y-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                        <i class="fas fa-users text-[#3ac792]"></i> Población de Asegurados en Retiro (Cantidad de Vidas Físicas)
-                    </h3>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border">
-                            Fuente Externa: Boletín Estadístico SSN
-                        </span>
-                        <button onclick="exportTableToCSV('tbl-retiro-vidas', 'poblacion_asegurados_retiro.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b mb-6 border-slate-200 dark:border-slate-800">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#f8cc59]/20 text-[#b91f38] dark:text-[#f8cc59] uppercase">Mercado de Seguros de Retiro</span>
+                            <span class="text-xs txt-muted font-mono" id="sr-period-desc">Marzo 2026</span>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold txt-primary">
+                            Compromisos Técnicos, Asegurados & Primas de Retiro
+                        </h2>
+                        <p class="text-xs txt-muted mt-1">Evolución de reservas matemáticas, carteras administradas y producción de aseguradoras exclusivas de retiro según SSN.</p>
+                    </div>
+                    
+                    <!-- Sub-view Navigation Pills -->
+                    <div class="flex items-center bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs font-semibold">
+                        <button id="btn-sr-subtab-compromisos" onclick="switchRetiroSubtab('compromisos')" class="btn-sr-subtab px-3.5 py-1.5 rounded-lg bg-[#e20039] text-white shadow-sm transition-all flex items-center gap-1.5">
+                            <i class="fas fa-vault"></i> <span>Compromisos Técnicos</span>
+                        </button>
+                        <button id="btn-sr-subtab-primas" onclick="switchRetiroSubtab('primas')" class="btn-sr-subtab px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5">
+                            <i class="fas fa-file-invoice-dollar"></i> <span>Primas Emitidas</span>
+                        </button>
+                        <button id="btn-sr-subtab-asegurados" onclick="switchRetiroSubtab('asegurados')" class="btn-sr-subtab px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5">
+                            <i class="fas fa-users"></i> <span>Asegurados</span>
                         </button>
                     </div>
                 </div>
-                <div class="overflow-x-auto rounded-xl border max-h-[320px]">
-                    <table class="w-full text-left border-collapse data-table text-xs">
-                        <thead class="sticky top-0">
-                            <tr>
-                                <th class="p-2.5">Compañía de Retiro</th>
-                                <th class="p-2.5 text-right">Total Asegurados</th>
-                                <th class="p-2.5 text-right">Ahorro Individual</th>
-                                <th class="p-2.5 text-right">Ahorro Colectivo</th>
-                                <th class="p-2.5 text-right">Rentas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbl-retiro-vidas-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+
+                <!-- SUB-VISTA 1: COMPROMISOS TÉCNICOS -->
+                <div id="sr-view-compromisos" class="sr-subtab-pane space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
+                            <i class="fas fa-vault text-[#4183ca]"></i> Reservas Matemáticas y Compromisos Técnicos ($ en Millones)
+                        </h3>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="toggleSrCol('ahorro')" class="px-3 py-1.5 text-xs font-bold bg-[#4183ca]/10 text-[#4183ca] border border-[#4183ca]/30 rounded-lg hover:bg-[#4183ca]/20 transition flex items-center gap-1.5">
+                                <i class="fas fa-layer-group"></i> <span id="btn-toggle-ahorro-txt">Desglosar Ahorro</span>
+                            </button>
+                            <button onclick="toggleSrCol('rentas')" class="px-3 py-1.5 text-xs font-bold bg-[#3ac792]/10 text-[#3ac792] border border-[#3ac792]/30 rounded-lg hover:bg-[#3ac792]/20 transition flex items-center gap-1.5">
+                                <i class="fas fa-layer-group"></i> <span id="btn-toggle-rentas-txt">Desglosar Rentas</span>
+                            </button>
+                            <button onclick="exportTableToCSV('tbl-sr-compromisos', 'compromisos_retiro.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                                <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto border rounded-xl border-slate-200 dark:border-slate-800 max-h-[440px]">
+                        <table class="w-full text-left text-xs font-mono data-table" id="tbl-sr-compromisos">
+                            <thead class="uppercase text-[10px] sticky-header">
+                                <tr>
+                                    <th class="py-3 px-3">Compañía de Retiro</th>
+                                    <th class="py-3 px-3 text-right">Total ($M)</th>
+                                    <th class="py-3 px-3 text-right">% Total</th>
+                                    <th class="py-3 px-3 text-right">P. Ahorro ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-ahorro hidden text-[#4183ca]">Ahorro Indiv. ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-ahorro hidden text-[#4183ca]">Ahorro Colec. ($M)</th>
+                                    <th class="py-3 px-3 text-right">% Ahorro</th>
+                                    <th class="py-3 px-3 text-right">P. Renta ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-rentas hidden text-[#3ac792]">Renta Indiv. ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-rentas hidden text-[#3ac792]">Renta Colec. ($M)</th>
+                                    <th class="py-3 px-3 text-right">% Renta</th>
+                                    <th class="py-3 px-3 text-right text-[#f8cc59]">RVP + ART ($M)</th>
+                                    <th class="py-3 px-3 text-right txt-muted">Otros ($M)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-sr-compromisos-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Gráfico Compromisos -->
+                    <div class="subtle-card p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-chart-bar text-[#4183ca]"></i> Top Aseguradoras por Compromisos Técnicos (Reservas Matemáticas)
+                        </h4>
+                        <div class="relative w-full h-[320px]">
+                            <canvas id="chart-sr-compromisos"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-VISTA 2: PRIMAS EMITIDAS -->
+                <div id="sr-view-primas" class="sr-subtab-pane hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
+                                <i class="fas fa-file-invoice-dollar text-[#e20039]"></i> Primas Emitidas - Ranking de Producción ($ en Millones)
+                            </h3>
+                            <p class="text-xs txt-muted mt-0.5">Desglose de primas emitidas por modalidad colectiva e individual.</p>
+                        </div>
+                        <button onclick="exportTableToCSV('tbl-sr-primas', 'primas_retiro.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto border rounded-xl border-slate-200 dark:border-slate-800 max-h-[440px]">
+                        <table class="w-full text-left text-xs font-mono data-table" id="tbl-sr-primas">
+                            <thead class="uppercase text-[10px] sticky-header">
+                                <tr>
+                                    <th class="py-3 px-3">Aseguradora (Entidad)</th>
+                                    <th class="py-3 px-3 text-right">Total Primas ($M)</th>
+                                    <th class="py-3 px-3 text-right">Part. %</th>
+                                    <th class="py-3 px-3 text-center">Rank Total</th>
+                                    <th class="py-3 px-3 text-right">Retiro Colectivo ($M)</th>
+                                    <th class="py-3 px-3 text-right">Part. %</th>
+                                    <th class="py-3 px-3 text-right">Retiro Individual ($M)</th>
+                                    <th class="py-3 px-3 text-right">Part. %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-sr-primas-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Gráfico Primas Retiro -->
+                    <div class="subtle-card p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-chart-bar text-[#e20039]"></i> Ranking de Primas Emitidas en Retiro
+                        </h4>
+                        <div class="relative w-full h-[320px]">
+                            <canvas id="chart-sr-primas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUB-VISTA 3: ASEGURADOS -->
+                <div id="sr-view-asegurados" class="sr-subtab-pane hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
+                            <i class="fas fa-users text-[#3ac792]"></i> Población de Asegurados en Retiro (Cantidad de Vidas y Cuentas)
+                        </h3>
+                        <button onclick="exportTableToCSV('tbl-sr-asegurados', 'asegurados_retiro.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto border rounded-xl border-slate-200 dark:border-slate-800 max-h-[440px]">
+                        <table class="w-full text-left text-xs font-mono data-table" id="tbl-sr-asegurados">
+                            <thead class="uppercase text-[10px] sticky-header">
+                                <tr>
+                                    <th class="py-3 px-3">Compañía de Retiro</th>
+                                    <th class="py-3 px-3 text-right">Total Asegurados</th>
+                                    <th class="py-3 px-3 text-right">Ahorro Total</th>
+                                    <th class="py-3 px-3 text-right">Ahorro Indiv.</th>
+                                    <th class="py-3 px-3 text-right">Ahorro Colec.</th>
+                                    <th class="py-3 px-3 text-right">Rentas Total</th>
+                                    <th class="py-3 px-3 text-right">Rentas Indiv.</th>
+                                    <th class="py-3 px-3 text-right">Rentas Colec.</th>
+                                    <th class="py-3 px-3 text-right">RVP + ART</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-sr-asegurados-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </section>
-
-        <!-- ==================================================================== -->
-        <!-- TAB 8: INVERSIONES SSN                                               -->
-        <!-- ==================================================================== -->
         <section id="tab-inversiones" class="tab-content space-y-6 hidden">
             <!-- Header -->
             <div class="main-card rounded-2xl p-6 border">
@@ -3619,40 +3710,320 @@
             }
         }
 
-        // --- TAB 7: RETIRO ---
-        function renderRetiroTab(pData) {
-            const retList = pData.rankings.total_retiro || [];
-            const tbodyP = document.getElementById('tbl-retiro-primas-body');
-            if (tbodyP) {
-                tbodyP.innerHTML = '';
-                retList.forEach(r => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="p-2.5 text-center font-mono font-bold">${r.posicion}</td>
-                        <td class="p-2.5 font-semibold">${r.entidad}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.prima / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                        <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r.participacion)}</td>
-                    `;
-                    tbodyP.appendChild(tr);
-                });
+        // --- TAB 7: RETIRO (SUITE COMPLETA SSN) ---
+        let currentSrSubtab = 'compromisos';
+
+        function switchRetiroSubtab(subtabId) {
+            currentSrSubtab = subtabId;
+            document.querySelectorAll('.sr-subtab-pane').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById('sr-view-' + subtabId);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.btn-sr-subtab').forEach(b => {
+                b.className = "btn-sr-subtab px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5";
+            });
+
+            const activeBtn = document.getElementById('btn-sr-subtab-' + subtabId);
+            if (activeBtn) {
+                activeBtn.className = "btn-sr-subtab px-3.5 py-1.5 rounded-lg bg-[#e20039] text-white shadow-sm transition-all flex items-center gap-1.5";
             }
 
-            const vidasList = window.INSURANCE_DATA_V2.supplementary_data.retiro_vidas_stats || [];
-            const tbodyV = document.getElementById('tbl-retiro-vidas-body');
-            if (tbodyV) {
-                tbodyV.innerHTML = '';
-                vidasList.forEach(r => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="p-2.5 font-semibold">${r.entidad}</td>
-                        <td class="p-2.5 text-right font-mono font-bold">${r.total_asegurados?.toLocaleString() || '-'}</td>
-                        <td class="p-2.5 text-right font-mono">${r.ahorro_indiv?.toLocaleString() || '-'}</td>
-                        <td class="p-2.5 text-right font-mono">${r.ahorro_colec?.toLocaleString() || '-'}</td>
-                        <td class="p-2.5 text-right font-mono">${r.renta_total?.toLocaleString() || '-'}</td>
-                    `;
-                    tbodyV.appendChild(tr);
-                });
+            if (window.INSURANCE_DATA_V2 && currentPeriod) {
+                const pData = window.INSURANCE_DATA_V2.periods_data[currentPeriod];
+                renderRetiroTab(pData);
             }
+        }
+
+        function toggleSrCol(type) {
+            const cols = document.querySelectorAll('.col-sr-' + type);
+            let isHidden = false;
+            cols.forEach(el => {
+                el.classList.toggle('hidden');
+                isHidden = el.classList.contains('hidden');
+            });
+            const txtEl = document.getElementById('btn-toggle-' + type + '-txt');
+            if (txtEl) {
+                txtEl.innerText = isHidden ? ('Desglosar ' + (type === 'ahorro' ? 'Ahorro' : 'Rentas')) : ('Ocultar ' + (type === 'ahorro' ? 'Ahorro' : 'Rentas'));
+            }
+        }
+
+        function renderRetiroTab(pData) {
+            if (!window.INSURANCE_DATA_V2) return;
+            const supp = window.INSURANCE_DATA_V2.supplementary_data || {};
+            const srData = supp.ssn_seg_retiro || {};
+
+            const pDesc = document.getElementById('sr-period-desc');
+            if (pDesc) pDesc.innerText = srData.periodo || 'Marzo 2026';
+
+            const fmtM = (n) => {
+                if (n === null || n === undefined || isNaN(n)) return '-';
+                const inM = (n / 1000.0);
+                return '$ ' + inM.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+            };
+
+            const fmtP = (n) => {
+                if (n === null || n === undefined || isNaN(n)) return '-';
+                return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+            };
+
+            const fmtC = (n) => {
+                if (n === null || n === undefined || isNaN(n)) return '-';
+                return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            };
+
+            // 1. COMPROMISOS TÉCNICOS TABLE
+            const compBody = document.getElementById('tbl-sr-compromisos-body');
+            const compList = supp.retiro_compromisos || srData.compromisos_tecnicos || [];
+            const compTotal = supp.retiro_compromisos_total_row || srData.compromisos_total_row;
+
+            if (compBody && compList.length > 0) {
+                let htmlRows = '';
+                if (compTotal) {
+                    htmlRows += `
+                        <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
+                            <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> ${compTotal.entidad}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">${fmtM(compTotal.total)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#e20039]">100,00%</td>
+                            <td class="py-3 px-3 text-right font-mono txt-primary font-bold">${fmtM(compTotal.ahorro_total)}</td>
+                            <td class="py-3 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca] font-bold">${fmtM(compTotal.ahorro_indiv)}</td>
+                            <td class="py-3 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca] font-bold">${fmtM(compTotal.ahorro_colec)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#4183ca]">100,00%</td>
+                            <td class="py-3 px-3 text-right font-mono txt-primary font-bold">${fmtM(compTotal.rentas_total)}</td>
+                            <td class="py-3 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792] font-bold">${fmtM(compTotal.rentas_indiv)}</td>
+                            <td class="py-3 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792] font-bold">${fmtM(compTotal.rentas_colec)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#3ac792]">100,00%</td>
+                            <td class="py-3 px-3 text-right font-mono text-amber-500 font-bold">${fmtM(compTotal.rvp_art)}</td>
+                            <td class="py-3 px-3 text-right font-mono txt-muted font-bold">${fmtM(compTotal.otros)}</td>
+                        </tr>
+                    `;
+                }
+
+                compList.forEach(r => {
+                    const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
+                    const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
+                    const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
+
+                    htmlRows += `
+                        <tr class="${rowClass}">
+                            <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
+                                ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                                <span>${r.entidad}</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${fmtM(r.total)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold">${fmtP(r.total_pct)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono">${fmtM(r.ahorro_total)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">${fmtM(r.ahorro_indiv)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">${fmtM(r.ahorro_colec)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">${fmtP(r.ahorro_pct)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono">${fmtM(r.rentas_total)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">${fmtM(r.rentas_indiv)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">${fmtM(r.rentas_colec)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">${fmtP(r.rentas_pct)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-amber-500">${fmtM(r.rvp_art)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono txt-muted">${fmtM(r.otros)}</td>
+                        </tr>
+                    `;
+                });
+                compBody.innerHTML = htmlRows;
+            }
+
+            // 2. PRIMAS EMITIDAS TABLE
+            const primasBody = document.getElementById('tbl-sr-primas-body');
+            const primasList = supp.retiro_primas_desglose || srData.primas_emitidas || [];
+            const primasTotal = supp.retiro_primas_total_row || srData.primas_emitidas_total_row;
+
+            if (primasBody && primasList.length > 0) {
+                let htmlPrimas = '';
+                if (primasTotal) {
+                    htmlPrimas += `
+                        <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
+                            <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> ${primasTotal.entidad}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">${fmtM(primasTotal.primas_total)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#e20039]">100,00%</td>
+                            <td class="py-3 px-3 text-center font-mono">-</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#4183ca] font-bold">${fmtM(primasTotal.primas_colectivo)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#4183ca]">100,00%</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#3ac792] font-bold">${fmtM(primasTotal.primas_individual)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#3ac792]">100,00%</td>
+                        </tr>
+                    `;
+                }
+
+                primasList.forEach(r => {
+                    const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
+                    const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
+                    const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
+
+                    htmlPrimas += `
+                        <tr class="${rowClass}">
+                            <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
+                                ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                                <span>${r.entidad}</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${fmtM(r.primas_total)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold">${fmtP(r.total_pct)}</td>
+                            <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">#${r.rank_total || '-'}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-semibold">${fmtM(r.primas_colectivo)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">${fmtP(r.colectivo_pct)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-semibold">${fmtM(r.primas_individual)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">${fmtP(r.individual_pct)}</td>
+                        </tr>
+                    `;
+                });
+                primasBody.innerHTML = htmlPrimas;
+            }
+
+            // 3. ASEGURADOS TABLE
+            const vidasBody = document.getElementById('tbl-sr-asegurados-body');
+            const vidasList = supp.retiro_vidas_stats || srData.asegurados || [];
+            const vidasTotal = supp.retiro_vidas_total_row || srData.asegurados_total_row;
+
+            if (vidasBody && vidasList.length > 0) {
+                let htmlVidas = '';
+                if (vidasTotal) {
+                    htmlVidas += `
+                        <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
+                            <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> ${vidasTotal.entidad}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">${fmtC(vidasTotal.total_asegurados)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#4183ca] font-bold">${fmtC(vidasTotal.ahorro_total)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#4183ca]">${fmtC(vidasTotal.ahorro_indiv)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#4183ca]">${fmtC(vidasTotal.ahorro_colec)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#3ac792] font-bold">${fmtC(vidasTotal.renta_total)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#3ac792]">${fmtC(vidasTotal.renta_indiv)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-[#3ac792]">${fmtC(vidasTotal.renta_colec)}</td>
+                            <td class="py-3 px-3 text-right font-mono text-amber-500 font-bold">${fmtC(vidasTotal.rvp_art)}</td>
+                        </tr>
+                    `;
+                }
+
+                vidasList.forEach(r => {
+                    const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
+                    const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
+                    const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
+
+                    htmlVidas += `
+                        <tr class="${rowClass}">
+                            <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
+                                ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                                <span>${r.entidad}</span>
+                            </td>
+                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${fmtC(r.total_asegurados)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-semibold">${fmtC(r.ahorro_total)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono">${fmtC(r.ahorro_indiv)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono">${fmtC(r.ahorro_colec)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono font-semibold">${fmtC(r.renta_total)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono">${fmtC(r.renta_indiv)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono">${fmtC(r.renta_colec)}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-amber-500">${fmtC(r.rvp_art)}</td>
+                        </tr>
+                    `;
+                });
+                vidasBody.innerHTML = htmlVidas;
+            }
+
+            // CHARTS RENDERING
+            renderSrCompromisosChart(compList);
+            renderSrPrimasChart(primasList);
+        }
+
+        function renderSrCompromisosChart(compList) {
+            const ctx = document.getElementById('chart-sr-compromisos');
+            if (!ctx || !compList || compList.length === 0) return;
+
+            const topComp = compList.slice(0, 10);
+            const labels = topComp.map(c => c.entidad);
+            const dataAhorro = topComp.map(c => (c.ahorro_total || 0) / 1000.0);
+            const dataRentas = topComp.map(c => (c.rentas_total || 0) / 1000.0);
+            const dataRvp = topComp.map(c => (c.rvp_art || 0) / 1000.0);
+
+            const isDark = document.documentElement.classList.contains('dark');
+            if (chartInstances['sr-compromisos']) chartInstances['sr-compromisos'].destroy();
+
+            chartInstances['sr-compromisos'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Planes de Ahorro ($M)', data: dataAhorro, backgroundColor: '#4183ca', borderRadius: 4 },
+                        { label: 'Planes de Renta ($M)', data: dataRentas, backgroundColor: '#3ac792', borderRadius: 4 },
+                        { label: 'RVP + ART ($M)', data: dataRvp, backgroundColor: '#f8cc59', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                            ticks: { callback: v => '$ ' + v.toLocaleString('es-AR') + ' M', font: { family: 'JetBrains Mono', size: 10 } }
+                        },
+                        y: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Sora', size: 11, weight: '600' } } },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.dataset.label}: $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSrPrimasChart(primasList) {
+            const ctx = document.getElementById('chart-sr-primas');
+            if (!ctx || !primasList || primasList.length === 0) return;
+
+            const topPrimas = primasList.slice(0, 10);
+            const labels = topPrimas.map(c => c.entidad);
+            const dataColec = topPrimas.map(c => (c.primas_colectivo || 0) / 1000.0);
+            const dataIndiv = topPrimas.map(c => (c.primas_individual || 0) / 1000.0);
+
+            const isDark = document.documentElement.classList.contains('dark');
+            if (chartInstances['sr-primas']) chartInstances['sr-primas'].destroy();
+
+            chartInstances['sr-primas'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Retiro Colectivo ($M)', data: dataColec, backgroundColor: '#4183ca', borderRadius: 4 },
+                        { label: 'Retiro Individual ($M)', data: dataIndiv, backgroundColor: '#3ac792', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                            ticks: { callback: v => '$ ' + v.toLocaleString('es-AR') + ' M', font: { family: 'JetBrains Mono', size: 10 } }
+                        },
+                        y: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Sora', size: 11, weight: '600' } } },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ` ${ctx.dataset.label}: $ ${ctx.raw.toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         // --- TAB 8: INVERSIONES ---

@@ -672,8 +672,15 @@ def build_all_v2_datasets():
             with open(old_dataset_path, "r", encoding="utf-8") as f:
                 old_d = json.load(f)
                 supplementary_data["monthly_flash_series"] = old_d.get("ssn_produccion_mensual", {})
-                supplementary_data["retiro_vidas_stats"] = old_d.get("ssn_seg_retiro", {}).get("asegurados", [])
-                supplementary_data["retiro_vidas_total_row"] = old_d.get("ssn_seg_retiro", {}).get("asegurados_total_row", {})
+                sr_d = old_d.get("ssn_seg_retiro", {})
+                supplementary_data["ssn_seg_retiro"] = sr_d
+                supplementary_data["retiro_vidas_stats"] = sr_d.get("asegurados", [])
+                supplementary_data["retiro_vidas_total_row"] = sr_d.get("asegurados_total_row", {})
+                supplementary_data["retiro_compromisos"] = sr_d.get("compromisos_tecnicos", [])
+                supplementary_data["retiro_compromisos_total_row"] = sr_d.get("compromisos_total_row", {})
+                supplementary_data["retiro_primas_desglose"] = sr_d.get("primas_emitidas", [])
+                supplementary_data["retiro_primas_total_row"] = sr_d.get("primas_emitidas_total_row", {})
+                supplementary_data["retiro_periodo"] = sr_d.get("periodo", "Marzo 2026")
         except Exception as e:
             print(f"Warning reading old supplementary data: {e}")
 
