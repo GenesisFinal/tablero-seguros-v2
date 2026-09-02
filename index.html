@@ -935,48 +935,41 @@
                         <h2 class="text-xl md:text-2xl font-bold txt-primary" id="rankings-title-display">Ranking: Total del Mercado</h2>
                     </div>
 
-                    <!-- Category Selector Dropdown (Búsqueda Predictiva Unificada) -->
+                    <!-- Category Selector Dropdown -->
                     <div class="flex items-center gap-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-[#e20039] flex items-center justify-center text-xs shadow-sm">
                                 <i class="fas fa-trophy"></i>
                             </div>
-                            <div class="flex flex-col relative" id="combobox-rankings-container">
-                                <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Seleccionar Ranking o Ramo:</span>
-                                <button 
-                                    type="button" 
-                                    id="btn-rankings-trigger" 
-                                    onclick="toggleCombobox('rankings')" 
-                                    class="ui-select text-xs font-bold w-[270px] sm:w-[340px] flex items-center justify-between text-left cursor-pointer truncate"
-                                    title="Hacer clic para abrir la lista y buscar ranking"
-                                >
-                                    <span id="label-rankings-selected" class="truncate">2. Total del Mercado (186 Compañías)</span>
-                                    <i class="fas fa-chevron-down text-slate-400 text-xs ml-2"></i>
-                                </button>
-                                <input type="hidden" id="select-ranking-cat" value="total_mercado">
-                                <div id="dropdown-rankings" class="absolute top-[100%] right-0 md:left-0 z-50 mt-1 w-[300px] sm:w-[380px] rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl hidden flex flex-col overflow-hidden">
-                                    <div class="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
-                                        <div class="relative flex items-center">
-                                            <i class="fas fa-search absolute left-2.5 text-slate-400 text-xs"></i>
-                                            <input 
-                                                type="text" 
-                                                id="input-rankings-search" 
-                                                placeholder="Tipear para buscar ranking o ramo..." 
-                                                autocomplete="off"
-                                                class="w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#e20039]"
-                                                oninput="onComboboxInput('rankings', this.value)"
-                                            >
-                                            <button type="button" onclick="clearComboboxSearch('rankings')" class="absolute right-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs" title="Limpiar filtro">
-                                                <i class="fas fa-times-circle"></i>
-                                            </button>
-                                        </div>
-                                        <div class="flex items-center justify-between px-1 pt-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
-                                            <span id="count-rankings-options">Mostrando 17 rankings</span>
-                                            <span>Desplazar para ver</span>
-                                        </div>
-                                    </div>
-                                    <div id="list-rankings" class="max-h-64 overflow-y-auto p-1.5 text-xs space-y-0.5"></div>
-                                </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Seleccionar Ranking / Ramo:</span>
+                                <select id="select-ranking-category" onchange="onRankingCategoryChange(this.value)" class="ui-select text-xs font-bold min-w-[280px] sm:min-w-[340px]" title="Seleccionar Ranking o Ramo">
+                                    <optgroup label="🏛️ Totales y Consolidaciones Generales">
+                                        <option value="total_mercado" selected>1. Total del Mercado Asegurador (186 Cías)</option>
+                                        <option value="grupos_aseguradores">2. Grupos Aseguradores Económicos (17 Grupos)</option>
+                                        <option value="total_patrimoniales">3. Total Seguros Patrimoniales (118 Cías)</option>
+                                        <option value="total_personas">4. Total Seguros de Personas (134 Cías)</option>
+                                        <option value="total_retiro">5. Total Seguros de Retiro (14 Cías)</option>
+                                    </optgroup>
+                                    <optgroup label="🚗 Seguros Patrimoniales">
+                                        <option value="total_automotores">6. Automotores y Remolcados (65 Cías)</option>
+                                        <option value="total_art">7. Riesgos del Trabajo - ART (23 Cías)</option>
+                                        <option value="total_agro">8. Agropecuario y Forestal (35 Cías)</option>
+                                        <option value="total_incendio_comb">9. Incendio y Combinados (80 Cías)</option>
+                                        <option value="total_rc">10. Responsabilidad Civil (72 Cías)</option>
+                                        <option value="total_caucion">11. Caución y Crédito (86 Cías)</option>
+                                        <option value="total_transporte">12. Transporte y Cascos (59 Cías)</option>
+                                        <option value="total_otros_patrimoniales">13. Otros Ramos Patrimoniales (113 Cías)</option>
+                                    </optgroup>
+                                    <optgroup label="👥 Seguros de Personas y Retiro">
+                                        <option value="total_vida">14. Seguros de Vida Total (113 Cías)</option>
+                                        <option value="total_ap">15. Accidentes Personales - AP (98 Cías)</option>
+                                        <option value="total_salud">16. Seguros de Salud (41 Cías)</option>
+                                        <option value="total_sepelio">17. Seguros de Sepelio (84 Cías)</option>
+                                        <option value="total_retiro_individual">18. Retiro Individual (13 Cías)</option>
+                                        <option value="total_retiro_colectivo">19. Retiro Colectivo (12 Cías)</option>
+                                    </optgroup>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -3247,59 +3240,44 @@
             });
         }
 
-        // --- TAB 3: RANKINGS (MOTOR CON BÚSQUEDA Y LISTA COMPLETA) ---
-        const RANKING_CATEGORIES_ITEMS = [
-            { value: 'grupos_aseguradores', label: '1. Grupos Aseguradores', subtext: '17 Consolidaciones de Grupos Económicos' },
-            { value: 'total_mercado', label: '2. Total del Mercado', subtext: '186 Aseguradoras autorizadas activas' },
-            { value: 'total_patrimoniales', label: '3. Total Seguros Patrimoniales', subtext: 'Patrimoniales y Mixtas' },
-            { value: 'total_personas', label: '4. Total Seguros de Personas', subtext: 'Vida, AP, Salud y Sepelio' },
-            { value: 'total_retiro', label: '5. Total Seguros de Retiro', subtext: 'Retiro Individual y Colectivo' },
-            { value: 'total_automotores', label: '6. Automotores y Remolcados', subtext: 'Cascos, Motos y Responsabilidad Civil' },
-            { value: 'total_art', label: '7. Riesgos del Trabajo (ART)', subtext: 'Seguro Obligatorio LRT Ley 24.557' },
-            { value: 'total_vida', label: '8. Seguros de Vida (Total)', subtext: 'Vida Individual, Colectivo y Obligatorios' },
-            { value: 'total_ap', label: '9. Accidentes Personales (AP)', subtext: 'AP Individual y AP Colectivo' },
-            { value: 'total_agro', label: '10. Agropecuario y Forestal', subtext: 'Granizo y Riesgos Agrícolas' },
-            { value: 'total_incendio_comb', label: '11. Incendio y Combinados', subtext: 'Incendio, Combinado Familiar e Integral de Comercio' },
-            { value: 'total_rc', label: '12. Responsabilidad Civil', subtext: 'RC Profesional, Hechos Privados y Otros' },
-            { value: 'total_caucion', label: '13. Caución y Crédito', subtext: 'Garantías contractuales y cauciones' },
-            { value: 'total_transporte', label: '14. Transporte y Cascos', subtext: 'Transporte terrestre, marítimo y aviación' },
-            { value: 'total_salud', label: '15. Salud', subtext: 'Salud individual y colectiva' },
-            { value: 'total_sepelio', label: '16. Sepelio', subtext: 'Sepelio individual y colectivo' },
-            { value: 'total_otros_patrimoniales', label: '17. Otros Ramos Patrimoniales', subtext: 'Robo, Técnicos, Cristales y Varios' }
-        ];
-
+        // --- TAB 3: RANKINGS OFICIALES SSN (19 CATEGORÍAS DISPONIBLES) ---
         function onRankingCategoryChange(catKey) {
+            const sel = document.getElementById('select-ranking-category');
+            if (sel && sel.value !== catKey) sel.value = catKey;
             if (!window.INSURANCE_DATA_V2 || !currentPeriod) return;
             renderRankingsTab(window.INSURANCE_DATA_V2.periods_data[currentPeriod]);
         }
 
         function renderRankingsTab(pData) {
-            const hidden = document.getElementById('select-ranking-cat');
-            const cat = (hidden && hidden.value) ? hidden.value : 'total_mercado';
+            if (!pData || !pData.rankings) return;
+            const sel = document.getElementById('select-ranking-category');
+            const cat = (sel && sel.value) ? sel.value : 'total_mercado';
 
-            // Populate / sync rankings combobox
-            updateComboboxItems('rankings', RANKING_CATEGORIES_ITEMS, cat);
-            comboboxRegistry['rankings'].callback = (val) => { onRankingCategoryChange(val); };
-
-            const selectedItem = RANKING_CATEGORIES_ITEMS.find(it => it.value === cat) || RANKING_CATEGORIES_ITEMS[1];
+            const selectedOpt = sel ? sel.options[sel.selectedIndex] : null;
+            const catLabel = selectedOpt ? selectedOpt.text.replace(/^[0-9]+\.\s*/, '') : 'Total del Mercado';
+            
             const titleEl = document.getElementById('rankings-title-display');
-            if (titleEl) titleEl.innerText = `Ranking: ${selectedItem.label.replace(/^[0-9]+\.\s*/, '')}`;
+            if (titleEl) titleEl.innerText = `Ranking: ${catLabel}`;
 
             const rkList = pData.rankings[cat] || 
                            pData.rankings[cat.replace('total_accidentes_personales', 'total_ap')] || 
                            pData.rankings['total_' + cat] || 
                            pData.rankings[cat.replace('total_', '')] || [];
-            const totEmit = rkList.reduce((acc, x) => acc + x.prima, 0);
 
             // Concentration KPIs
             const top5 = rkList.slice(0, 5).reduce((acc, x) => acc + x.participacion, 0);
             const top10 = rkList.slice(0, 10).reduce((acc, x) => acc + x.participacion, 0);
             const hhi = rkList.reduce((acc, x) => acc + Math.pow(x.participacion, 2), 0);
 
-            document.getElementById('rank-kpi-top5').innerText = fmtPct(top5);
-            document.getElementById('rank-kpi-top10').innerText = fmtPct(top10);
+            const kpiTop5 = document.getElementById('rank-kpi-top5');
+            const kpiTop10 = document.getElementById('rank-kpi-top10');
+            const kpiHhi = document.getElementById('rank-kpi-hhi');
+            const kpiCount = document.getElementById('rank-kpi-count');
+
+            if (kpiTop5) kpiTop5.innerText = fmtPct(top5);
+            if (kpiTop10) kpiTop10.innerText = fmtPct(top10);
             const hhiVal = Math.round(hhi);
-            document.getElementById('rank-kpi-hhi').innerText = hhiVal.toLocaleString();
+            if (kpiHhi) kpiHhi.innerText = hhiVal.toLocaleString();
             
             const badgeEl = document.getElementById('rank-kpi-hhi-badge');
             if (badgeEl) {
@@ -3314,7 +3292,7 @@
                     badgeEl.className = 'px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
                 }
             }
-            document.getElementById('rank-kpi-count').innerText = rkList.length;
+            if (kpiCount) kpiCount.innerText = `${rkList.length} Entidades`;
 
             // Bar chart Top 10
             const ctx = document.getElementById('chart-ranking-bar');
@@ -3326,16 +3304,35 @@
                     data: {
                         labels: top10List.map(x => x.short_name || x.entidad),
                         datasets: [{
-                            label: 'Cuota %',
+                            label: 'Cuota de Mercado %',
                             data: top10List.map(x => x.participacion),
-                            backgroundColor: '#e20039'
+                            backgroundColor: '#e20039',
+                            borderRadius: 4
                         }]
                     },
                     options: {
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (c) => ` Cuota: ${c.raw.toFixed(2)}%`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { callback: (v) => v + '%' },
+                                grid: {
+                                    color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
+                                }
+                            },
+                            y: {
+                                grid: { display: false }
+                            }
+                        }
                     }
                 });
             }
@@ -3346,40 +3343,26 @@
                 tbody.innerHTML = '';
                 rkList.forEach(r => {
                     const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition";
                     const isLS = (r.entidad || '').includes('SEGUNDA');
-                    if (isLS) tr.className = 'highlight-lasegunda';
+                    if (isLS) tr.classList.add('bg-rose-50/70', 'dark:bg-rose-950/30', 'font-bold');
+                    
                     tr.innerHTML = `
-                        <td class="p-2.5 text-center font-bold font-mono">${r.posicion}</td>
-                        <td class="p-2.5 font-semibold">${r.entidad}</td>
-                        <td class="p-2.5 text-right font-mono">${(r.prima / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                        <td class="p-2.5 text-right font-mono font-bold">${fmtPct(r.participacion)}</td>
+                        <td class="p-2.5 text-center font-bold font-mono text-xs text-slate-500">${r.posicion}</td>
+                        <td class="p-2.5 font-semibold ${isLS ? 'text-[#e20039]' : 'txt-primary'} flex items-center gap-1.5">
+                            ${isLS ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                            <span>${r.entidad}</span>
+                        </td>
+                        <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${(r.prima / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                        <td class="p-2.5 text-right font-mono font-bold text-slate-700 dark:text-slate-200">${fmtPct(r.participacion)}</td>
                         <td class="p-2.5 text-center">
-                            <button onclick="inspectCompany('${r.cod_cia || r.id}')" class="px-2 py-1 rounded subtle-card hover:bg-[#e20039] hover:text-white transition-all text-[11px]">
+                            <button type="button" onclick="inspectCompany('${r.cod_cia || r.id}')" class="px-2 py-1 rounded subtle-card hover:bg-[#e20039] hover:text-white transition-all text-[11px]" title="Ver Balance de Entidad">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
-            }
-        }
-
-        function filterRankingsTable(q) {
-            const query = q.toLowerCase();
-            document.querySelectorAll('#tbl-rankings-body tr').forEach(tr => {
-                tr.style.display = tr.innerText.toLowerCase().includes(query) ? '' : 'none';
-            });
-        }
-
-        function inspectCompany(code) {
-            switchTab('balances');
-            if (comboboxRegistry['balances']) {
-                const item = comboboxRegistry['balances'].items.find(it => it.value === code);
-                selectComboboxItem('balances', code, item ? item.label : code);
-            } else {
-                const sel = document.getElementById('select-balance-cia');
-                if (sel) sel.value = code;
-                renderBalanceView();
             }
         }
 
