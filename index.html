@@ -478,7 +478,91 @@
                     </div>
 
                     <!-- Macro View Mode Switcher -->
-                    <div class="flex items-center flex-nowrap overflow-x-auto whitespace-nowrap gap-1 mt-3 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 w-fit shrink-0">
+                    <div class="flex items-center gap-1.5 subtle-card p-1.5 rounded-xl border">
+                        <button onclick="setMacroViewMode('productos')" id="btn-macro-mode-prod" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#e20039] text-white transition-all">
+                            <i class="fas fa-cubes mr-1"></i> Por Ramo Real (Subramos)
+                        </button>
+                        <button onclick="setMacroViewMode('entidades')" id="btn-macro-mode-ent" class="px-3 py-1.5 rounded-lg text-xs font-semibold txt-muted hover:text-[#e20039] transition-all">
+                            <i class="fas fa-building mr-1"></i> Por Tipo de Compañía
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Macro KPI Cards Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-6" id="macro-kpi-grid">
+                    <!-- Populated dynamically according to active view mode -->
+                </div>
+
+                <!-- Cross-selling info banner (when looking at Personas) -->
+                <div id="cross-selling-box" class="mt-4 p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-shuffle text-[#4183ca]"></i>
+                        <span class="font-bold text-blue-950 dark:text-blue-200">Apertura Cross-Selling de Personas:</span>
+                        <span class="txt-secondary" id="cs-desc">-</span>
+                    </div>
+                    <div class="flex items-center gap-3 font-mono font-bold text-[11px]">
+                        <span class="text-[#4183ca]" id="cs-mixtas">En Mixtas: -</span>
+                        <span class="text-[#f8cc59]" id="cs-personas">En Personas: -</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Branches Breakdown Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Doughnut Segment Distribution -->
+                <div class="main-card rounded-2xl p-5 border flex flex-col">
+                    <h3 class="font-bold text-sm txt-primary mb-3 flex items-center gap-2" id="doughnut-title">
+                        <i class="fas fa-chart-pie text-[#e20039]"></i> Distribución por Ramos (Subramos)
+                    </h3>
+                    <div class="relative flex-1 min-h-[260px] flex items-center justify-center">
+                        <canvas id="chart-primas-doughnut"></canvas>
+                    </div>
+                </div>
+
+                <!-- Subramos Table -->
+                <div class="main-card rounded-2xl p-5 border lg:col-span-2 flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
+                            <i class="fas fa-list-check text-[#4183ca]"></i> Desglose Detallado por Ramos (53 Subramos)
+                        </h3>
+                        <input type="text" id="filter-subramos" onkeyup="filterSubramosTable(this.value)" placeholder="Buscar ramo..." class="ui-input text-xs px-3 py-1.5 rounded-lg w-48">
+                    </div>
+                    <div class="overflow-x-auto flex-1 max-h-[420px] rounded-xl border">
+                        <table class="w-full text-left border-collapse data-table text-xs">
+                            <thead class="sticky top-0">
+                                <tr>
+                                    <th class="p-2.5">Cód.</th>
+                                    <th class="p-2.5">Subramo</th>
+                                    <th class="p-2.5 text-right">Primas ($M)</th>
+                                    <th class="p-2.5 text-right">Siniestros ($M)</th>
+                                    <th class="p-2.5 text-right">Siniestralidad %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-subramos-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================================================================== -->
+        <!-- TAB: MATRIZ ESTRATÉGICA (MARGEN TÉCNICO vs RENDIMIENTO FINANCIERO)   -->
+        <!-- ==================================================================== -->
+        <section id="tab-matriz" class="tab-content space-y-6 hidden">
+            <div class="main-card rounded-2xl p-6 border">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-600 text-white uppercase">Análisis Estratégico SSN</span>
+                            <span class="text-xs txt-muted font-mono" id="matriz-period-desc">Período: -</span>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold txt-primary">Matriz Estratégica: Margen Técnico vs. Rendimiento Financiero</h2>
+                        <p class="text-xs txt-muted mt-1">Evaluación de las 4 posiciones estratégicas del mercado según su rentabilidad de suscripción y retorno financiero.</p>
+                        
+                        <!-- Mode Switcher Pills: Aseguradoras, Segmentos Consolidados, Grupos -->
+                        <div class="flex items-center flex-nowrap overflow-x-auto whitespace-nowrap gap-1 mt-3 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 w-fit shrink-0">
                             <button id="btn-matriz-mode-individual" type="button" onclick="switchMatrizMode('ALL')" class="btn-matriz-mode px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs whitespace-nowrap shadow-sm transition-all flex items-center gap-1.5">
                                 <i class="fas fa-building"></i> <span>Aseguradoras</span>
                             </button>
@@ -493,7 +577,7 @@
 
                     <!-- Filter Quadrants / Segments & Focus Selector -->
                     <div class="flex flex-wrap items-center gap-3">
-                        <!-- Selector de Conjunto -->
+                        <!-- Selector de Conjunto / Segmento -->
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center text-xs shadow-sm">
                                 <i class="fas fa-filter"></i>
@@ -508,7 +592,6 @@
                                     <option value="Riesgos del Trabajo (ART)">Riesgos del Trabajo (ART)</option>
                                     <option value="Seguros de Personas">Seguros de Personas</option>
                                     <option value="Seguros de Retiro">Seguros de Retiro</option>
-                                    <option value="Transporte Público de Pasajeros">Transporte Público de Pasajeros</option>
                                 </select>
                             </div>
                         </div>
@@ -559,7 +642,6 @@
                     </div>
                 </div>
 
-                <!-- 4 Quadrants Explanatory Cards Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-6">
                     <div class="p-3 rounded-xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/20">
                         <div class="flex items-center justify-between">
@@ -599,64 +681,20 @@
                 </div>
             </div>
 
-            <!-- Scatter Plot Container (Plotly Interactive with Clean Custom Tools) -->
-            <div class="main-card rounded-2xl p-5 border flex flex-col">
-                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center text-sm shadow-sm">
-                            <i class="fas fa-chart-scatter"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-sm txt-primary leading-tight">Mapa de Posicionamiento Competitivo</h3>
-                            <p class="text-[11px] txt-muted">Margen Técnico vs. Rendimiento Financiero</p>
-                        </div>
-                    </div>
-
-                    <!-- Clean UI Navigation Tools (Only: Box Zoom, Zoom In, Zoom Out, Centrar, PNG) -->
-                    <div class="flex flex-wrap items-center gap-1.5 subtle-card p-1.5 rounded-xl border">
-                        <button id="btn-mode-boxzoom" onclick="setPlotlyMode('zoom')" class="btn-tool active" title="Seleccionar zona con el cursor para ampliar (Box Zoom)">
-                            <i class="fas fa-vector-square text-purple-600"></i>
-                            <span class="hidden sm:inline">Seleccionar Zona</span>
-                        </button>
-                        <button id="btn-mode-pan" onclick="setPlotlyMode('pan')" class="btn-tool" title="Mover y desplazar el gráfico (Pan)">
-                            <i class="fas fa-hand text-slate-500"></i>
-                            <span class="hidden sm:inline">Mover</span>
-                        </button>
-                        <span class="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-0.5"></span>
-                        <button onclick="plotlyZoomIn()" class="btn-tool px-2" title="Acercar (Zoom In)">
-                            <i class="fas fa-magnifying-glass-plus text-slate-600 dark:text-slate-300"></i>
-                        </button>
-                        <button onclick="plotlyZoomOut()" class="btn-tool px-2" title="Alejar (Zoom Out)">
-                            <i class="fas fa-magnifying-glass-minus text-slate-600 dark:text-slate-300"></i>
-                        </button>
-                        <button onclick="plotlyCenter()" class="btn-tool" title="Centrar y reajustar ejes">
-                            <i class="fas fa-arrows-to-dot text-blue-600"></i>
-                            <span class="hidden sm:inline">Centrar</span>
-                        </button>
-                        <span class="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-0.5"></span>
-                        <button onclick="exportPlotlyToPNG('chart-strategic-matrix', 'matriz_estrategica.png')" class="btn-export" title="Descargar Gráfico en PNG">
-                            <i class="fas fa-camera text-rose-500"></i>
-                            <span>PNG</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="relative flex-1 min-h-[520px] rounded-xl overflow-hidden">
-                    <div id="chart-strategic-matrix" class="w-full h-full min-h-[520px]"></div>
+            <!-- Scatter Plot Canvas -->
+            <div class="main-card rounded-2xl p-5 border">
+                <div class="relative h-[480px]">
+                    <canvas id="chart-strategic-matrix"></canvas>
                 </div>
             </div>
 
             <!-- Matrix Companies Table -->
             <div class="main-card rounded-2xl p-5 border">
-                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <div class="flex items-center justify-between mb-3">
                     <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
                         <i class="fas fa-table text-purple-500"></i> Tabla de Posiciones Estratégicas
                     </h3>
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="filter-matriz" onkeyup="filterMatrizTable(this.value)" placeholder="Buscar aseguradora..." class="ui-input text-xs px-3 py-1.5 rounded-lg w-48">
-                        <button onclick="exportTableToCSV('tbl-matriz', 'posiciones_estrategicas.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
-                        </button>
-                    </div>
+                    <input type="text" id="filter-matriz" onkeyup="filterMatrizTable(this.value)" placeholder="Buscar aseguradora..." class="ui-input text-xs px-3 py-1.5 rounded-lg w-52">
                 </div>
                 <div class="overflow-x-auto rounded-xl border max-h-[380px]">
                     <table class="w-full text-left border-collapse data-table text-xs">
@@ -703,175 +741,47 @@
                 </div>
             </div>
 
-            <!-- SUBTAB 1: EVOLUCIÓN POR EJERCICIO Y COMPARACIÓN INTERANUAL (DESFASADA 1 AÑO) -->
+            <!-- SUBTAB 1: EVOLUCIÓN TRIMESTRAL (21 TRIMESTRES MDB) -->
             <div id="subtab-view-trimestral" class="space-y-6">
-                <!-- Controls: Ejercicio, Serie, Ajuste Inflación & Export -->
-                <div class="main-card rounded-2xl p-5 border flex flex-col">
-                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <!-- Selector de Ejercicio Fiscal -->
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-[#e20039] flex items-center justify-center text-xs shadow-sm">
-                                    <i class="fas fa-calendar-check"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Ejercicio Fiscal:</span>
-                                    <select id="select-evolucion-ejercicio" onchange="renderQuarterlyChart()" class="ui-select text-xs font-bold min-w-[200px]" title="Seleccionar Ejercicio Fiscal">
-                                        <!-- Populated dynamically -->
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Selector de Nivel de Análisis -->
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center text-xs shadow-sm">
-                                    <i class="fas fa-layer-group"></i>
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Nivel de Análisis:</span>
-                                    <select id="select-evolucion-nivel" onchange="onEvolucionNivelChange(this.value)" class="ui-select text-xs font-bold min-w-[220px]" title="Seleccionar Nivel de Análisis">
-                                        <optgroup label="Totales y Grupos">
-                                            <option value="macro">Totales de Mercado & Macro-Ramos</option>
-                                            <option value="grupos">Por Grupo Asegurador (17 Grupos)</option>
-                                            <option value="empresas">Por Aseguradora (Todas las Cías)</option>
-                                        </optgroup>
-                                        <optgroup label="Por Ramo Específico (Cías que operan)">
-                                            <option value="ramo_total_automotores">Automotores (Cías del Ramo)</option>
-                                            <option value="ramo_total_art">Riesgos del Trabajo / ART</option>
-                                            <option value="ramo_total_vida">Seguros de Vida (Cías de Vida)</option>
-                                            <option value="ramo_total_retiro">Seguros de Retiro (Cías de Retiro)</option>
-                                            <option value="ramo_total_agro">Agropecuario y Forestal</option>
-                                            <option value="ramo_total_incendio_comb">Incendio y Combinados</option>
-                                            <option value="ramo_total_rc">Responsabilidad Civil</option>
-                                            <option value="ramo_total_caucion">Caución y Crédito</option>
-                                            <option value="ramo_total_transporte">Transporte y Cascos</option>
-                                            <option value="ramo_total_personas">Personas Total</option>
-                                            <option value="ramo_total_ap">Accidentes Personales</option>
-                                            <option value="ramo_total_salud">Salud</option>
-                                            <option value="ramo_total_sepelio">Sepelio</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Selector Desplegable de Entidad con Filtro por Búsqueda -->
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-[#4183ca] flex items-center justify-center text-xs shadow-sm">
-                                    <i class="fas fa-building"></i>
-                                </div>
-                                <div class="flex flex-col relative" id="combobox-evolucion-container">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider txt-muted">Entidad / Serie Seleccionada:</span>
-                                    <!-- Trigger Button styled like ui-select -->
-                                    <button 
-                                        type="button" 
-                                        id="btn-evolucion-trigger" 
-                                        onclick="toggleCombobox('evolucion')" 
-                                        class="ui-select text-xs font-bold w-[280px] sm:w-[340px] flex items-center justify-between text-left cursor-pointer truncate"
-                                        title="Hacer clic para abrir la lista y buscar"
-                                    >
-                                        <span id="label-evolucion-selected" class="truncate">Total Mercado Asegurador</span>
-                                        <i class="fas fa-chevron-down text-slate-400 text-xs ml-2"></i>
-                                    </button>
-
-                                    <!-- Hidden storage for actual selected ID -->
-                                    <input type="hidden" id="select-evolucion-item" value="total_mercado">
-
-                                    <!-- Dropdown Menu with Full List & Search Filter Header -->
-                                    <div id="dropdown-evolucion" class="absolute top-[100%] left-0 z-50 mt-1 w-[320px] sm:w-[380px] rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl hidden flex flex-col overflow-hidden">
-                                        <!-- Search Header -->
-                                        <div class="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50">
-                                            <div class="relative flex items-center">
-                                                <i class="fas fa-search absolute left-2.5 text-slate-400 text-xs"></i>
-                                                <input 
-                                                    type="text" 
-                                                    id="input-evolucion-search" 
-                                                    placeholder="Tipear letras para filtrar lista..." 
-                                                    autocomplete="off"
-                                                    class="w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#e20039]"
-                                                    oninput="onComboboxInput('evolucion', this.value)"
-                                                >
-                                                <button type="button" onclick="clearComboboxSearch('evolucion')" class="absolute right-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs" title="Limpiar filtro">
-                                                    <i class="fas fa-times-circle"></i>
-                                                </button>
-                                            </div>
-                                            <div class="flex items-center justify-between px-1 pt-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
-                                                <span id="count-evolucion-options">Mostrando opciones</span>
-                                                <span>Desplazar para ver todas</span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Full Scrollable Options List -->
-                                        <div id="list-evolucion" class="max-h-64 overflow-y-auto p-1.5 text-xs space-y-0.5">
-                                            <!-- Dynamically populated -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Controls & Filter by Branch / Group -->
+                <div class="main-card rounded-2xl p-5 border">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-semibold txt-secondary">Serie a Graficar:</span>
+                            <select id="select-trimestral-metric" onchange="renderQuarterlyChart()" class="ui-input text-xs rounded-lg px-3 py-1.5 font-semibold">
+                                <option value="total_mercado">Total Mercado vs Segmentos (Por Producto)</option>
+                                <option value="branches">Principales Ramos (Auto, ART, Vida, Retiro, Agro)</option>
+                                <option value="groups">Top Grupos Aseguradores</option>
+                            </select>
                         </div>
-
-                        <!-- Selector Inflación (Nominal vs Real) & PNG -->
-                        <div class="flex flex-wrap items-center gap-2">
-                            <div class="flex items-center gap-1.5 subtle-card p-1 rounded-xl border">
-                                <button id="btn-infl-nominal" onclick="setEvolucionInflationMode('nominal')" class="btn-tool active" title="Valores Corrientes (Históricos nominales sin deflactor)">
-                                    <i class="fas fa-coins text-amber-500"></i>
-                                    <span class="hidden sm:inline">Valores Corrientes</span>
-                                    <span class="sm:hidden">Nominal</span>
-                                </button>
-                                <button id="btn-infl-real" onclick="setEvolucionInflationMode('real')" class="btn-tool" title="Valores Constantes (Ajustados por IPC a poder adquisitivo actual)">
-                                    <i class="fas fa-arrow-trend-up text-blue-500"></i>
-                                    <span class="hidden sm:inline">Ajustado por Inflación</span>
-                                    <span class="sm:hidden">Ajustado IPC</span>
-                                </button>
-                            </div>
-
-                            <button onclick="exportChartToPNG('chart-quarterly-line', 'evolucion_ejercicio_interanual.png')" class="btn-export" title="Descargar Gráfico en PNG">
-                                <i class="fas fa-camera text-blue-500"></i>
-                                <span>PNG</span>
-                            </button>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs txt-muted font-mono bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                                <i class="fas fa-check-circle mr-1"></i> 21 Trimestres Consecutivos (100% Contable)
+                            </span>
                         </div>
                     </div>
-
-                    <!-- Comparison Chart Title & Subtitle -->
-                    <div class="flex items-center justify-between mt-3 mb-1">
-                        <div>
-                            <h3 class="font-bold text-sm txt-primary flex items-center gap-2" id="quarterly-chart-title">
-                                <i class="fas fa-chart-line text-[#e20039]"></i> Evolución Trimestral y Comparación Interanual
-                            </h3>
-                            <p class="text-[11px] txt-muted" id="quarterly-chart-subtitle">Comparando trimestre a trimestre contra el mismo período desfasado un año.</p>
-                        </div>
-                    </div>
-
                     <!-- Chart Canvas -->
-                    <div class="relative h-[380px] mt-2">
+                    <div class="relative h-[360px] mt-4">
                         <canvas id="chart-quarterly-line"></canvas>
                     </div>
                 </div>
 
-                <!-- Quarterly Interanual Data Table -->
+                <!-- Quarterly Data Table -->
                 <div class="main-card rounded-2xl p-5 border">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <div>
-                            <h3 class="font-bold text-sm txt-primary flex items-center gap-2" id="quarterly-table-title">
-                                <i class="fas fa-table text-[#3ac792]"></i> Comparativa Interanual del Ejercicio ($ en Millones)
-                            </h3>
-                            <p class="text-[11px] txt-muted">Desglose de los 4 trimestres fiscales vs. mismo trimestre del año anterior.</p>
-                        </div>
-                        <button onclick="exportTableToCSV('tbl-quarterly', 'comparativa_ejercicio_interanual.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto rounded-xl border">
+                    <h3 class="font-bold text-sm txt-primary mb-3 flex items-center gap-2">
+                        <i class="fas fa-table text-[#3ac792]"></i> Matriz Histórica de 21 Trimestres ($ en Millones)
+                    </h3>
+                    <div class="overflow-x-auto rounded-xl border max-h-[380px]">
                         <table class="w-full text-left border-collapse data-table text-xs">
-                            <thead>
+                            <thead class="sticky top-0">
                                 <tr>
-                                    <th class="p-2.5">Trimestre Fiscal</th>
-                                    <th class="p-2.5">Corte Contable</th>
-                                    <th class="p-2.5 font-mono">Período Actual</th>
-                                    <th class="p-2.5 text-right font-mono" id="th-quarterly-curr-val">Importe Ejercicio Actual ($M)</th>
-                                    <th class="p-2.5 font-mono">Período Año Anterior</th>
-                                    <th class="p-2.5 text-right font-mono" id="th-quarterly-prev-val">Importe Año Anterior ($M)</th>
-                                    <th class="p-2.5 text-right font-mono">Crecimiento ($M)</th>
-                                    <th class="p-2.5 text-center font-mono">Variación Interanual %</th>
+                                    <th class="p-2.5">Período</th>
+                                    <th class="p-2.5">Corte Fiscal</th>
+                                    <th class="p-2.5 text-right">Total Mercado ($M)</th>
+                                    <th class="p-2.5 text-right">Patrimoniales ($M)</th>
+                                    <th class="p-2.5 text-right">ART ($M)</th>
+                                    <th class="p-2.5 text-right">Personas ($M)</th>
+                                    <th class="p-2.5 text-right">Retiro ($M)</th>
                                 </tr>
                             </thead>
                             <tbody id="tbl-quarterly-body">
@@ -884,52 +794,15 @@
 
             <!-- SUBTAB 2: EVOLUCIÓN MENSUAL (BOLETÍN FLASH) -->
             <div id="subtab-view-mensual" class="space-y-6 hidden">
-                <!-- Header Banner & Mode Selector -->
-                <div class="main-card rounded-2xl p-5 border flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <!-- Notice Banner -->
+                <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 flex items-start gap-3">
+                    <i class="fas fa-circle-info text-amber-500 text-lg mt-0.5"></i>
                     <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#4183ca] text-white uppercase">Boletín Estadístico SSN</span>
-                            <span class="text-xs txt-muted font-mono" id="mensual-badge-date">Último Dato: Julio 2026</span>
-                        </div>
-                        <h3 class="font-bold text-base txt-primary">Evolución de Producción Mensual del Mercado</h3>
-                        <p class="text-xs txt-muted mt-0.5">Valores mensuales de primas emitidas provisorias. Alterná entre valores nominales, constantes deflactados o vista comparativa.</p>
-                    </div>
-
-                    <!-- Deflator Selector Controls -->
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div class="subtle-card p-1 rounded-xl flex items-center gap-1 border">
-                            <button onclick="setMensualMode('corriente')" id="btn-mensual-corriente" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-[#e20039] text-white shadow-sm flex items-center gap-1.5">
-                                <i class="fas fa-money-bill-wave"></i> <span>Valores Corrientes</span>
-                            </button>
-                            <button onclick="setMensualMode('constante')" id="btn-mensual-constante" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all txt-muted hover:text-[#e20039] flex items-center gap-1.5">
-                                <i class="fas fa-arrow-trend-up"></i> <span>Constantes (IPC)</span>
-                            </button>
-                            <button onclick="setMensualMode('comparativa')" id="btn-mensual-comparativa" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all txt-muted hover:text-[#e20039] flex items-center gap-1.5">
-                                <i class="fas fa-code-compare"></i> <span>Comparativa</span>
-                            </button>
-                        </div>
-                        <button onclick="exportChartToPNG('chart-mensual-flash-line', 'produccion_mensual_flash.png')" class="btn-export" title="Descargar Gráfico en PNG">
-                            <i class="fas fa-camera text-blue-500"></i> <span>PNG</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Monthly KPI Highlights -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div class="subtle-card rounded-xl p-3.5 border">
-                        <p class="text-[11px] font-bold uppercase text-[#e20039]">Última Emisión Mensual</p>
-                        <p class="text-lg font-bold font-mono txt-primary mt-1" id="flash-kpi-latest-val">-</p>
-                        <p class="text-[10px] txt-muted font-mono" id="flash-kpi-latest-date">-</p>
-                    </div>
-                    <div class="subtle-card rounded-xl p-3.5 border">
-                        <p class="text-[11px] font-bold uppercase text-[#4183ca]">Variación Intermensual (MoM)</p>
-                        <p class="text-lg font-bold font-mono txt-primary mt-1" id="flash-kpi-mom">-</p>
-                        <p class="text-[10px] txt-muted">vs. Mes Inmediato Anterior</p>
-                    </div>
-                    <div class="subtle-card rounded-xl p-3.5 border">
-                        <p class="text-[11px] font-bold uppercase text-[#3ac792]">Variación Interanual (YoY)</p>
-                        <p class="text-lg font-bold font-mono txt-primary mt-1" id="flash-kpi-yoy">-</p>
-                        <p class="text-[10px] txt-muted">vs. Mismo Mes Año Anterior</p>
+                        <p class="text-xs font-bold text-amber-900 dark:text-amber-200">Aviso de Fuente de Datos Complementaria:</p>
+                        <p class="text-xs text-amber-800 dark:text-amber-300 mt-0.5">
+                            Esta sección presenta la serie de <strong>Producción Mensual Provisoria del Boletín Estadístico de la SSN</strong>. 
+                            A diferencia de los balances contables trimestrales de sumas y saldos (.mdb), estos valores provienen del reporte flash mensual de emisión.
+                        </p>
                     </div>
                 </div>
 
@@ -939,9 +812,6 @@
                         <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
                             <i class="fas fa-chart-line text-[#e20039]"></i> Evolución de Producción Mensual (Corriente vs Constante)
                         </h3>
-                        <button onclick="exportChartToPNG('chart-mensual-flash-line', 'produccion_mensual_flash.png')" class="btn-export" title="Descargar Gráfico en PNG">
-                            <i class="fas fa-camera text-blue-500"></i> <span>PNG</span>
-                        </button>
                     </div>
                     <div class="relative h-[340px]">
                         <canvas id="chart-mensual-flash-line"></canvas>
@@ -950,14 +820,9 @@
 
                 <!-- Monthly Table -->
                 <div class="main-card rounded-2xl p-5 border">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                            <i class="fas fa-table text-[#4183ca]"></i> Registro Histórico Mes a Mes
-                        </h3>
-                        <button onclick="exportTableToCSV('tbl-mensual-flash', 'produccion_mensual_flash.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
-                        </button>
-                    </div>
+                    <h3 class="font-bold text-sm txt-primary mb-3 flex items-center gap-2">
+                        <i class="fas fa-table text-[#4183ca]"></i> Registro Histórico Mes a Mes
+                    </h3>
                     <div class="overflow-x-auto rounded-xl border max-h-[360px]">
                         <table class="w-full text-left border-collapse data-table text-xs">
                             <thead class="sticky top-0">
@@ -982,6 +847,8 @@
         <!-- ==================================================================== -->
         <!-- TAB 3: RANKINGS SSN (12 CATEGORÍAS COMPLETAS)                        -->
         <!-- ==================================================================== -->
+        
+
         <section id="tab-rankings" class="tab-content space-y-6 hidden">
             <!-- Header & Category Selector -->
             <div class="main-card rounded-2xl p-6 border">
