@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e20039"/>
+      <stop offset="100%" stop-color="#b91f38"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Background rounded rect -->
+  <rect width="128" height="128" rx="28" fill="url(#brandGrad)"/>
+  
+  <!-- Shield Icon -->
+  <path d="M64 22 L96 36 V62 C96 82 82 99 64 106 C46 99 32 82 32 62 V36 Z" 
+        fill="#ffffff" 
+        filter="url(#shadow)"/>
+        
+  <!-- Inner Shield Accent -->
+  <path d="M64 30 L88 40 V60 C88 76 77 90 64 96 C51 90 40 76 40 60 V40 Z" 
+        fill="#e20039" 
+        opacity="0.12"/>
+        
+  <!-- Checkmark / Growth line -->
+  <path d="M52 64 L60 72 L76 54" 
+        fill="none" 
+        stroke="#e20039" 
+        stroke-width="7" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+</svg>

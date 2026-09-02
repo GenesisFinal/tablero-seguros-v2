@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches
+.cache/
+.pytest_cache/
+
+# OS generated files
+desktop.ini
+.DS_Store
+Thumbs.db
+
+# Sensitive local tokens (used locally for deployment)
+# GitHub token.txt is kept locally for deploy script
