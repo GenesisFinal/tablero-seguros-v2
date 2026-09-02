@@ -478,108 +478,14 @@
                     </div>
 
                     <!-- Macro View Mode Switcher -->
-                    <div class="flex items-center gap-1.5 subtle-card p-1.5 rounded-xl border">
-                        <button onclick="setMacroViewMode('productos')" id="btn-macro-mode-prod" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#e20039] text-white transition-all">
-                            <i class="fas fa-cubes mr-1"></i> Por Ramo Real (Subramos)
-                        </button>
-                        <button onclick="setMacroViewMode('entidades')" id="btn-macro-mode-ent" class="px-3 py-1.5 rounded-lg text-xs font-semibold txt-muted hover:text-[#e20039] transition-all">
-                            <i class="fas fa-building mr-1"></i> Por Tipo de Compañía
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Macro KPI Cards Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-6" id="macro-kpi-grid">
-                    <!-- Populated dynamically according to active view mode -->
-                </div>
-
-                <!-- Cross-selling info banner (when looking at Personas) -->
-                <div id="cross-selling-box" class="mt-4 p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-shuffle text-[#4183ca]"></i>
-                        <span class="font-bold text-blue-950 dark:text-blue-200">Apertura Cross-Selling de Personas:</span>
-                        <span class="txt-secondary" id="cs-desc">-</span>
-                    </div>
-                    <div class="flex items-center gap-3 font-mono font-bold text-[11px]">
-                        <span class="text-[#4183ca]" id="cs-mixtas">En Mixtas: -</span>
-                        <span class="text-[#f8cc59]" id="cs-personas">En Personas: -</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts & Branches Breakdown Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Doughnut Segment Distribution -->
-                <div class="main-card rounded-2xl p-5 border flex flex-col">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2" id="doughnut-title">
-                            <i class="fas fa-chart-pie text-[#e20039]"></i> Distribución por Ramos (Subramos)
-                        </h3>
-                        <button onclick="exportChartToPNG('chart-primas-doughnut', 'distribucion_ramos.png')" class="btn-export" title="Descargar Gráfico en PNG">
-                            <i class="fas fa-camera text-blue-500"></i> <span>PNG</span>
-                        </button>
-                    </div>
-                    <div class="relative h-[280px] w-full flex items-center justify-center">
-                        <canvas id="chart-primas-doughnut"></canvas>
-                    </div>
-                </div>
-
-                <!-- Subramos Table -->
-                <div class="main-card rounded-2xl p-5 border lg:col-span-2 flex flex-col">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                            <i class="fas fa-list-check text-[#4183ca]"></i> Desglose Detallado por Ramos (53 Subramos)
-                        </h3>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="filter-subramos" onkeyup="filterSubramosTable(this.value)" placeholder="Buscar ramo..." class="ui-input text-xs px-3 py-1.5 rounded-lg w-44">
-                            <button onclick="exportTableToCSV('tbl-subramos', 'desglose_subramos.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                                <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto flex-1 max-h-[420px] rounded-xl border">
-                        <table class="w-full text-left border-collapse data-table text-xs">
-                            <thead class="sticky top-0">
-                                <tr>
-                                    <th class="p-2.5">Cód.</th>
-                                    <th class="p-2.5">Subramo</th>
-                                    <th class="p-2.5 text-right">Primas ($M)</th>
-                                    <th class="p-2.5 text-right">Siniestros ($M)</th>
-                                    <th class="p-2.5 text-right">Siniestralidad %</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbl-subramos-body">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================================================================== -->
-        <!-- TAB: MATRIZ ESTRATÉGICA (MARGEN TÉCNICO vs RENDIMIENTO FINANCIERO)   -->
-        <!-- ==================================================================== -->
-        <section id="tab-matriz" class="tab-content space-y-6 hidden">
-            <div class="main-card rounded-2xl p-6 border">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-600 text-white uppercase">Análisis Estratégico SSN</span>
-                            <span class="text-xs txt-muted font-mono" id="matriz-period-desc">Período: -</span>
-                        </div>
-                        <h2 class="text-xl md:text-2xl font-bold txt-primary">Matriz Estratégica: Margen Técnico vs. Rendimiento Financiero</h2>
-                        <p class="text-xs txt-muted mt-1">Evaluación de las 4 posiciones estratégicas del mercado según su rentabilidad de suscripción y retorno financiero.</p>
-                        
-                        <!-- Mode Switcher Pills: Aseguradoras, Segmentos Consolidados, Grupos -->
-                        <div class="flex items-center gap-1 mt-3 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 w-fit">
-                            <button id="btn-matriz-mode-individual" onclick="switchMatrizMode('ALL')" class="btn-matriz-mode px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5">
+                    <div class="flex items-center flex-nowrap overflow-x-auto whitespace-nowrap gap-1 mt-3 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 w-fit shrink-0">
+                            <button id="btn-matriz-mode-individual" type="button" onclick="switchMatrizMode('ALL')" class="btn-matriz-mode px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs whitespace-nowrap shadow-sm transition-all flex items-center gap-1.5">
                                 <i class="fas fa-building"></i> <span>Aseguradoras</span>
                             </button>
-                            <button id="btn-matriz-mode-segmentos" onclick="switchMatrizMode('SEGMENTOS')" class="btn-matriz-mode px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs transition-all flex items-center gap-1.5">
+                            <button id="btn-matriz-mode-segmentos" type="button" onclick="switchMatrizMode('SEGMENTOS')" class="btn-matriz-mode px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5">
                                 <i class="fas fa-cubes"></i> <span>Segmentos Consolidados</span>
                             </button>
-                            <button id="btn-matriz-mode-grupos" onclick="switchMatrizMode('GRUPOS')" class="btn-matriz-mode px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs transition-all flex items-center gap-1.5">
+                            <button id="btn-matriz-mode-grupos" type="button" onclick="switchMatrizMode('GRUPOS')" class="btn-matriz-mode px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5">
                                 <i class="fas fa-layer-group"></i> <span>Grupos Económicos</span>
                             </button>
                         </div>
@@ -2620,6 +2526,13 @@
         // --- TAB: MATRIZ ESTRATÉGICA (CON PLOTLY.JS INTERACTIVO Y CONSOLIDACIÓN POR SEGMENTOS) ---
         let activeMatrizFocus = 'ALL';
 
+        function getQuadrantBadge(quad) {
+            if (quad === 'Q1_LIDERES') return '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Q1 Ganadoras</span>';
+            if (quad === 'Q2_DEP_FIN') return '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">Q2 Dep. Fin.</span>';
+            if (quad === 'Q3_ESP_TEC') return '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">Q3 Esp. Téc.</span>';
+            return '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">Q4 Riesgo</span>';
+        }
+
         function switchMatrizMode(modeVal) {
             const sel = document.getElementById('select-matriz-segment');
             if (sel) {
@@ -2630,20 +2543,23 @@
         }
 
         function updateMatrizModePills(modeVal) {
-            document.querySelectorAll('.btn-matriz-mode').forEach(b => {
-                b.className = "btn-matriz-mode px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5";
-            });
-            let activeBtnId = 'btn-matriz-mode-individual';
-            if (modeVal === 'SEGMENTOS') activeBtnId = 'btn-matriz-mode-segmentos';
-            else if (modeVal === 'GRUPOS') activeBtnId = 'btn-matriz-mode-grupos';
+            const btnAll = document.getElementById('btn-matriz-mode-individual');
+            const btnSeg = document.getElementById('btn-matriz-mode-segmentos');
+            const btnGrp = document.getElementById('btn-matriz-mode-grupos');
 
-            const activeBtn = document.getElementById(activeBtnId);
-            if (activeBtn) {
-                activeBtn.className = "btn-matriz-mode px-3 py-1.5 rounded-lg bg-[#e20039] text-white shadow-sm transition-all flex items-center gap-1.5";
-            }
+            const inactiveCls = "btn-matriz-mode px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs whitespace-nowrap transition-all flex items-center gap-1.5";
+            const activeCls = "btn-matriz-mode px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs whitespace-nowrap shadow-sm transition-all flex items-center gap-1.5";
+
+            if (btnAll) btnAll.className = (modeVal === 'ALL' || (modeVal !== 'SEGMENTOS' && modeVal !== 'GRUPOS')) ? activeCls : inactiveCls;
+            if (btnSeg) btnSeg.className = (modeVal === 'SEGMENTOS') ? activeCls : inactiveCls;
+            if (btnGrp) btnGrp.className = (modeVal === 'GRUPOS') ? activeCls : inactiveCls;
         }
 
         function onMatrizSegmentChange(segVal) {
+            const sel = document.getElementById('select-matriz-segment');
+            if (sel && sel.value !== segVal) {
+                sel.value = segVal;
+            }
             activeMatrizFocus = 'ALL';
             updateMatrizModePills(segVal);
             updateMatrizFocusDropdown(segVal);
@@ -2661,7 +2577,6 @@
             if (pData.strategic_matrix_segments && pData.strategic_matrix_segments.length > 0) {
                 return pData.strategic_matrix_segments;
             }
-            // Dynamic fallback computation
             const companies = listCompanies(pData);
             const totEmit = companies.reduce((a, b) => a + (b.primas_emitidas || 0), 0);
             const segmentsAgg = {};
@@ -2755,7 +2670,7 @@
                     items.push({
                         value: s.id || s.cod_cia,
                         label: `[Segmento] ${s.razon_social} (${s.entities_count} aseg.)`,
-                        subtext: `Cuadrante: ${s.quadrant} &bull; Primas: ${fmtARS(s.primas_emitidas)}`
+                        subtext: `Cuadrante: ${s.quadrant} • Primas: ${fmtARS(s.primas_emitidas)}`
                     });
                 });
             } else if (segVal === 'GRUPOS') {
@@ -2764,17 +2679,17 @@
                     items.push({
                         value: g.id || g.cod_cia,
                         label: `[Grupo] ${g.short_name || g.razon_social}`,
-                        subtext: `Cuadrante: ${g.quadrant} &bull; Primas: ${fmtARS(g.primas_emitidas)}`
+                        subtext: `Cuadrante: ${g.quadrant} • Primas: ${fmtARS(g.primas_emitidas)}`
                     });
                 });
             } else {
                 const matrix = pData.strategic_matrix || [];
-                const filtered = segVal === 'ALL' ? matrix : matrix.filter(c => c.tipo_entidad === segVal);
+                const filtered = segVal === 'ALL' ? matrix : matrix.filter(c => (c.tipo_entidad === segVal || (segVal === 'Patrimoniales y Mixtas' && c.tipo_entidad.includes('Patrimoniales'))));
                 filtered.slice().sort((a, b) => a.razon_social.localeCompare(b.razon_social)).forEach(c => {
                     items.push({
                         value: c.cod_cia,
                         label: `[${c.cod_cia}] ${c.razon_social}`,
-                        subtext: `${c.tipo_entidad} &bull; Cuadrante: ${c.quadrant}`
+                        subtext: `${c.tipo_entidad} • Cuadrante: ${c.quadrant}`
                     });
                 });
             }
@@ -2795,21 +2710,26 @@
             });
         }
 
+        function getMatrizFilteredItems(pData, seg) {
+            if (seg === 'SEGMENTOS') {
+                return getConsolidatedSegments(pData);
+            }
+            if (seg === 'GRUPOS') {
+                return pData.strategic_matrix_groups || [];
+            }
+            const matrix = pData.strategic_matrix || [];
+            if (seg === 'ALL') {
+                return matrix;
+            }
+            return matrix.filter(c => (c.tipo_entidad === seg || (seg === 'Patrimoniales y Mixtas' && c.tipo_entidad.includes('Patrimoniales'))));
+        }
+
         function renderStrategicMatrixTab(pData) {
             const seg = document.getElementById('select-matriz-segment')?.value || 'ALL';
             const isSegmentos = seg === 'SEGMENTOS';
             const isGrupos = seg === 'GRUPOS';
 
-            let matrix = [];
-            if (isSegmentos) {
-                matrix = getConsolidatedSegments(pData);
-            } else if (isGrupos) {
-                matrix = pData.strategic_matrix_groups || [];
-            } else {
-                matrix = pData.strategic_matrix || [];
-            }
-
-            const filtered = (isSegmentos || isGrupos || seg === 'ALL') ? matrix : matrix.filter(c => c.tipo_entidad === seg);
+            const filtered = getMatrizFilteredItems(pData, seg);
             
             const q1 = filtered.filter(c => c.quadrant === 'Q1_LIDERES').length;
             const q2 = filtered.filter(c => c.quadrant === 'Q2_DEP_FIN').length;
@@ -2825,6 +2745,9 @@
             document.getElementById('matriz-kpi-q3').innerText = `${q3} ${unit}`;
             document.getElementById('matriz-kpi-q4').innerText = `${q4} ${unit}`;
 
+            const descEl = document.getElementById('matriz-period-desc');
+            if (descEl) descEl.innerText = `Período: ${pData.periodo} (${pData.period_label || ''})`;
+
             updateMatrizFocusDropdown(seg);
             renderStrategicMatrixChart();
             renderStrategicMatrixTable(filtered, isGrupos, isSegmentos);
@@ -2834,9 +2757,10 @@
             if (!window.INSURANCE_DATA_V2 || !currentPeriod || !window.Plotly) return;
             const pData = window.INSURANCE_DATA_V2.periods_data[currentPeriod];
             const seg = document.getElementById('select-matriz-segment')?.value || 'ALL';
+            const isSegmentos = seg === 'SEGMENTOS';
             const isGrupos = seg === 'GRUPOS';
-            const matrix = isGrupos ? (pData.strategic_matrix_groups || []) : (pData.strategic_matrix || []);
-            const filtered = (isGrupos || seg === 'ALL') ? matrix : matrix.filter(c => c.tipo_entidad === seg);
+
+            const filtered = getMatrizFilteredItems(pData, seg);
 
             const isDark = document.documentElement.classList.contains('dark');
             const isFocusing = activeMatrizFocus !== 'ALL';
@@ -2869,13 +2793,21 @@
                     const isSelected = (c.cod_cia === activeMatrizFocus || c.id === activeMatrizFocus);
 
                     // Bubble size scaling
-                    const baseRadius = Math.max(isGrupos ? 14 : 7, Math.min(38, Math.sqrt(c.primas_emitidas / (isGrupos ? 3e8 : 8e7))));
-                    sizes.push(isSelected ? baseRadius + 12 : baseRadius);
+                    let baseRadius = 7;
+                    if (isSegmentos) {
+                        baseRadius = Math.max(22, Math.min(48, Math.sqrt(c.primas_emitidas / 1.5e9) * 20));
+                    } else if (isGrupos) {
+                        baseRadius = Math.max(14, Math.min(38, Math.sqrt(c.primas_emitidas / 3e8)));
+                    } else {
+                        baseRadius = Math.max(7, Math.min(35, Math.sqrt(c.primas_emitidas / 8e7)));
+                    }
+
+                    sizes.push(isSelected ? baseRadius + 14 : baseRadius);
 
                     if (!isFocusing) {
                         colors.push(q.rgba);
                         lineColors.push(isDark ? '#1e293b' : '#ffffff');
-                        lineWidths.push(1.5);
+                        lineWidths.push(isSegmentos ? 2.5 : 1.5);
                     } else if (isSelected) {
                         colors.push(q.color);
                         lineColors.push('#ffffff');
@@ -2886,51 +2818,61 @@
                         lineWidths.push(0);
                     }
 
-                    hoverTexts.push(c.razon_social);
+                    hoverTexts.push(c.razon_social + (c.entities_count ? ` (${c.entities_count} Cías)` : ''));
                     customData.push([
                         fmtARS(c.primas_emitidas),
                         fmtPct(c.x),
                         fmtPct(c.y),
                         fmtPct(c.combined_ratio),
-                        fmtARS(c.resultado_neto),
-                        c.tipo_entidad + (c.entities_count ? ` (${c.entities_count} Cías)` : ''),
-                        c.cod_cia || c.id
+                        c.quadrant_label || q.name,
+                        isSegmentos ? 'Segmento Consolidado SSN' : (isGrupos ? 'Grupo Consolidado' : (c.tipo_entidad || 'Aseguradora')),
+                        c.entities_count || 1,
+                        fmtARS(c.resultado_tecnico || 0),
+                        fmtARS(c.resultado_financiero || 0),
+                        fmtARS(c.resultado_neto || 0)
                     ]);
                 });
 
                 traces.push({
                     x: xVals,
                     y: yVals,
-                    text: hoverTexts,
-                    customdata: customData,
-                    mode: 'markers',
+                    mode: isSegmentos ? 'markers+text' : 'markers',
+                    text: isSegmentos ? qItems.map(c => c.short_name || c.razon_social) : hoverTexts,
+                    textposition: 'top center',
+                    textfont: {
+                        family: 'Sora, sans-serif',
+                        size: 11,
+                        color: isDark ? '#f1f5f9' : '#0f172a',
+                        weight: 'bold'
+                    },
                     name: q.name,
-                    hovertemplate: 
-                        '<b>%{text} [%{customdata[6]}]</b><br>' +
-                        'Segmento: %{customdata[5]}<br>' +
-                        '<b>Margen Técnico:</b> %{customdata[1]}<br>' +
-                        '<b>ROI Inversiones:</b> %{customdata[2]}<br>' +
-                        'Ratio Combinado: %{customdata[3]}<br>' +
-                        'Primas: %{customdata[0]}<br>' +
-                        'Resultado Neto: %{customdata[4]}<extra></extra>',
+                    customdata: customData,
                     marker: {
                         size: sizes,
                         color: colors,
-                        line: {
-                            color: lineColors,
-                            width: lineWidths
-                        },
-                        sizemode: 'diameter'
-                    }
+                        line: { color: lineColors, width: lineWidths }
+                    },
+                    hovertemplate: 
+                        '<b>%{customdata[5]}: %{customdata[0]}</b><br>' +
+                        '<span style="font-size:12px; font-weight:bold; color:#f8cc59">%{text}</span><br>' +
+                        '<span style="font-size:11px; color:#cbd5e1">Cuadrante: %{customdata[4]}</span><br>' +
+                        '--------------------------------<br>' +
+                        'Primas Emitidas: <b>%{customdata[0]}</b><br>' +
+                        'Margen Técnico: <b>%{customdata[1]}</b> (Res. Téc: %{customdata[7]})<br>' +
+                        'ROI Inversiones: <b>%{customdata[2]}</b> (Res. Fin: %{customdata[8]})<br>' +
+                        'Resultado Neto: <b>%{customdata[9]}</b><br>' +
+                        'Ratio Combinado: <b>%{customdata[3]}</b>' +
+                        '<extra></extra>'
                 });
             });
 
+            // Layout
             const layout = {
                 template: isDark ? 'plotly_dark' : 'plotly_white',
                 paper_bgcolor: 'transparent',
                 plot_bgcolor: 'transparent',
                 margin: { l: 60, r: 40, t: 30, b: 60 },
-                dragmode: 'zoom', // Enable box select zoom by default
+                dragmode: currentPlotlyDragMode || 'zoom',
                 hovermode: 'closest',
                 xaxis: {
                     title: { text: '<b>Margen Técnico (%)</b> [Resultado Técnico / Primas Devengadas]', font: { family: 'Sora', size: 12, color: isDark ? '#cbd5e1' : '#1e293b' } },
@@ -2966,667 +2908,149 @@
             const config = {
                 responsive: true,
                 displayModeBar: false,
-                displaylogo: false,
-                modeBarButtonsToAdd: [
-                    'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toImage'
-                ],
-                toImageButtonOptions: {
-                    format: 'png',
-                    filename: `matriz_estrategica_${pData.periodo}`,
-                    height: 800,
-                    width: 1400,
-                    scale: 2
-                }
+                displaylogo: false
             };
 
             Plotly.react('chart-strategic-matrix', traces, layout, config);
         }
 
-        function renderStrategicMatrixTable(matrix, isGrupos = false) {
+        function renderStrategicMatrixTable(items, isGrupos, isSegmentos) {
             const tbody = document.getElementById('tbl-matriz-body');
             if (!tbody) return;
+
             tbody.innerHTML = '';
-            matrix.sort((a, b) => b.primas_emitidas - a.primas_emitidas).forEach(c => {
-                let badgeClass = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
-                if (c.quadrant === 'Q2_DEP_FIN') badgeClass = 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300';
-                if (c.quadrant === 'Q3_ESP_TEC') badgeClass = 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300';
-                if (c.quadrant === 'Q4_RIESGO') badgeClass = 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300';
-
-                const codeKey = c.cod_cia || c.id;
-                const isSelected = (codeKey === activeMatrizFocus);
-
+            items.slice().sort((a, b) => b.primas_emitidas - a.primas_emitidas).forEach((c, idx) => {
                 const tr = document.createElement('tr');
-                tr.setAttribute('data-code', codeKey);
-                if (isSelected) tr.className = 'bg-purple-100 dark:bg-purple-950/60 font-bold';
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition cursor-pointer";
+                tr.setAttribute('data-code', c.cod_cia || c.id);
+                tr.onclick = () => { onMatrizFocusChange(c.cod_cia || c.id); };
+
+                const qBadge = getQuadrantBadge(c.quadrant);
+                const isL2 = (c.razon_social || '').toUpperCase().includes('SEGUNDA');
+
+                const nameCol = isSegmentos 
+                    ? `<span>${c.razon_social}</span> <span class="text-[10px] text-slate-400 font-mono">(${c.entities_count} Cías)</span>`
+                    : (isGrupos 
+                        ? `<span>${c.razon_social}</span> <span class="text-[10px] text-slate-400 font-mono">(${c.entities_count || 1} entidades)</span>`
+                        : `<span>${c.razon_social}</span>`);
+
                 tr.innerHTML = `
-                    <td class="p-2.5 font-mono font-bold text-[11px]">${codeKey}</td>
-                    <td class="p-2.5 font-semibold">
-                        <div class="flex items-center gap-1.5">
-                            <span>${c.razon_social}</span>
-                            <button onclick="focusOnEntity('${codeKey}')" class="text-xs text-purple-600 hover:text-purple-800 ml-1" title="Hacer foco en esta entidad">
-                                <i class="fas fa-crosshairs"></i>
-                            </button>
-                        </div>
+                    <td class="p-2.5 font-mono text-xs ${isL2 ? 'text-[#e20039] font-bold' : 'text-slate-500'}">${c.cod_cia || idx + 1}</td>
+                    <td class="p-2.5 font-semibold ${isL2 ? 'text-[#e20039]' : 'txt-primary'} flex items-center gap-1.5">
+                        ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                        ${nameCol}
                     </td>
-                    <td class="p-2.5 txt-muted text-[11px]">${c.tipo_entidad}${c.entities_count ? ` (${c.entities_count} Cías)` : ''}</td>
-                    <td class="p-2.5 text-right font-mono">${(c.primas_emitidas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono font-bold ${c.x >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${fmtPct(c.x)}</td>
-                    <td class="p-2.5 text-right font-mono font-bold ${c.y >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${fmtPct(c.y)}</td>
+                    <td class="p-2.5 text-xs txt-muted">${c.tipo_entidad}</td>
+                    <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${(c.primas_emitidas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono font-bold ${c.x >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${fmtPct(c.x)}</td>
+                    <td class="p-2.5 text-right font-mono font-bold ${c.y >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${fmtPct(c.y)}</td>
                     <td class="p-2.5 text-right font-mono">${fmtPct(c.combined_ratio)}</td>
-                    <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">${c.quadrant.replace('_', ' ')}</span></td>
+                    <td class="p-2.5 text-center">${qBadge}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function focusOnEntity(code) {
-            if (comboboxRegistry['matriz']) {
-                const item = comboboxRegistry['matriz'].items.find(it => it.value === code);
-                selectComboboxItem('matriz', code, item ? item.label : code);
-            } else {
-                const sel = document.getElementById('select-matriz-focus');
-                if (sel) {
-                    sel.value = code;
-                    onMatrizFocusChange(code);
-                }
-            }
-        }
-
-        function filterMatrizTable(q) {
-            const query = q.toLowerCase();
-            document.querySelectorAll('#tbl-matriz-body tr').forEach(tr => {
-                tr.style.display = tr.innerText.toLowerCase().includes(query) ? '' : 'none';
-            });
-        }
-
-        
-        // --- TAB 2: EVOLUCIÓN TEMPORAL POR EJERCICIO & COMPARACIÓN INTERANUAL ---
-        let evolucionInflationMode = 'nominal'; // 'nominal' vs 'real'
-
-        function setEvolucionInflationMode(mode) {
-            evolucionInflationMode = mode;
-            const bNom = document.getElementById('btn-infl-nominal');
-            const bReal = document.getElementById('btn-infl-real');
-            if (bNom && bReal) {
-                if (mode === 'nominal') {
-                    bNom.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#e20039] text-white transition-all flex items-center gap-1.5 shadow-sm";
-                    bReal.className = "px-3 py-1.5 rounded-lg text-xs font-semibold txt-muted hover:text-[#e20039] transition-all flex items-center gap-1.5";
-                } else {
-                    bReal.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#e20039] text-white transition-all flex items-center gap-1.5 shadow-sm";
-                    bNom.className = "px-3 py-1.5 rounded-lg text-xs font-semibold txt-muted hover:text-[#e20039] transition-all flex items-center gap-1.5";
-                }
-            }
-            renderQuarterlyChart();
-        }
-
-        function onEvolucionNivelChange(nivel) {
-            populateEvolucionItemsDropdown(nivel);
-            renderQuarterlyChart();
-        }
-
-        function populateEvolucionItemsDropdown(selectedNivel) {
-            if (!window.INSURANCE_DATA_V2) return;
-            const data = window.INSURANCE_DATA_V2;
-            const nivel = selectedNivel || document.getElementById('select-evolucion-nivel')?.value || 'macro';
-            const latestP = data.latest_period || '2026-2';
-            const pData = data.periods_data[latestP];
-            if (!pData) return;
-
-            let items = [];
-
-            if (nivel === 'macro') {
-                items = [
-                    { value: 'total_mercado', label: 'Total Mercado Asegurador', subtext: '100% Producción global SSN' },
-                    { value: 'patrimoniales', label: 'Total Daños Patrimoniales', subtext: 'Producción consolidada patrimonial' },
-                    { value: 'art', label: 'Total Riesgos del Trabajo (ART)', subtext: 'Producción total cobertura laboral' },
-                    { value: 'personas', label: 'Total Seguros de Personas', subtext: 'Vida, Salud, AP y Sepelio' },
-                    { value: 'retiro', label: 'Total Seguros de Retiro', subtext: 'Planes de retiro individuales y colectivos' }
-                ];
-            } else if (nivel === 'grupos') {
-                const groups = (data.groups_definitions || []).slice().sort((a, b) => a.name.localeCompare(b.name));
-                groups.forEach(g => {
-                    const gData = pData.groups_by_id ? pData.groups_by_id[g.id] : null;
-                    items.push({
-                        value: `group_${g.id}`,
-                        label: `[Grupo] ${g.name}`,
-                        subtext: `Primas: ${gData ? fmtARS(gData.primas_emitidas) : 'S/D'}`
-                    });
-                });
-            } else if (nivel === 'empresas') {
-                const companies = (pData.companies || []).slice().sort((a, b) => a.razon_social.localeCompare(b.razon_social));
-                companies.forEach(c => {
-                    items.push({
-                        value: `cia_${c.cod_cia}`,
-                        label: `[${c.cod_cia}] ${c.razon_social}`,
-                        subtext: `${c.tipo_entidad} &bull; Primas: ${fmtARS(c.primas_emitidas)}`
-                    });
-                });
-            } else if (nivel.startsWith('ramo_')) {
-                const branchKey = nivel.replace('ramo_', '');
-                const rkList = pData.rankings[branchKey] || [];
-                
-                // Add first option: Total of this branch
-                const totalBranchPrimas = rkList.reduce((acc, c) => acc + (c.prima || 0), 0);
-                const branchTitles = {
-                    total_automotores: 'Total Ramo Automotores',
-                    total_art: 'Total Riesgos del Trabajo (ART)',
-                    total_vida: 'Total Seguros de Vida',
-                    total_retiro: 'Total Seguros de Retiro',
-                    total_agro: 'Total Agropecuario y Forestal',
-                    total_incendio_comb: 'Total Incendio y Combinados',
-                    total_rc: 'Total Responsabilidad Civil',
-                    total_caucion: 'Total Caución y Crédito',
-                    total_transporte: 'Total Transporte y Cascos',
-                    total_personas: 'Total Seguros de Personas',
-                    total_ap: 'Total Accidentes Personales',
-                    total_salud: 'Total Salud',
-                    total_sepelio: 'Total Sepelio'
-                };
-
-                items.push({
-                    value: `branch_${branchKey}`,
-                    label: `[Total Ramo] ${branchTitles[branchKey] || branchKey}`,
-                    subtext: `${rkList.length} entidades operantes &bull; Primas: ${fmtARS(totalBranchPrimas)}`
-                });
-
-                // Add all companies operating in this specific branch
-                const sortedBranchCias = rkList.slice().sort((a, b) => a.entidad.localeCompare(b.entidad));
-                sortedBranchCias.forEach(c => {
-                    items.push({
-                        value: `branch_cia_${branchKey}_cia_${c.cod_cia}`,
-                        label: `[${c.cod_cia}] ${c.entidad}`,
-                        subtext: `Posición #${c.posicion} &bull; Cuota: ${fmtPct(c.participacion)} &bull; Primas: ${fmtARS(c.prima)}`
-                    });
-                });
-            }
-
-            const defaultVal = items[0] ? items[0].value : 'total_mercado';
-            updateComboboxItems('evolucion', items, defaultVal);
-            comboboxRegistry['evolucion'].callback = () => { renderQuarterlyChart(); };
-        }
-
-        function populateEvolucionEjercicioDropdown() {
-            const sel = document.getElementById('select-evolucion-ejercicio');
-            if (!sel || !window.INSURANCE_DATA_V2) return;
-            const data = window.INSURANCE_DATA_V2;
-            let ejercicios = data.ejercicios_fiscales;
-            
-            if (!ejercicios || Object.keys(ejercicios).length === 0) {
-                // Dynamic fallback construction (SSN Fiscal Calendar)
-                ejercicios = {};
-                (data.available_periods || []).forEach(p => {
-                    const parts = p.split('-');
-                    const yr = parseInt(parts[0]);
-                    const q = parseInt(parts[1]);
-                    
-                    let ejKey, pos, qLabel, prevP, prevEj;
-                    if (q === 3) {
-                        ejKey = `${yr}/${yr + 1}`;
-                        pos = 1;
-                        qLabel = `Q1 (30-09-${yr} - 3 Meses)`;
-                        prevP = `${yr - 1}-3`;
-                        prevEj = `${yr - 1}/${yr}`;
-                    } else if (q === 4) {
-                        ejKey = `${yr}/${yr + 1}`;
-                        pos = 2;
-                        qLabel = `Q2 (31-12-${yr} - 6 Meses)`;
-                        prevP = `${yr - 1}-4`;
-                        prevEj = `${yr - 1}/${yr}`;
-                    } else if (q === 1) {
-                        ejKey = `${yr - 1}/${yr}`;
-                        pos = 3;
-                        qLabel = `Q3 (31-03-${yr} - 9 Meses)`;
-                        prevP = `${yr - 1}-1`;
-                        prevEj = `${yr - 2}/${yr - 1}`;
-                    } else if (q === 2) {
-                        ejKey = `${yr - 1}/${yr}`;
-                        pos = 4;
-                        qLabel = `Q4 (30-06-${yr} - 12 Meses Cierre)`;
-                        prevP = `${yr - 1}-2`;
-                        prevEj = `${yr - 2}/${yr - 1}`;
-                    }
-
-                    if (!ejercicios[ejKey]) {
-                        const eparts = ejKey.split('/');
-                        ejercicios[ejKey] = {
-                            id: ejKey,
-                            label: `Ejercicio ${ejKey}`,
-                            start_year: parseInt(eparts[0]),
-                            end_year: parseInt(eparts[1]),
-                            quarters: {}
-                        };
-                    }
-                    const hasPrev = (data.available_periods || []).includes(prevP);
-                    ejercicios[ejKey].quarters[String(pos)] = {
-                        period: p,
-                        quarter_num: pos,
-                        quarter_label: qLabel,
-                        prev_period: hasPrev ? prevP : null,
-                        prev_ejercicio: hasPrev ? prevEj : null
-                    };
-                });
-                data.ejercicios_fiscales = ejercicios;
-                if (!data.latest_ejercicio && data.latest_period) {
-                    const lparts = data.latest_period.split('-');
-                    const lyr = parseInt(lparts[0]);
-                    const lq = parseInt(lparts[1]);
-                    data.latest_ejercicio = (lq === 3 || lq === 4) ? `${lyr}/${lyr + 1}` : `${lyr - 1}/${lyr}`;
-                }
-            }
-
-            const ejKeys = Object.keys(ejercicios).reverse();
-            if (sel.options.length === 0 || sel.options.length !== ejKeys.length) {
-                sel.innerHTML = '';
-                ejKeys.forEach((k) => {
-                    const opt = document.createElement('option');
-                    opt.value = k;
-                    const isLatest = (k === data.latest_ejercicio);
-                    opt.innerText = isLatest ? `Ejercicio ${k} (Último Ejercicio)` : `Ejercicio ${k}`;
-                    sel.appendChild(opt);
-                });
-                sel.value = data.latest_ejercicio || ejKeys[0];
-            }
-        }
-
-        function getMetricValueForPeriod(periodCode, itemKey, isReal = false) {
-            if (!window.INSURANCE_DATA_V2 || !periodCode) return null;
-            const pData = window.INSURANCE_DATA_V2.periods_data[periodCode];
-            if (!pData) return null;
-
-            let val = 0.0;
-            if (itemKey === 'total_mercado') {
-                val = pData.macro_entidades ? pData.macro_entidades.total_mercado_emitidas : 0.0;
-            } else if (itemKey === 'patrimoniales') {
-                val = pData.macro_productos ? pData.macro_productos.patrimoniales.primas : 0.0;
-            } else if (itemKey === 'art') {
-                val = pData.macro_productos ? pData.macro_productos.art.primas : 0.0;
-            } else if (itemKey === 'personas') {
-                val = pData.macro_productos ? pData.macro_productos.personas.primas : 0.0;
-            } else if (itemKey === 'retiro') {
-                val = pData.macro_productos ? pData.macro_productos.retiro.primas : 0.0;
-            } else if (itemKey.startsWith('branch_cia_')) {
-                const parts = itemKey.replace('branch_cia_', '').split('_cia_');
-                const bKey = parts[0];
-                const cCode = parts[1];
-                const rk = pData.rankings ? (pData.rankings[bKey] || []) : [];
-                const found = rk.find(x => x.cod_cia === cCode);
-                val = found ? (found.prima || 0.0) : 0.0;
-            } else if (itemKey.startsWith('branch_')) {
-                const bKey = itemKey.replace('branch_', '');
-                const rkList = pData.rankings ? (pData.rankings[bKey] || pData.rankings['total_' + bKey] || []) : [];
-                val = rkList.reduce((acc, c) => acc + (c.prima || 0.0), 0.0);
-            } else if (itemKey.startsWith('group_')) {
-                const gKey = itemKey.replace('group_', '');
-                const grp = pData.groups_by_id ? pData.groups_by_id[gKey] : null;
-                val = grp ? grp.primas_emitidas : 0.0;
-            } else if (itemKey.startsWith('cia_')) {
-                const ciaCode = itemKey.replace('cia_', '');
-                const cia = pData.companies_by_code ? pData.companies_by_code[ciaCode] : null;
-                val = cia ? (cia.primas_emitidas || 0.0) : 0.0;
-            }
-
-            if (isReal && window.INSURANCE_DATA_V2.ipc_indices) {
-                const latestP = window.INSURANCE_DATA_V2.latest_period;
-                const latestIpc = window.INSURANCE_DATA_V2.ipc_indices[latestP] || 11979.38;
-                const periodIpc = window.INSURANCE_DATA_V2.ipc_indices[periodCode] || latestIpc;
-                const deflator = latestIpc / periodIpc;
-                val = val * deflator;
-            }
-
-            return val;
-        }
-
+        // --- TAB 2: EVOLUCIÓN TEMPORAL & SERIES HISTÓRICAS ---
         function renderQuarterlyChart() {
-            populateEvolucionEjercicioDropdown();
-            if (!comboboxRegistry['evolucion'] || comboboxRegistry['evolucion'].items.length === 0) {
-                populateEvolucionItemsDropdown();
-            }
-
             const ctx = document.getElementById('chart-quarterly-line');
             if (!ctx || !window.INSURANCE_DATA_V2) return;
-            const data = window.INSURANCE_DATA_V2;
-            const ejKey = document.getElementById('select-evolucion-ejercicio')?.value || data.latest_ejercicio;
-            const itemKey = document.getElementById('select-evolucion-item')?.value || 'total_mercado';
-            
-            // Get user-facing label
-            let itemLabel = 'Total Mercado Asegurador';
-            if (comboboxRegistry['evolucion']) {
-                const found = comboboxRegistry['evolucion'].items.find(it => it.value === itemKey);
-                if (found) itemLabel = found.label;
-            }
-            const isReal = (evolucionInflationMode === 'real');
-
-            const ejObj = data.ejercicios_fiscales[ejKey];
-            if (!ejObj) return;
-
-            // Define the 4 standard quarters (SSN Fiscal Order: Q1 Sep, Q2 Dic, Q3 Mar, Q4 Jun)
-            const quarterLabels = [
-                `Q1 (30-Sep - 3M)`,
-                `Q2 (31-Dic - 6M)`,
-                `Q3 (31-Mar - 9M)`,
-                `Q4 (30-Jun - 12M Cierre)`
-            ];
-            const currVals = [];
-            const prevVals = [];
-            const varPctVals = [];
-            const tableRows = [];
-
-            for (let qNum = 1; qNum <= 4; qNum++) {
-                const qKey = String(qNum);
-                const qInfo = ejObj.quarters[qKey];
-                const qLabel = quarterLabels[qNum - 1];
-
-                if (qInfo) {
-                    const currVal = getMetricValueForPeriod(qInfo.period, itemKey, isReal);
-                    const prevVal = qInfo.prev_period ? getMetricValueForPeriod(qInfo.prev_period, itemKey, isReal) : null;
-                    
-                    currVals.push(currVal !== null ? currVal / 1e6 : null);
-                    prevVals.push(prevVal !== null ? prevVal / 1e6 : null);
-
-                    let varPct = null;
-                    if (currVal !== null && prevVal !== null && prevVal > 0) {
-                        varPct = ((currVal - prevVal) / prevVal) * 100.0;
-                    }
-                    varPctVals.push(varPct);
-
-                    tableRows.push({
-                        qNum: `Q${qNum}`,
-                        corte: qInfo.quarter_label || qLabel,
-                        currPeriod: qInfo.period,
-                        currVal: currVal,
-                        prevPeriod: qInfo.prev_period || 'Sin base previa',
-                        prevVal: prevVal,
-                        growthM: (currVal !== null && prevVal !== null) ? (currVal - prevVal) : null,
-                        varPct: varPct
-                    });
-                } else {
-                    // Quarter not reached yet in this fiscal year
-                    currVals.push(null);
-                    prevVals.push(null);
-                    varPctVals.push(null);
-
-                    tableRows.push({
-                        qNum: `Q${qNum}`,
-                        corte: qLabel,
-                        currPeriod: 'Próximo Trimestre',
-                        currVal: null,
-                        prevPeriod: '-',
-                        prevVal: null,
-                        growthM: null,
-                        varPct: null
-                    });
-                }
-            }
-
-            // Update Titles
-            const prevEjKey = `${ejObj.start_year - 1}/${ejObj.start_year}`;
-            const subTitle = `Comparativa: Ejercicio ${ejKey} vs. Ejercicio Anterior ${prevEjKey} (${isReal ? 'Ajustado por Inflación IPC' : 'Valores Corrientes Nominales'})`;
-            document.getElementById('quarterly-chart-title').innerHTML = `<i class="fas fa-chart-line text-[#e20039]"></i> ${itemLabel} • Ejercicio ${ejKey}`;
-            document.getElementById('quarterly-chart-subtitle').innerText = subTitle;
-            document.getElementById('th-quarterly-curr-val').innerText = `Ejercicio ${ejKey} ($M)`;
-            document.getElementById('th-quarterly-prev-val').innerText = `Ejercicio ${prevEjKey} ($M)`;
+            const ts = window.INSURANCE_DATA_V2.quarterly_time_series;
+            if (!ts) return;
+            const metric = document.getElementById('select-trimestral-metric')?.value || 'total_mercado';
 
             if (chartInstances['quarterly-line']) chartInstances['quarterly-line'].destroy();
 
-            const isDark = document.documentElement.classList.contains('dark');
+            let datasets = [];
+            if (metric === 'total_mercado') {
+                datasets = [
+                    { label: 'Total Mercado ($M)', data: (ts.total_mercado_emitidas || []).map(v => v / 1e6), borderColor: '#e20039', backgroundColor: '#e20039', tension: 0.3 },
+                    { label: 'Patrimoniales Puras ($M)', data: (ts.patrimoniales_prod_emitidas || []).map(v => v / 1e6), borderColor: '#4183ca', backgroundColor: '#4183ca', tension: 0.3 },
+                    { label: 'ART ($M)', data: (ts.art_prod_emitidas || []).map(v => v / 1e6), borderColor: '#3ac792', backgroundColor: '#3ac792', tension: 0.3 },
+                    { label: 'Personas Total ($M)', data: (ts.personas_prod_emitidas || []).map(v => v / 1e6), borderColor: '#f8cc59', backgroundColor: '#f8cc59', tension: 0.3 },
+                    { label: 'Retiro ($M)', data: (ts.retiro_prod_emitidas || []).map(v => v / 1e6), borderColor: '#ff593e', backgroundColor: '#ff593e', tension: 0.3 }
+                ];
+            } else if (metric === 'branches' && ts.branches) {
+                const b = ts.branches;
+                datasets = [
+                    { label: 'Automotores ($M)', data: (b.automotores || []).map(v => v / 1e6), borderColor: '#e20039', tension: 0.3 },
+                    { label: 'ART ($M)', data: (b.art || []).map(v => v / 1e6), borderColor: '#3ac792', tension: 0.3 },
+                    { label: 'Vida ($M)', data: (b.vida || []).map(v => v / 1e6), borderColor: '#4183ca', tension: 0.3 },
+                    { label: 'Retiro ($M)', data: (b.retiro || []).map(v => v / 1e6), borderColor: '#f8cc59', tension: 0.3 },
+                    { label: 'Agro ($M)', data: (b.agro || []).map(v => v / 1e6), borderColor: '#ff593e', tension: 0.3 }
+                ];
+            } else if (metric === 'groups' && ts.groups) {
+                const g = ts.groups;
+                datasets = [
+                    { label: 'Sancor ($M)', data: (g.sancor || []).map(v => v / 1e6), borderColor: '#e20039', tension: 0.3 },
+                    { label: 'Fed. Patronal ($M)', data: (g.federacion_patronal || []).map(v => v / 1e6), borderColor: '#4183ca', tension: 0.3 },
+                    { label: 'Provincia ($M)', data: (g.provincia || []).map(v => v / 1e6), borderColor: '#3ac792', tension: 0.3 },
+                    { label: 'San Cristóbal ($M)', data: (g.san_cristobal || []).map(v => v / 1e6), borderColor: '#f8cc59', tension: 0.3 },
+                    { label: 'La Segunda ($M)', data: (g.la_segunda || []).map(v => v / 1e6), borderColor: '#ff593e', borderWidth: 3, tension: 0.3 }
+                ];
+            }
 
             chartInstances['quarterly-line'] = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: quarterLabels,
-                    datasets: [
-                        {
-                            type: 'bar',
-                            label: `Ejercicio ${ejKey} (${isReal ? 'Ajustado' : 'Corriente'})`,
-                            data: currVals,
-                            backgroundColor: 'rgba(226, 0, 57, 0.85)',
-                            borderColor: '#e20039',
-                            borderWidth: 1.5,
-                            borderRadius: 6,
-                            order: 2
-                        },
-                        {
-                            type: 'bar',
-                            label: `Ejercicio Anterior ${prevEjKey} (${isReal ? 'Ajustado' : 'Corriente'})`,
-                            data: prevVals,
-                            backgroundColor: isDark ? 'rgba(65, 131, 202, 0.45)' : 'rgba(65, 131, 202, 0.65)',
-                            borderColor: '#4183ca',
-                            borderWidth: 1.5,
-                            borderRadius: 6,
-                            order: 3
-                        },
-                        {
-                            type: 'line',
-                            label: 'Variación Interanual %',
-                            data: varPctVals,
-                            borderColor: '#10b981',
-                            backgroundColor: '#10b981',
-                            borderWidth: 2.5,
-                            pointBackgroundColor: '#10b981',
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
-                            yAxisID: 'y1',
-                            order: 1,
-                            tension: 0.2
-                        }
-                    ]
-                },
+                type: 'line',
+                data: { labels: ts.period_labels || [], datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                boxWidth: 12,
-                                font: { family: 'Sora', size: 11, weight: '600' },
-                                color: isDark ? '#cbd5e1' : '#334155'
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    if (context.dataset.yAxisID === 'y1') {
-                                        return ` Var. Interanual: ${context.raw !== null ? context.raw.toFixed(2) + '%' : 'N/D'}`;
-                                    }
-                                    const val = context.raw;
-                                    return ` ${context.dataset.label}: ${val !== null ? '$ ' + val.toLocaleString('es-AR', { maximumFractionDigits: 1 }) + ' M' : 'Pendiente'}`;
-                                }
-                            }
-                        }
-                    },
+                    plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Sora', size: 11 } } } },
                     scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Sora', size: 11, weight: '600' }, color: isDark ? '#94a3b8' : '#64748b' }
-                        },
-                        y: {
-                            type: 'linear',
-                            position: 'left',
-                            grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
-                            ticks: {
-                                callback: v => '$ ' + v.toLocaleString('es-AR') + ' M',
-                                font: { family: 'JetBrains Mono', size: 10 },
-                                color: isDark ? '#94a3b8' : '#64748b'
-                            }
-                        },
-                        y1: {
-                            type: 'linear',
-                            position: 'right',
-                            grid: { display: false },
-                            ticks: {
-                                callback: v => v.toFixed(0) + '%',
-                                font: { family: 'JetBrains Mono', size: 10 },
-                                color: '#10b981'
-                            }
-                        }
+                        y: { ticks: { callback: v => '$ ' + v.toLocaleString() + ' M' } }
                     }
                 }
             });
-
-            renderQuarterlyTable(tableRows);
         }
 
-        function renderQuarterlyTable(rows) {
+        function renderQuarterlyTable() {
             const tbody = document.getElementById('tbl-quarterly-body');
-            if (!tbody) return;
+            if (!tbody || !window.INSURANCE_DATA_V2) return;
+            const ts = window.INSURANCE_DATA_V2.quarterly_time_series;
+            if (!ts || !ts.periods) return;
             tbody.innerHTML = '';
-
-            rows.forEach(r => {
+            for (let i = ts.periods.length - 1; i >= 0; i--) {
                 const tr = document.createElement('tr');
-                const isAvailable = (r.currVal !== null);
-
-                let badge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">En Curso</span>';
-                if (r.varPct !== null) {
-                    const isPos = r.varPct >= 0;
-                    badge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPos ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'}">${isPos ? '+' : ''}${r.varPct.toFixed(2)}%</span>`;
-                }
-
                 tr.innerHTML = `
-                    <td class="p-2.5 font-bold">${r.qNum}</td>
-                    <td class="p-2.5 font-semibold txt-secondary">${r.corte}</td>
-                    <td class="p-2.5 font-mono font-bold">${r.currPeriod}</td>
-                    <td class="p-2.5 text-right font-mono font-bold ${isAvailable ? 'text-[#e20039]' : 'txt-muted'}">${isAvailable ? (r.currVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '-'}</td>
-                    <td class="p-2.5 font-mono txt-muted">${r.prevPeriod}</td>
-                    <td class="p-2.5 text-right font-mono txt-secondary">${r.prevVal !== null ? (r.prevVal / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '-'}</td>
-                    <td class="p-2.5 text-right font-mono font-bold ${r.growthM >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${r.growthM !== null ? (r.growthM / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '-'}</td>
-                    <td class="p-2.5 text-center">${badge}</td>
+                    <td class="p-2.5 font-bold font-mono">${ts.periods[i]}</td>
+                    <td class="p-2.5 txt-muted">${ts.period_labels ? ts.period_labels[i] : ''}</td>
+                    <td class="p-2.5 text-right font-mono font-bold">${((ts.total_mercado_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${((ts.patrimoniales_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${((ts.art_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${((ts.personas_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${((ts.retiro_prod_emitidas[i] || 0) / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
                 `;
                 tbody.appendChild(tr);
-            });
-        }
-
-        function setMensualMode(mode) {
-            mensualMode = mode;
-            const bCorr = document.getElementById('btn-mensual-corriente');
-            const bConst = document.getElementById('btn-mensual-constante');
-            const bComp = document.getElementById('btn-mensual-comparativa');
-
-            [bCorr, bConst, bComp].forEach(btn => {
-                if (btn) {
-                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all txt-muted hover:text-[#e20039] flex items-center gap-1.5";
-                }
-            });
-
-            const activeBtn = document.getElementById(`btn-mensual-${mode}`);
-            if (activeBtn) {
-                activeBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-[#e20039] text-white shadow-sm flex items-center gap-1.5";
             }
-
-            renderMensualFlashChart();
-            renderMensualFlashTable();
         }
 
         function renderMensualFlashChart() {
             const ctx = document.getElementById('chart-mensual-flash-line');
             if (!ctx || !window.INSURANCE_DATA_V2) return;
             const supp = window.INSURANCE_DATA_V2.supplementary_data?.monthly_flash_series;
-            if (!supp) return;
+            if (!supp || !supp.corriente) return;
 
-            const histCorr = (supp.corriente && supp.corriente.history) ? supp.corriente.history : [];
-            const histConst = (supp.constante && supp.constante.history) ? supp.constante.history : [];
-            if (histCorr.length === 0) return;
-
-            const recentCorr = histCorr.slice(-24);
-            const recentConst = histConst.slice(-24);
-            const labels = recentCorr.map(h => h.date || `${h.month}/${h.year}`);
-            const valCorr = recentCorr.map(h => (h.total_mercado || 0));
-            const valConst = recentConst.map(h => (h.total_mercado || 0));
-
-            const isDark = document.documentElement.classList.contains('dark');
+            const months = Object.keys(supp.corriente);
+            const valCorr = Object.values(supp.corriente).map(v => v.total_mercado / 1e6);
+            const valConst = supp.constante ? Object.values(supp.constante).map(v => v.total_mercado / 1e6) : [];
 
             if (chartInstances['mensual-flash-line']) chartInstances['mensual-flash-line'].destroy();
-
-            let datasets = [];
-            if (mensualMode === 'corriente') {
-                datasets.push({
-                    label: 'Valores Corrientes ($M)',
-                    data: valCorr,
-                    borderColor: '#e20039',
-                    backgroundColor: 'rgba(226, 0, 57, 0.12)',
-                    fill: true,
-                    tension: 0.25,
-                    borderWidth: 2.5,
-                    pointRadius: 3,
-                    pointHoverRadius: 6
-                });
-            } else if (mensualMode === 'constante') {
-                datasets.push({
-                    label: 'Valores Constantes Deflactados IPC ($M)',
-                    data: valConst,
-                    borderColor: '#4183ca',
-                    backgroundColor: 'rgba(65, 131, 202, 0.12)',
-                    fill: true,
-                    tension: 0.25,
-                    borderWidth: 2.5,
-                    pointRadius: 3,
-                    pointHoverRadius: 6
-                });
-            } else {
-                // Comparativa (Corriente vs Constante)
-                datasets.push({
-                    label: 'Valores Corrientes ($M)',
-                    data: valCorr,
-                    borderColor: '#e20039',
-                    backgroundColor: 'transparent',
-                    tension: 0.25,
-                    borderWidth: 2.5,
-                    pointRadius: 3,
-                    pointHoverRadius: 6
-                });
-                datasets.push({
-                    label: 'Valores Constantes IPC ($M)',
-                    data: valConst,
-                    borderColor: '#4183ca',
-                    borderDash: [5, 5],
-                    backgroundColor: 'transparent',
-                    tension: 0.25,
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 6
-                });
-            }
 
             chartInstances['mensual-flash-line'] = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
-                    datasets: datasets
+                    labels: months,
+                    datasets: [
+                        { label: 'Valores Corrientes ($M)', data: valCorr, borderColor: '#e20039', tension: 0.2 },
+                        { label: 'Valores Constantes (Ajustados IPC $M)', data: valConst, borderColor: '#4183ca', borderDash: [5, 5], tension: 0.2 }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                boxWidth: 12,
-                                font: { family: 'Sora', size: 11, weight: '600' },
-                                color: isDark ? '#cbd5e1' : '#334155'
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: ctx => ` ${ctx.dataset.label}: $ ${(ctx.raw || 0).toLocaleString('es-AR', { maximumFractionDigits: 1 })} M`
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { family: 'Sora', size: 10 }, color: isDark ? '#94a3b8' : '#64748b' }
-                        },
-                        y: {
-                            grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
-                            ticks: {
-                                callback: v => '$ ' + Number(v).toLocaleString('es-AR') + ' M',
-                                font: { family: 'JetBrains Mono', size: 10 },
-                                color: isDark ? '#94a3b8' : '#64748b'
-                            }
-                        }
-                    }
+                    plugins: { legend: { position: 'top' } }
                 }
             });
         }
@@ -3635,72 +3059,20 @@
             const tbody = document.getElementById('tbl-mensual-flash-body');
             if (!tbody || !window.INSURANCE_DATA_V2) return;
             const supp = window.INSURANCE_DATA_V2.supplementary_data?.monthly_flash_series;
-            if (!supp) return;
-
-            const baseSeries = (mensualMode === 'constante') 
-                ? ((supp.constante && supp.constante.history) ? supp.constante.history : [])
-                : ((supp.corriente && supp.corriente.history) ? supp.corriente.history : []);
-            
-            if (baseSeries.length === 0) return;
+            if (!supp || !supp.corriente) return;
 
             tbody.innerHTML = '';
-            
-            // Calculate MoM and YoY variations chronologically
-            const enriched = baseSeries.map((curr, idx) => {
-                const prevM = idx > 0 ? baseSeries[idx - 1] : null;
-                const prevY = idx >= 12 ? baseSeries[idx - 12] : null;
-                const varM = (prevM && prevM.total_mercado > 0) ? ((curr.total_mercado - prevM.total_mercado) / prevM.total_mercado * 100.0) : null;
-                const varY = (prevY && prevY.total_mercado > 0) ? ((curr.total_mercado - prevY.total_mercado) / prevY.total_mercado * 100.0) : null;
-                return {
-                    ...curr,
-                    var_mensual: varM,
-                    var_interanual: varY
-                };
-            });
-
-            // Update KPI cards with latest month stats
-            const latestMonth = enriched[enriched.length - 1];
-            if (latestMonth) {
-                const kpiVal = document.getElementById('flash-kpi-latest-val');
-                const kpiDate = document.getElementById('flash-kpi-latest-date');
-                const kpiMoM = document.getElementById('flash-kpi-mom');
-                const kpiYoY = document.getElementById('flash-kpi-yoy');
-
-                const modeLabel = mensualMode === 'constante' ? '(Constante IPC)' : '(Corriente)';
-                if (kpiVal) kpiVal.innerText = `$ ${(latestMonth.total_mercado || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} M`;
-                if (kpiDate) kpiDate.innerText = `Mes de ${latestMonth.date || `${latestMonth.month}/${latestMonth.year}`} ${modeLabel}`;
-                if (kpiMoM && latestMonth.var_mensual !== null) {
-                    const isPos = latestMonth.var_mensual >= 0;
-                    kpiMoM.innerHTML = `<span class="${isPos ? 'text-emerald-500' : 'text-rose-500'}">${isPos ? '+' : ''}${latestMonth.var_mensual.toFixed(2)}%</span>`;
-                }
-                if (kpiYoY && latestMonth.var_interanual !== null) {
-                    const isPos = latestMonth.var_interanual >= 0;
-                    kpiYoY.innerHTML = `<span class="${isPos ? 'text-emerald-500' : 'text-rose-500'}">${isPos ? '+' : ''}${latestMonth.var_interanual.toFixed(2)}%</span>`;
-                }
-            }
-
-            // Display latest months on top
-            const displayRows = enriched.slice().reverse();
-            displayRows.forEach(h => {
+            const months = Object.keys(supp.corriente).reverse();
+            months.forEach(m => {
+                const c = supp.corriente[m];
                 const tr = document.createElement('tr');
-                const isPosM = h.var_mensual !== null && h.var_mensual >= 0;
-                const isPosY = h.var_interanual !== null && h.var_interanual >= 0;
-                
-                const badgeM = h.var_mensual !== null 
-                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPosM ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'}">${isPosM ? '+' : ''}${h.var_mensual.toFixed(2)}%</span>`
-                    : '-';
-                    
-                const badgeY = h.var_interanual !== null 
-                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPosY ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'}">${isPosY ? '+' : ''}${h.var_interanual.toFixed(2)}%</span>`
-                    : '-';
-
                 tr.innerHTML = `
-                    <td class="p-2.5 font-bold font-mono">${h.date || `${h.month}/${h.year}`}</td>
-                    <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${(h.total_mercado || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">$ ${(h.total_patrimoniales || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right font-mono">$ ${(h.total_personas || 0).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                    <td class="p-2.5 text-right">${badgeM}</td>
-                    <td class="p-2.5 text-right">${badgeY}</td>
+                    <td class="p-2.5 font-bold font-mono">${m}</td>
+                    <td class="p-2.5 text-right font-mono">${(c.total_mercado / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${(c.patrimoniales / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${(c.personas / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}</td>
+                    <td class="p-2.5 text-right font-mono">${fmtPct(c.var_mensual)}</td>
+                    <td class="p-2.5 text-right font-mono">${fmtPct(c.var_interanual)}</td>
                 `;
                 tbody.appendChild(tr);
             });
