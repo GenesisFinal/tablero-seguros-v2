@@ -1030,48 +1030,63 @@
                 </div>
             </div>
 
-            <!-- Bar Chart & Table Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Top 10 Bar Chart -->
-                <div class="main-card rounded-2xl p-5 border flex flex-col">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                            <i class="fas fa-chart-bar text-[#e20039]"></i> Top 10 Entidades &bull; Cuota (%)
-                        </h3>
-                        <button onclick="exportChartToPNG('chart-ranking-bar', 'ranking_top10.png')" class="btn-export" title="Descargar Gráfico en PNG">
-                            <i class="fas fa-camera text-blue-500"></i> <span>PNG</span>
+            <!-- Bar Chart & Table Section -->
+            <div class="space-y-6">
+                <!-- Top 10 Bar Chart (Ancho Completo y Espacioso) -->
+                <div class="main-card rounded-2xl p-6 border flex flex-col">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-[#e20039] flex items-center justify-center text-sm shadow-sm">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm txt-primary leading-tight" id="chart-ranking-bar-title">Top 10 Entidades Líderes &bull; Cuota de Mercado (%)</h3>
+                                <p class="text-[11px] txt-muted">Distribución de primas y cuotas relativas de las primeras 10 posiciones.</p>
+                            </div>
+                        </div>
+                        <button onclick="exportChartToPNG('chart-ranking-bar', 'ranking_top10.png')" class="btn-export text-xs" title="Descargar Gráfico en PNG">
+                            <i class="fas fa-camera text-blue-500"></i> <span>Descargar PNG</span>
                         </button>
                     </div>
-                    <div class="relative flex-1 min-h-[340px]">
+                    <div class="relative w-full h-[380px]">
                         <canvas id="chart-ranking-bar"></canvas>
                     </div>
                 </div>
 
-                <!-- Full Table -->
-                <div class="main-card rounded-2xl p-5 border lg:col-span-2 flex flex-col">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <h3 class="font-bold text-sm txt-primary flex items-center gap-2">
-                            <i class="fas fa-table-list text-[#4183ca]"></i> Tabla Completa de Entidades
-                        </h3>
+                <!-- Full Table (Tabla Completa de Entidades) -->
+                <div class="main-card rounded-2xl p-6 border flex flex-col">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-sm shadow-sm">
+                                <i class="fas fa-table-list"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm txt-primary leading-tight">Tabla Completa de Posiciones</h3>
+                                <p class="text-[11px] txt-muted">Valores de primas emitidas en Millones de Pesos ($ ARS) y participación sobre el total.</p>
+                            </div>
+                        </div>
                         <div class="flex items-center gap-2">
-                            <input type="text" id="filter-rankings" onkeyup="filterRankingsTable(this.value)" placeholder="Buscar aseguradora..." class="ui-input text-xs px-3 py-1.5 rounded-lg w-44">
-                            <button onclick="exportTableToCSV('tbl-rankings', 'ranking_aseguradoras.csv')" class="btn-export" title="Exportar Tabla a CSV">
-                                <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                            <div class="relative flex items-center">
+                                <i class="fas fa-search absolute left-2.5 text-slate-400 text-xs"></i>
+                                <input type="text" id="filter-rankings" onkeyup="filterRankingsTable(this.value)" placeholder="Filtrar por nombre..." class="ui-input text-xs pl-8 pr-3 py-1.5 rounded-lg w-52">
+                            </div>
+                            <button onclick="exportTableToCSV('tbl-rankings', 'ranking_aseguradoras.csv')" class="btn-export text-xs" title="Exportar Tabla a CSV">
+                                <i class="fas fa-file-csv text-emerald-600"></i> <span>Exportar CSV</span>
                             </button>
                         </div>
                     </div>
-                    <div class="overflow-x-auto flex-1 max-h-[460px] rounded-xl border">
-                        <table class="w-full text-left border-collapse data-table text-xs">
-                            <thead class="sticky top-0">
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 max-h-[520px]">
+                        <table id="tbl-rankings" class="w-full text-left border-collapse data-table text-xs">
+                            <thead class="sticky top-0 bg-slate-50 dark:bg-slate-800/90 backdrop-blur-sm z-10">
                                 <tr>
-                                    <th class="p-2.5 w-12 text-center">Pos.</th>
-                                    <th class="p-2.5">Entidad / Grupo Asegurador</th>
-                                    <th class="p-2.5 text-right">Primas ($M)</th>
-                                    <th class="p-2.5 text-right">Participación %</th>
-                                    <th class="p-2.5 text-center w-20">Acción</th>
+                                    <th class="p-3 w-16 text-center font-bold">Pos.</th>
+                                    <th class="p-3 font-bold">Entidad / Grupo Asegurador</th>
+                                    <th class="p-3 text-right font-bold">Primas ($M)</th>
+                                    <th class="p-3 text-right font-bold">Participación %</th>
+                                    <th class="p-3 text-center w-24 font-bold">Balance</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbl-rankings-body">
+                            <tbody id="tbl-rankings-body" class="divide-y divide-slate-100 dark:divide-slate-800">
                                 <!-- Populated dynamically -->
                             </tbody>
                         </table>
@@ -3248,6 +3263,27 @@
             renderRankingsTab(window.INSURANCE_DATA_V2.periods_data[currentPeriod]);
         }
 
+        function inspectCompany(code) {
+            if (!code) return;
+            switchTab('balances');
+            setTimeout(() => {
+                const hidden = document.getElementById('select-balance-cia');
+                if (hidden) hidden.value = code;
+                if (window.INSURANCE_DATA_V2 && currentPeriod) {
+                    const pData = window.INSURANCE_DATA_V2.periods_data[currentPeriod];
+                    renderBalancesTab(pData);
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 60);
+        }
+
+        function filterRankingsTable(query) {
+            const q = query.toLowerCase().trim();
+            document.querySelectorAll('#tbl-rankings-body tr').forEach(tr => {
+                tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
         function renderRankingsTab(pData) {
             if (!pData || !pData.rankings) return;
             const sel = document.getElementById('select-ranking-category');
@@ -3258,6 +3294,9 @@
             
             const titleEl = document.getElementById('rankings-title-display');
             if (titleEl) titleEl.innerText = `Ranking: ${catLabel}`;
+
+            const chartTitleEl = document.getElementById('chart-ranking-bar-title');
+            if (chartTitleEl) chartTitleEl.innerText = `Top 10 Entidades &bull; ${catLabel}`;
 
             const rkList = pData.rankings[cat] || 
                            pData.rankings[cat.replace('total_accidentes_personales', 'total_ap')] || 
@@ -3294,7 +3333,7 @@
             }
             if (kpiCount) kpiCount.innerText = `${rkList.length} Entidades`;
 
-            // Bar chart Top 10
+            // Bar chart Top 10 (Amplio y Horizontal con etiquetas formateadas en Millones)
             const ctx = document.getElementById('chart-ranking-bar');
             if (ctx) {
                 if (chartInstances['ranking-bar']) chartInstances['ranking-bar'].destroy();
@@ -3307,7 +3346,9 @@
                             label: 'Cuota de Mercado %',
                             data: top10List.map(x => x.participacion),
                             backgroundColor: '#e20039',
-                            borderRadius: 4
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            barPercentage: 0.72
                         }]
                     },
                     options: {
@@ -3318,18 +3359,28 @@
                             legend: { display: false },
                             tooltip: {
                                 callbacks: {
-                                    label: (c) => ` Cuota: ${c.raw.toFixed(2)}%`
+                                    label: function(c) {
+                                        const rItem = top10List[c.dataIndex];
+                                        const pM = Math.round(rItem.prima / 1e6).toLocaleString('es-AR');
+                                        return ` Cuota: ${c.raw.toFixed(2)}% • Primas: $ ${pM} M`;
+                                    }
                                 }
                             }
                         },
                         scales: {
                             x: {
-                                ticks: { callback: (v) => v + '%' },
+                                ticks: {
+                                    callback: (v) => v + '%',
+                                    font: { family: 'JetBrains Mono', size: 11 }
+                                },
                                 grid: {
                                     color: document.documentElement.classList.contains('dark') ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
                                 }
                             },
                             y: {
+                                ticks: {
+                                    font: { family: 'Sora', size: 11, weight: 'bold' }
+                                },
                                 grid: { display: false }
                             }
                         }
@@ -3337,27 +3388,30 @@
                 });
             }
 
-            // Table
+            // Table (Valores formateados en Millones sin decimales innecesarios)
             const tbody = document.getElementById('tbl-rankings-body');
             if (tbody) {
                 tbody.innerHTML = '';
                 rkList.forEach(r => {
                     const tr = document.createElement('tr');
                     tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition";
-                    const isLS = (r.entidad || '').includes('SEGUNDA');
+                    const isLS = (r.entidad || '').toUpperCase().includes('SEGUNDA');
                     if (isLS) tr.classList.add('bg-rose-50/70', 'dark:bg-rose-950/30', 'font-bold');
                     
+                    const primasM = Math.round(r.prima / 1e6).toLocaleString('es-AR');
+                    const ciaCode = r.cod_cia || r.id;
+
                     tr.innerHTML = `
-                        <td class="p-2.5 text-center font-bold font-mono text-xs text-slate-500">${r.posicion}</td>
-                        <td class="p-2.5 font-semibold ${isLS ? 'text-[#e20039]' : 'txt-primary'} flex items-center gap-1.5">
+                        <td class="p-3 text-center font-bold font-mono text-xs text-slate-500">${r.posicion}</td>
+                        <td class="p-3 font-semibold ${isLS ? 'text-[#e20039]' : 'txt-primary'} flex items-center gap-2">
                             ${isLS ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
                             <span>${r.entidad}</span>
                         </td>
-                        <td class="p-2.5 text-right font-mono font-bold text-[#e20039]">$ ${(r.prima / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
-                        <td class="p-2.5 text-right font-mono font-bold text-slate-700 dark:text-slate-200">${fmtPct(r.participacion)}</td>
-                        <td class="p-2.5 text-center">
-                            <button type="button" onclick="inspectCompany('${r.cod_cia || r.id}')" class="px-2 py-1 rounded subtle-card hover:bg-[#e20039] hover:text-white transition-all text-[11px]" title="Ver Balance de Entidad">
-                                <i class="fas fa-eye"></i>
+                        <td class="p-3 text-right font-mono font-bold text-[#e20039]">$ ${primasM}</td>
+                        <td class="p-3 text-right font-mono font-bold text-slate-700 dark:text-slate-200">${fmtPct(r.participacion)}</td>
+                        <td class="p-3 text-center">
+                            <button type="button" onclick="inspectCompany('${ciaCode}')" class="px-2.5 py-1.5 rounded-lg subtle-card hover:bg-[#e20039] hover:text-white transition-all text-xs font-semibold flex items-center justify-center gap-1 mx-auto" title="Ver Balance Oficial de ${r.entidad}">
+                                <i class="fas fa-eye"></i> <span class="text-[10px]">Ver</span>
                             </button>
                         </td>
                     `;
