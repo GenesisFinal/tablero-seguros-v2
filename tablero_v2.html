@@ -7749,7 +7749,7 @@
             });
         }
 
-        // --- TAB 7: RETIRO (SUITE COMPLETA SSN DINÁMICA) ---
+        // --- TAB 7: RETIRO (SUITE COMPLETA SSN CON DATOS INTEGRALES) ---
         let currentSrSubtab = 'compromisos';
 
         function switchRetiroSubtab(subtabId) {
@@ -7759,12 +7759,12 @@
             if (target) target.classList.remove('hidden');
 
             document.querySelectorAll('.btn-sr-subtab').forEach(b => {
-                b.className = "btn-sr-subtab px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5";
+                b.className = "btn-sr-subtab px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5 cursor-pointer";
             });
 
             const activeBtn = document.getElementById('btn-sr-subtab-' + subtabId);
             if (activeBtn) {
-                activeBtn.className = "btn-sr-subtab px-3.5 py-1.5 rounded-lg bg-[#e20039] text-white shadow-sm transition-all flex items-center gap-1.5";
+                activeBtn.className = "btn-sr-subtab px-3.5 py-1.5 rounded-lg bg-[#e20039] text-white shadow-sm transition-all flex items-center gap-1.5 cursor-pointer";
             }
 
             if (window.INSURANCE_DATA_V2 && currentPeriod) {
@@ -7787,157 +7787,237 @@
         }
 
         function renderRetiroTab(pData) {
-            if (!pData) return;
+            if (!window.INSURANCE_DATA_V2) return;
+            const supp = window.INSURANCE_DATA_V2.supplementary_data || {};
+            const srData = supp.ssn_seg_retiro || {};
+
             const pDesc = document.getElementById('sr-period-desc');
-            if (pDesc) pDesc.innerText = `Período: ${pData.period_label || pData.periodo}`;
+            if (pDesc) pDesc.innerText = `Bases Oficiales SSN • ${srData.periodo || (pData ? (pData.period_label || pData.periodo) : 'Marzo 2026')}`;
 
-            const compList = pData.companies || Object.values(pData.companies_by_code || {});
-            const retComps = compList.filter(c => c.tipo_entidad === 'Seguros de Retiro').sort((a, b) => (b.compromisos_tecnicos || b.inversiones || 0) - (a.compromisos_tecnicos || a.inversiones || 0));
+            // Formatting helpers
+            const fmtM_from_thousands = (n) => {
+                if (n === null || n === undefined || isNaN(n)) return '-';
+                const inM = Math.round(n / 1000.0);
+                return '$ ' + inM.toLocaleString('es-AR');
+            };
 
-            const totCompTec = retComps.reduce((a, b) => a + (b.compromisos_tecnicos || b.inversiones || 0), 0);
-            const totPrimas = retComps.reduce((a, b) => a + (b.primas_emitidas || 0), 0);
-            const totInv = retComps.reduce((a, b) => a + (b.inversiones || 0), 0);
+            const fmtM_from_units = (n) => {
+                if (n === null || n === undefined || isNaN(n)) return '-';
+                const inM = Math.round(n / 1e6);
+                return '$ ' + inM.toLocaleString('es-AR');
+            };
 
-            // 1. COMPROMISOS TÉCNICOS TABLE
+            const fmtP = (n) => {
+                if (n === null || n === undefined || isNaN(n)) return '-';
+                return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+            };
+
+            const fmtC = (n) => {
+                if (n === null || n === undefined || isNaN(n)) return '-';
+                return Number(n).toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            };
+
+            // 1. SUB-TAB 1: COMPROMISOS TÉCNICOS & RESERVAS MATEMÁTICAS
             const compBody = document.getElementById('tbl-sr-compromisos-body');
+            const compList = supp.retiro_compromisos || srData.compromisos_tecnicos || [];
+            const compTotal = supp.retiro_compromisos_total_row || srData.compromisos_total_row;
+
             if (compBody) {
-                let htmlRows = `
-                    <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
-                        <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> TOTAL MERCADO DE RETIRO (${retComps.length} Cías)</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">$ ${Math.round(totCompTec / 1e6).toLocaleString('es-AR')}</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#e20039]">100,00%</td>
-                        <td class="py-3 px-3 text-right font-mono txt-primary font-bold">$ ${Math.round(totInv / 1e6).toLocaleString('es-AR')}</td>
-                        <td class="py-3 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca] font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca] font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#4183ca]">100,00%</td>
-                        <td class="py-3 px-3 text-right font-mono txt-primary font-bold">$ ${Math.round(totPrimas / 1e6).toLocaleString('es-AR')}</td>
-                        <td class="py-3 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792] font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792] font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#3ac792]">100,00%</td>
-                        <td class="py-3 px-3 text-right font-mono text-amber-500 font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono txt-muted font-bold">-</td>
-                    </tr>
-                `;
+                if (compList.length > 0) {
+                    let htmlRows = '';
+                    if (compTotal) {
+                        htmlRows += `
+                            <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
+                                <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> ${compTotal.entidad}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">${fmtM_from_thousands(compTotal.total)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#e20039]">100,00%</td>
+                                <td class="py-3 px-3 text-right font-mono txt-primary font-bold">${fmtM_from_thousands(compTotal.ahorro_total)}</td>
+                                <td class="py-3 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca] font-bold">${fmtM_from_thousands(compTotal.ahorro_indiv)}</td>
+                                <td class="py-3 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca] font-bold">${fmtM_from_thousands(compTotal.ahorro_colec)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#4183ca]">${fmtP(compTotal.ahorro_pct)}</td>
+                                <td class="py-3 px-3 text-right font-mono txt-primary font-bold">${fmtM_from_thousands(compTotal.rentas_total)}</td>
+                                <td class="py-3 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792] font-bold">${fmtM_from_thousands(compTotal.rentas_indiv)}</td>
+                                <td class="py-3 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792] font-bold">${fmtM_from_thousands(compTotal.rentas_colec)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#3ac792]">${fmtP(compTotal.rentas_pct)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-amber-500 font-bold">${fmtM_from_thousands(compTotal.rvp_art)}</td>
+                                <td class="py-3 px-3 text-right font-mono txt-muted font-bold">${fmtM_from_thousands(compTotal.otros)}</td>
+                            </tr>
+                        `;
+                    }
 
-                retComps.forEach(r => {
-                    const isL2 = (r.razon_social || '').toUpperCase().includes('SEGUNDA');
-                    const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
-                    const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
-                    
-                    const cTec = r.compromisos_tecnicos || r.inversiones || 0;
-                    const cPct = totCompTec > 0 ? ((cTec / totCompTec) * 100) : 0;
-                    const invM = Math.round((r.inversiones || 0) / 1e6).toLocaleString('es-AR');
-                    const primasM = Math.round((r.primas_emitidas || 0) / 1e6).toLocaleString('es-AR');
-                    const resTecM = Math.round((cTec / 1e6)).toLocaleString('es-AR');
+                    compList.forEach(r => {
+                        const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
+                        const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
+                        const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
 
-                    htmlRows += `
-                        <tr class="${rowClass}">
-                            <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
-                                ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
-                                <span>${r.razon_social}</span>
-                            </td>
-                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">$ ${resTecM}</td>
-                            <td class="py-2.5 px-3 text-right font-mono font-bold">${cPct.toFixed(2)}%</td>
-                            <td class="py-2.5 px-3 text-right font-mono">$ ${invM}</td>
-                            <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono">$ ${primasM}</td>
-                            <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-amber-500">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono txt-muted">-</td>
-                        </tr>
-                    `;
-                });
-                compBody.innerHTML = htmlRows;
+                        htmlRows += `
+                            <tr class="${rowClass}">
+                                <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
+                                    ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                                    <span>${r.entidad}</span>
+                                </td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${fmtM_from_thousands(r.total)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold">${fmtP(r.total_pct)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold">${fmtM_from_thousands(r.ahorro_total)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">${fmtM_from_thousands(r.ahorro_indiv)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">${fmtM_from_thousands(r.ahorro_colec)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">${fmtP(r.ahorro_pct)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold">${fmtM_from_thousands(r.rentas_total)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">${fmtM_from_thousands(r.rentas_indiv)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">${fmtM_from_thousands(r.rentas_colec)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">${fmtP(r.rentas_pct)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-amber-500">${fmtM_from_thousands(r.rvp_art)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono txt-muted">${fmtM_from_thousands(r.otros)}</td>
+                            </tr>
+                        `;
+                    });
+                    compBody.innerHTML = htmlRows;
+                } else if (pData) {
+                    // Fallback to pData.companies for any period
+                    const retComps = (pData.companies || []).filter(c => c.tipo_entidad === 'Seguros de Retiro').sort((a, b) => (b.compromisos_tecnicos || b.inversiones || 0) - (a.compromisos_tecnicos || a.inversiones || 0));
+                    const totCompTec = retComps.reduce((a, b) => a + (b.compromisos_tecnicos || b.inversiones || 0), 0);
+                    let htmlFallback = '';
+                    retComps.forEach(r => {
+                        const isL2 = (r.razon_social || '').toUpperCase().includes('SEGUNDA');
+                        const cTec = r.compromisos_tecnicos || r.inversiones || 0;
+                        const cPct = totCompTec > 0 ? ((cTec / totCompTec) * 100) : 0;
+                        htmlFallback += `
+                            <tr class="${isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition'}">
+                                <td class="py-2.5 px-3 ${isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold'}">${r.razon_social}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">$ ${Math.round(cTec / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold">${cPct.toFixed(2)}%</td>
+                                <td class="py-2.5 px-3 text-right font-mono">$ ${Math.round((r.inversiones || 0) / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono">$ ${Math.round((r.primas_emitidas || 0) / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-amber-500">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono txt-muted">-</td>
+                            </tr>
+                        `;
+                    });
+                    compBody.innerHTML = htmlFallback;
+                }
             }
 
-            // 2. PRIMAS EMITIDAS TABLE
+            // 2. SUB-TAB 2: PRIMAS EMITIDAS (COLECTIVO vs INDIVIDUAL)
             const primasBody = document.getElementById('tbl-sr-primas-body');
-            const primasRankings = (pData.rankings && pData.rankings.total_retiro) || [];
+            const primasList = supp.retiro_primas_desglose || srData.primas_emitidas || [];
+            const primasTotal = supp.retiro_primas_total_row || srData.primas_emitidas_total_row;
+
             if (primasBody) {
-                let htmlPrimas = `
-                    <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
-                        <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> TOTAL MERCADO DE RETIRO</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">$ ${Math.round(totPrimas / 1e6).toLocaleString('es-AR')}</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#e20039]">100,00%</td>
-                        <td class="py-3 px-3 text-center font-mono">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#4183ca] font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#4183ca]">100,00%</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#3ac792] font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#3ac792]">100,00%</td>
-                    </tr>
-                `;
+                if (primasList.length > 0) {
+                    let htmlPrimas = '';
+                    if (primasTotal) {
+                        htmlPrimas += `
+                            <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
+                                <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> ${primasTotal.entidad}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">${fmtM_from_units(primasTotal.primas_total)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#e20039]">100,00%</td>
+                                <td class="py-3 px-3 text-center font-mono">-</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#4183ca] font-bold">${fmtM_from_units(primasTotal.primas_colectivo)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#4183ca]">${fmtP(primasTotal.colectivo_pct)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#3ac792] font-bold">${fmtM_from_units(primasTotal.primas_individual)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#3ac792]">${fmtP(primasTotal.individual_pct)}</td>
+                            </tr>
+                        `;
+                    }
 
-                primasRankings.forEach(r => {
-                    const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
-                    const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
-                    const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
-                    const primasM = Math.round(r.prima / 1e6).toLocaleString('es-AR');
+                    primasList.forEach(r => {
+                        const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
+                        const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
+                        const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
 
-                    htmlPrimas += `
-                        <tr class="${rowClass}">
-                            <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
-                                ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
-                                <span>${r.entidad}</span>
-                            </td>
-                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">$ ${primasM}</td>
-                            <td class="py-2.5 px-3 text-right font-mono font-bold">${r.participacion.toFixed(2)}%</td>
-                            <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">#${r.posicion || '-'}</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-semibold">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-semibold">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
-                        </tr>
-                    `;
-                });
-                primasBody.innerHTML = htmlPrimas;
+                        htmlPrimas += `
+                            <tr class="${rowClass}">
+                                <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
+                                    ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                                    <span>${r.entidad}</span>
+                                </td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${fmtM_from_units(r.primas_total)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold">${fmtP(r.total_pct)}</td>
+                                <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">#${r.rank_total || '-'}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-semibold">${fmtM_from_units(r.primas_colectivo)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">${fmtP(r.colectivo_pct)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-semibold">${fmtM_from_units(r.primas_individual)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">${fmtP(r.individual_pct)}</td>
+                            </tr>
+                        `;
+                    });
+                    primasBody.innerHTML = htmlPrimas;
+                } else if (pData) {
+                    const primasRankings = (pData.rankings && pData.rankings.total_retiro) || [];
+                    let htmlFallbackPrimas = '';
+                    primasRankings.forEach(r => {
+                        const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
+                        htmlFallbackPrimas += `
+                            <tr class="${isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition'}">
+                                <td class="py-2.5 px-3 ${isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold'}">${r.entidad}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">$ ${Math.round(r.prima / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold">${r.participacion.toFixed(2)}%</td>
+                                <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">#${r.posicion || '-'}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
+                            </tr>
+                        `;
+                    });
+                    primasBody.innerHTML = htmlFallbackPrimas;
+                }
             }
 
-            // 3. ASEGURADOS TABLE
+            // 3. SUB-TAB 3: ASEGURADOS / VIDAS
             const vidasBody = document.getElementById('tbl-sr-asegurados-body');
+            const vidasList = supp.retiro_vidas_stats || srData.asegurados || [];
+            const vidasTotal = supp.retiro_vidas_total_row || srData.asegurados_total_row;
+
             if (vidasBody) {
-                let htmlVidas = `
-                    <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
-                        <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> TOTAL MERCADO DE RETIRO (${retComps.length} Cías)</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">$ ${Math.round(totCompTec / 1e6).toLocaleString('es-AR')}</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#4183ca] font-bold">$ ${Math.round(totInv / 1e6).toLocaleString('es-AR')}</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#4183ca]">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#4183ca]">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#3ac792] font-bold">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#3ac792]">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-[#3ac792]">-</td>
-                        <td class="py-3 px-3 text-right font-mono text-amber-500 font-bold">-</td>
-                    </tr>
-                `;
+                if (vidasList.length > 0) {
+                    let htmlVidas = '';
+                    if (vidasTotal) {
+                        htmlVidas += `
+                            <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]">
+                                <td class="py-3 px-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> ${vidasTotal.entidad}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold">${fmtC(vidasTotal.total_asegurados)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#4183ca] font-bold">${fmtC(vidasTotal.ahorro_total)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#4183ca]">${fmtC(vidasTotal.ahorro_indiv)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#4183ca]">${fmtC(vidasTotal.ahorro_colec)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#3ac792] font-bold">${fmtC(vidasTotal.renta_total)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#3ac792]">${fmtC(vidasTotal.renta_indiv)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-[#3ac792]">${fmtC(vidasTotal.renta_colec)}</td>
+                                <td class="py-3 px-3 text-right font-mono text-amber-500 font-bold">${fmtC(vidasTotal.rvp_art)}</td>
+                            </tr>
+                        `;
+                    }
 
-                retComps.forEach(r => {
-                    const isL2 = (r.razon_social || '').toUpperCase().includes('SEGUNDA');
-                    const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
-                    const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
-                    const compM = Math.round((r.compromisos_tecnicos || r.inversiones || 0) / 1e6).toLocaleString('es-AR');
-                    const invM = Math.round((r.inversiones || 0) / 1e6).toLocaleString('es-AR');
+                    vidasList.forEach(r => {
+                        const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
+                        const rowClass = isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition';
+                        const nameClass = isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold';
 
-                    htmlVidas += `
-                        <tr class="${rowClass}">
-                            <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
-                                ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
-                                <span>${r.razon_social}</span>
-                            </td>
-                            <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">$ ${compM}</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-bold">$ ${invM}</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-bold">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
-                            <td class="py-2.5 px-3 text-right font-mono text-amber-500">-</td>
-                        </tr>
-                    `;
-                });
-                vidasBody.innerHTML = htmlVidas;
+                        htmlVidas += `
+                            <tr class="${rowClass}">
+                                <td class="py-2.5 px-3 ${nameClass} flex items-center gap-2">
+                                    ${isL2 ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                                    <span>${r.entidad}</span>
+                                </td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${fmtC(r.total_asegurados)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-semibold">${fmtC(r.ahorro_total)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">${fmtC(r.ahorro_indiv)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">${fmtC(r.ahorro_colec)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-semibold">${fmtC(r.renta_total)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">${fmtC(r.renta_indiv)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">${fmtC(r.renta_colec)}</td>
+                                <td class="py-2.5 px-3 text-right font-mono text-amber-500 font-semibold">${fmtC(r.rvp_art)}</td>
+                            </tr>
+                        `;
+                    });
+                    vidasBody.innerHTML = htmlVidas;
+                }
             }
         }
 
