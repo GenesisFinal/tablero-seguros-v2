@@ -3132,7 +3132,7 @@
 
                         <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
 
-                            <i class="fas fa-vault text-[#4183ca]"></i> Reservas Matemáticas y Compromisos Técnicos ($ en Millones)
+                            <i class="fas fa-vault text-[#4183ca]"></i> Reservas Matemáticas y Compromisos Técnicos (en Millones)
 
                         </h3>
 
@@ -3172,29 +3172,29 @@
 
                                     <th class="py-3 px-3">Compañía de Retiro</th>
 
-                                    <th class="py-3 px-3 text-right">Total ($M)</th>
+                                    <th class="py-3 px-3 text-right">Total (M)</th>
 
                                     <th class="py-3 px-3 text-right">% Total</th>
 
-                                    <th class="py-3 px-3 text-right">P. Ahorro ($M)</th>
+                                    <th class="py-3 px-3 text-right">P. Ahorro (M)</th>
 
-                                    <th class="py-3 px-3 text-right col-sr-ahorro hidden text-[#4183ca]">Ahorro Indiv. ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-ahorro hidden text-[#4183ca]">Ahorro Indiv. (M)</th>
 
-                                    <th class="py-3 px-3 text-right col-sr-ahorro hidden text-[#4183ca]">Ahorro Colec. ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-ahorro hidden text-[#4183ca]">Ahorro Colec. (M)</th>
 
                                     <th class="py-3 px-3 text-right">% Ahorro</th>
 
-                                    <th class="py-3 px-3 text-right">P. Renta ($M)</th>
+                                    <th class="py-3 px-3 text-right">P. Renta (M)</th>
 
-                                    <th class="py-3 px-3 text-right col-sr-rentas hidden text-[#3ac792]">Renta Indiv. ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-rentas hidden text-[#3ac792]">Renta Indiv. (M)</th>
 
-                                    <th class="py-3 px-3 text-right col-sr-rentas hidden text-[#3ac792]">Renta Colec. ($M)</th>
+                                    <th class="py-3 px-3 text-right col-sr-rentas hidden text-[#3ac792]">Renta Colec. (M)</th>
 
                                     <th class="py-3 px-3 text-right">% Renta</th>
 
-                                    <th class="py-3 px-3 text-right text-[#f8cc59]">RVP + ART ($M)</th>
+                                    <th class="py-3 px-3 text-right text-[#f8cc59]">RVP + ART (M)</th>
 
-                                    <th class="py-3 px-3 text-right txt-muted">Otros ($M)</th>
+                                    <th class="py-3 px-3 text-right txt-muted">Otros (M)</th>
 
                                 </tr>
 
@@ -3244,7 +3244,7 @@
 
                             <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
 
-                                <i class="fas fa-file-invoice-dollar text-[#e20039]"></i> Primas Emitidas - Ranking de Producción ($ en Millones)
+                                <i class="fas fa-file-invoice-dollar text-[#e20039]"></i> Primas Emitidas - Ranking de Producción (en Millones)
 
                             </h3>
 
@@ -3272,17 +3272,17 @@
 
                                     <th class="py-3 px-3">Aseguradora (Entidad)</th>
 
-                                    <th class="py-3 px-3 text-right">Total Primas ($M)</th>
+                                    <th class="py-3 px-3 text-right">Total Primas (M)</th>
 
                                     <th class="py-3 px-3 text-right">Part. %</th>
 
                                     <th class="py-3 px-3 text-center">Rank Total</th>
 
-                                    <th class="py-3 px-3 text-right">Retiro Colectivo ($M)</th>
+                                    <th class="py-3 px-3 text-right">Retiro Colectivo (M)</th>
 
                                     <th class="py-3 px-3 text-right">Part. %</th>
 
-                                    <th class="py-3 px-3 text-right">Retiro Individual ($M)</th>
+                                    <th class="py-3 px-3 text-right">Retiro Individual (M)</th>
 
                                     <th class="py-3 px-3 text-right">Part. %</th>
 
@@ -3480,7 +3480,7 @@
 
                                     <th class="p-2.5">Instrumento Financiero</th>
 
-                                    <th class="p-2.5 text-right">Monto ($M)</th>
+                                    <th class="p-2.5 text-right">Monto (M)</th>
 
                                     <th class="p-2.5 text-right">Participación %</th>
 
@@ -7798,13 +7798,13 @@
             const fmtM_from_thousands = (n) => {
                 if (n === null || n === undefined || isNaN(n)) return '-';
                 const inM = Math.round(n / 1000.0);
-                return '$ ' + inM.toLocaleString('es-AR');
+                return inM.toLocaleString('es-AR');
             };
 
             const fmtM_from_units = (n) => {
                 if (n === null || n === undefined || isNaN(n)) return '-';
                 const inM = Math.round(n / 1e6);
-                return '$ ' + inM.toLocaleString('es-AR');
+                return inM.toLocaleString('es-AR');
             };
 
             const fmtP = (n) => {
@@ -7884,13 +7884,13 @@
                         htmlFallback += `
                             <tr class="${isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition'}">
                                 <td class="py-2.5 px-3 ${isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold'}">${r.razon_social}</td>
-                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">$ ${Math.round(cTec / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${Math.round(cTec / 1e6).toLocaleString('es-AR')}</td>
                                 <td class="py-2.5 px-3 text-right font-mono font-bold">${cPct.toFixed(2)}%</td>
-                                <td class="py-2.5 px-3 text-right font-mono">$ ${Math.round((r.inversiones || 0) / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono">${Math.round((r.inversiones || 0) / 1e6).toLocaleString('es-AR')}</td>
                                 <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
                                 <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
                                 <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono">$ ${Math.round((r.primas_emitidas || 0) / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono">${Math.round((r.primas_emitidas || 0) / 1e6).toLocaleString('es-AR')}</td>
                                 <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
                                 <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
                                 <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
@@ -7956,7 +7956,7 @@
                         htmlFallbackPrimas += `
                             <tr class="${isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition'}">
                                 <td class="py-2.5 px-3 ${isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold'}">${r.entidad}</td>
-                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">$ ${Math.round(r.prima / 1e6).toLocaleString('es-AR')}</td>
+                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${Math.round(r.prima / 1e6).toLocaleString('es-AR')}</td>
                                 <td class="py-2.5 px-3 text-right font-mono font-bold">${r.participacion.toFixed(2)}%</td>
                                 <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">#${r.posicion || '-'}</td>
                                 <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
