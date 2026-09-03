@@ -41,8 +41,8 @@ GROUPS_DEFINITIONS = [
         "id": "san_cristobal",
         "name": "Grupo San Cristóbal",
         "short_name": "San Cristóbal",
-        "codes": ["0192", "0620", "0434"],
-        "description": "San Cristóbal Seguros, Asociart ART, San Cristóbal Retiro"
+        "codes": ["0192", "0620", "0442", "0856"],
+        "description": "San Cristóbal Seguros, Asociart ART, San Cristóbal Retiro, Iunigo"
     },
     {
         "id": "la_segunda",
@@ -80,6 +80,13 @@ GROUPS_DEFINITIONS = [
         "description": "Mercantil Andina, Andina ART"
     },
     {
+        "id": "nacion",
+        "name": "Grupo Nación",
+        "short_name": "Nación",
+        "codes": ["0515", "0534"],
+        "description": "Nación Seguros, Nación Retiro"
+    },
+    {
         "id": "rivadavia",
         "name": "Grupo Asegurador Rivadavia",
         "short_name": "Rivadavia",
@@ -108,11 +115,11 @@ GROUPS_DEFINITIONS = [
         "description": "Life Seguros, Orígenes Retiro"
     },
     {
-        "id": "nacion",
-        "name": "Grupo Nación",
-        "short_name": "Nación",
-        "codes": ["0244", "0424"],
-        "description": "Nación Seguros, Nación Retiro"
+        "id": "meridional",
+        "name": "Grupo La Meridional",
+        "short_name": "La Meridional",
+        "codes": ["0244"],
+        "description": "La Meridional Compañía Argentina de Seguros"
     },
     {
         "id": "mapfre",
@@ -132,8 +139,8 @@ GROUPS_DEFINITIONS = [
         "id": "galeno",
         "name": "Grupo Galeno",
         "short_name": "Galeno",
-        "codes": ["0878", "0606"],
-        "description": "Galeno Seguros, Galeno ART"
+        "codes": ["0878"],
+        "description": "Galeno Seguros (Patrimoniales y ART)"
     }
 ]
 
