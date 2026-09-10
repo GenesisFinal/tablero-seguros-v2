@@ -288,14 +288,19 @@ def compute_rankings_for_df(df_raw, df_summary, groups_dict):
         g['posicion'] = pos
     rankings['grupos_aseguradores'] = grp_list
 
-    # Subramos emission filter accounts
-    accounts_primas = (
+    # Cuentas Oficiales de Emisión Directa y Anulaciones Directas
+    cuentas_emision_directa = (
         '5.01.01.01.01.01.01', '5.01.01.01.01.01.99',
         '5.01.01.01.01.02.01', '5.01.01.01.01.02.99',
-        '5.01.01.01.01.03.02', '5.01.01.01.01.03.99',
-        '5.01.01.01.01.04.01', '5.01.01.01.01.04.99'
+        '5.01.01.01.01.03.02', '5.01.01.01.01.03.99'
     )
-    primas_sub = df_raw[df_raw['cod_cuenta'].str.startswith(accounts_primas) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
+    cuentas_anulaciones_directas = (
+        '4.01.04.04.04.01.01', '4.01.04.04.04.01.99',
+        '4.01.04.04.04.02.01', '4.01.04.04.04.02.99'
+    )
+
+    primas_sub = df_raw[df_raw['cod_cuenta'].str.startswith(cuentas_emision_directa) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
+    anul_sub = df_raw[df_raw['cod_cuenta'].str.startswith(cuentas_anulaciones_directas) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
 
     for b_key, b_def in BRANCH_TAXONOMY.items():
         if b_key in ['total_mercado']:
@@ -303,20 +308,27 @@ def compute_rankings_for_df(df_raw, df_summary, groups_dict):
         
         if 'codes' in b_def:
             sub_b = primas_sub[primas_sub['cod_subramo'].isin(b_def['codes'])]
+            anul_b = anul_sub[anul_sub['cod_subramo'].isin(b_def['codes'])]
         elif 'prefix' in b_def:
             prefix = b_def['prefix']
             if b_key == 'patrimoniales':
                 sub_b = primas_sub[primas_sub['cod_subramo'].str.startswith('1.') & (~primas_sub['cod_subramo'].str.startswith('1.050'))]
+                anul_b = anul_sub[anul_sub['cod_subramo'].str.startswith('1.') & (~anul_sub['cod_subramo'].str.startswith('1.050'))]
             else:
                 sub_b = primas_sub[primas_sub['cod_subramo'].str.startswith(prefix)]
+                anul_b = anul_sub[anul_sub['cod_subramo'].str.startswith(prefix)]
         else:
             continue
 
         if b_key == 'agro':
-            # Excluir inconsistencia de declaración de Experta (0880) en código de Granizo 1.070
             sub_b = sub_b[sub_b['cod_cia'] != '0880']
+            anul_b = anul_b[anul_b['cod_cia'] != '0880']
 
-        b_agg = sub_b.groupby(['cod_cia', 'razon_social'])['importe'].sum().reset_index()
+        em_agg = sub_b.groupby(['cod_cia', 'razon_social'])['importe'].sum().reset_index().rename(columns={'importe': 'emision_bruta'})
+        an_agg = anul_b.groupby(['cod_cia', 'razon_social'])['importe'].sum().reset_index().rename(columns={'importe': 'anulaciones'})
+        
+        b_agg = pd.merge(em_agg, an_agg, on=['cod_cia', 'razon_social'], how='outer').fillna(0)
+        b_agg['importe'] = b_agg['emision_bruta'] - b_agg['anulaciones']
         b_agg = b_agg[b_agg['importe'] > 0].sort_values(by='importe', ascending=False)
         tot_b = float(b_agg['importe'].sum())
 
@@ -373,14 +385,18 @@ def process_single_period(period_code):
         "retiro_entidades": retiro_ent['entidades']
     }
 
-    # 2. Macro Totals BY REAL PRODUCT LINE (SUBRAMOS PUROS)
-    accounts_primas = (
+    # 2. Macro Totals BY REAL PRODUCT LINE (SUBRAMOS PUROS CON EMISIÓN DIRECTA NETA)
+    cuentas_emision_directa = (
         '5.01.01.01.01.01.01', '5.01.01.01.01.01.99',
         '5.01.01.01.01.02.01', '5.01.01.01.01.02.99',
-        '5.01.01.01.01.03.02', '5.01.01.01.01.03.99',
-        '5.01.01.01.01.04.01', '5.01.01.01.01.04.99'
+        '5.01.01.01.01.03.02', '5.01.01.01.01.03.99'
     )
-    primas_sub = df_raw[df_raw['cod_cuenta'].str.startswith(accounts_primas) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
+    cuentas_anulaciones_directas = (
+        '4.01.04.04.04.01.01', '4.01.04.04.04.01.99',
+        '4.01.04.04.04.02.01', '4.01.04.04.04.02.99'
+    )
+    primas_sub = df_raw[df_raw['cod_cuenta'].str.startswith(cuentas_emision_directa) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
+    anul_sub = df_raw[df_raw['cod_cuenta'].str.startswith(cuentas_anulaciones_directas) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
     sin_sub = df_raw[df_raw['cod_cuenta'].str.startswith(('4.01.01.01.01.01', '4.01.01.01.01.99', '4.01.01.01.02.01', '4.01.01.01.02.99', '4.01.01.01.03.01', '4.01.01.01.03.99', '4.01.01.01.04.01', '4.01.01.01.04.99', '4.01.02.01', '4.01.02.02', '4.01.02.03')) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
 
     def get_macro_product(cod_sub):
@@ -396,26 +412,39 @@ def process_single_period(period_code):
         return 'otros'
 
     p_df = primas_sub.copy()
+    a_df = anul_sub.copy()
     s_df = sin_sub.copy()
     p_df['macro_prod'] = p_df['cod_subramo'].apply(get_macro_product)
+    a_df['macro_prod'] = a_df['cod_subramo'].apply(get_macro_product)
     s_df['macro_prod'] = s_df['cod_subramo'].apply(get_macro_product)
 
-    tot_prod_p = float(p_df['importe'].sum())
+    tot_prod_p = float(p_df['importe'].sum()) - float(a_df['importe'].sum())
     tot_prod_s = float(s_df['importe'].sum())
 
     macro_productos = {}
     for k in ['patrimoniales', 'art', 'personas', 'retiro']:
-        p_val = float(p_df[p_df['macro_prod'] == k]['importe'].sum())
+        em_val = float(p_df[p_df['macro_prod'] == k]['importe'].sum())
+        an_val = float(a_df[a_df['macro_prod'] == k]['importe'].sum())
+        p_val = max(0.0, em_val - an_val)
         s_val = float(s_df[s_df['macro_prod'] == k]['importe'].sum())
         sin_pct = (s_val / p_val * 100.0) if p_val > 0 else 0.0
         part_pct = (p_val / tot_prod_p * 100.0) if tot_prod_p > 0 else 0.0
 
         macro_productos[k] = {
             "primas": round(p_val, 2),
+            "emision_bruta": round(em_val, 2),
+            "anulaciones": round(an_val, 2),
             "siniestros": round(s_val, 2),
             "siniestralidad": round(sin_pct, 1),
             "participacion": round(part_pct, 1)
         }
+
+    macro_productos['total'] = {
+        "primas": round(tot_prod_p, 2),
+        "siniestros": round(tot_prod_s, 2),
+        "siniestralidad": round((tot_prod_s / tot_prod_p * 100.0) if tot_prod_p > 0 else 0.0, 1),
+        "participacion": 100.0
+    }
 
     # Cross-selling breakdown for Personas (how much is sold by Mixtas vs Exclusivas)
     pers_p_df = p_df[p_df['macro_prod'] == 'personas']

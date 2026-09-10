@@ -48,10 +48,24 @@ def compute_all_companies_summary(df):
         tipo_entidad = cia['tipo_entidad']
         is_retiro = (tipo_entidad == 'Seguros de Retiro')
 
-        # Paso 1: Primas y Recargos Emitidos
-        primas_emit = get_account_value(df_c, '5.01.01.00.00.00.00.00', exact=True)
+        # Paso 1: Emisión Directa Neta (Fórmula Oficial: 6 Cuentas 5.01 - 4 Cuentas 4.01)
+        cuentas_emision_directa = (
+            '5.01.01.01.01.01.01', '5.01.01.01.01.01.99',
+            '5.01.01.01.01.02.01', '5.01.01.01.01.02.99',
+            '5.01.01.01.01.03.02', '5.01.01.01.01.03.99'
+        )
+        cuentas_anulaciones_directas = (
+            '4.01.04.04.04.01.01', '4.01.04.04.04.01.99',
+            '4.01.04.04.04.02.01', '4.01.04.04.04.02.99'
+        )
 
-        # Paso 2: Cesiones y Anulaciones
+        emision_directa_bruta = float(df_c[df_c['cod_cuenta'].str.startswith(cuentas_emision_directa)]['importe'].sum())
+        anulaciones_directas = float(df_c[df_c['cod_cuenta'].str.startswith(cuentas_anulaciones_directas)]['importe'].sum())
+        
+        # Emisión Directa Neta como base unificada de producción
+        primas_emit = max(0.0, emision_directa_bruta - anulaciones_directas)
+
+        # Paso 2: Cesiones y Anulaciones Totales de Balance
         primas_cedidas = get_account_value(df_c, '4.01.03.00.00.00.00.00', exact=True)
         anulaciones = get_account_value(df_c, '4.01.04.00.00.00.00.00', exact=True)
         cesiones_anul = primas_cedidas + anulaciones
@@ -185,6 +199,8 @@ def compute_all_companies_summary(df):
             'previsiones': prev,
             'patrimonio_neto': pn,
             'primas_emitidas': primas_emit,
+            'emision_directa_bruta': emision_directa_bruta,
+            'anulaciones_directas': anulaciones_directas,
             'primas_cedidas': primas_cedidas,
             'cesiones_anulaciones': cesiones_anul,
             'var_reservas': var_comp_tec,
@@ -224,21 +240,27 @@ def get_company_subramos(df, cod_cia=None):
     else:
         sub_df = df
 
-    accounts_primas = (
+    cuentas_emision_directa = (
         '5.01.01.01.01.01.01', '5.01.01.01.01.01.99',
         '5.01.01.01.01.02.01', '5.01.01.01.01.02.99',
-        '5.01.01.01.01.03.02', '5.01.01.01.01.03.99',
-        '5.01.01.01.01.04.01', '5.01.01.01.04.99'
+        '5.01.01.01.01.03.02', '5.01.01.01.01.03.99'
     )
-    primas_rows = sub_df[sub_df['cod_cuenta'].str.startswith(accounts_primas) & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
+    cuentas_anulaciones_directas = (
+        '4.01.04.04.04.01.01', '4.01.04.04.04.01.99',
+        '4.01.04.04.04.02.01', '4.01.04.04.04.02.99'
+    )
+
+    primas_rows = sub_df[sub_df['cod_cuenta'].str.startswith(cuentas_emision_directa) & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
+    anul_rows = sub_df[sub_df['cod_cuenta'].str.startswith(cuentas_anulaciones_directas) & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
     siniestros_rows = sub_df[sub_df['cod_cuenta'].str.startswith(('4.01.01.01.01.01', '4.01.01.01.01.99', '4.01.01.01.02.01', '4.01.01.01.02.99', '4.01.01.01.03.01', '4.01.01.01.03.99', '4.01.01.01.04.01', '4.01.01.01.04.99', '4.01.02.01', '4.01.02.02', '4.01.02.03')) & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
 
-    primas_by_sub = primas_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index()
-    sin_by_sub = siniestros_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index()
+    primas_by_sub = primas_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index().rename(columns={'importe': 'emision_bruta'})
+    anul_by_sub = anul_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index().rename(columns={'importe': 'anulaciones'})
+    sin_by_sub = siniestros_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index().rename(columns={'importe': 'siniestros'})
 
-    merged = pd.merge(primas_by_sub, sin_by_sub, on=['cod_subramo', 'desc_subramo'], how='outer', suffixes=('_primas', '_siniestros')).fillna(0)
-    merged['primas'] = merged['importe_primas']
-    merged['siniestros'] = merged['importe_siniestros']
+    merged = pd.merge(primas_by_sub, anul_by_sub, on=['cod_subramo', 'desc_subramo'], how='outer').fillna(0)
+    merged['primas'] = merged['emision_bruta'] - merged['anulaciones']
+    merged = pd.merge(merged, sin_by_sub, on=['cod_subramo', 'desc_subramo'], how='outer').fillna(0)
     merged['siniestralidad_%'] = np.where(merged['primas'] > 0, (merged['siniestros'] / merged['primas']) * 100.0, 0.0)
 
     merged = merged[merged['desc_subramo'].notna() & (merged['desc_subramo'] != '') & ((merged['primas'] > 0) | (merged['siniestros'] > 0))]
