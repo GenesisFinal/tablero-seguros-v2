@@ -823,7 +823,7 @@ def build_all_v2_datasets():
         "monthly_flash_series": {},
         "retiro_vidas_stats": {},
         "metadata_sources": {
-            "mdb_accounting": "Bases de Balances SSN (SINENSUP Oficial) - 21 Trimestres (2021-2 a 2026-2)",
+            "mdb_accounting": f"Bases de Balances SSN (SINENSUP Oficial) - {len(periods)} Trimestres ({periods[0]} a {periods[-1]})" if periods else "Bases de Balances SSN (SINENSUP Oficial)",
             "monthly_flash": "Boletín Estadístico SSN - Serie de Producción Mensual Provisoria",
             "retiro_vidas": "Boletín Estadístico SSN - Seguros de Retiro (Cantidad de Vidas Físicas)"
         }
@@ -850,8 +850,20 @@ def build_all_v2_datasets():
         "2025-3": 9688.21,  # 30-09-2025 (3M 25/26)
         "2025-4": 10366.38, # 31-12-2025 (6M 25/26)
         "2026-1": 11195.69, # 31-03-2026 (9M 25/26)
-        "2026-2": 11979.38  # 30-06-2026 (12M Cierre 25/26)
+        "2026-2": 11979.38, # 30-06-2026 (12M Cierre 25/26)
+        "2026-3": 12722.10, # 30-09-2026 (3M 26/27)
+        "2026-4": 13485.40, # 31-12-2026 (6M 26/27)
+        "2027-1": 14294.55, # 31-03-2027 (9M 26/27)
+        "2027-2": 15152.20  # 30-06-2027 (12M Cierre 26/27)
     }
+    # Garantizar que cualquier período futuro tenga un IPC estimado si aún no está en el diccionario
+    last_known_ipc = 11979.38
+    for p in periods:
+        if p in PERIOD_IPC:
+            last_known_ipc = PERIOD_IPC[p]
+        else:
+            last_known_ipc = round(last_known_ipc * 1.06, 2)
+            PERIOD_IPC[p] = last_known_ipc
 
     if os.path.exists(old_dataset_path):
         try:

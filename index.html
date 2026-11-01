@@ -8252,9 +8252,11 @@
                 const metaEl = document.getElementById('footer-meta');
 
                 if (metaEl) {
-
-                    metaEl.innerText = `Dataset: 21 Bases Access MDB (2021-2 a 2026-2) • Actualizado: ${window.INSURANCE_DATA_V2.last_updated_human}`;
-
+                    const pList = window.INSURANCE_DATA_V2.available_periods || [];
+                    const pCount = pList.length || 21;
+                    const pFirst = pList[0] || '2021-2';
+                    const pLast = window.INSURANCE_DATA_V2.latest_period || '2026-2';
+                    metaEl.innerText = `Dataset: ${pCount} Bases Access MDB (${pFirst} a ${pLast}) • Actualizado: ${window.INSURANCE_DATA_V2.last_updated_human}`;
                 }
 
 
