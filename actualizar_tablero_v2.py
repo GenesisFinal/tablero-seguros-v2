@@ -338,7 +338,7 @@ def deploy_to_github_pages(commit_msg=None, force_upload_datasets=True):
     tree_resp = session.get(f"https://api.github.com/repos/{repo_full}/git/trees/{base_tree_sha}?recursive=1", headers=headers, timeout=30)
     existing_tree_map = {item["path"]: item["sha"] for item in tree_resp.json().get("tree", [])}
 
-    always_upload = {"index.html", "tablero_v2.html", "actualizar_tablero_v2.py", "src_v2/build_v2_data.py", "src_v2/insurance_kpis_v2.py"}
+    always_upload = {"index.html", "tablero_v2.html", "actualizar_tablero_v2.py", "src_v2/db_engine_v2.py", "src_v2/build_v2_data.py", "src_v2/insurance_kpis_v2.py"}
     if force_upload_datasets:
         always_upload.update({"data_v2/dataset_v2.js", "data_v2/dataset_v2.json"})
 

@@ -1,19 +1,73 @@
+import io
 import os
 import glob
-import pyodbc
+import struct
 import pandas as pd
+
+try:
+    import pyodbc
+except ImportError:
+    pyodbc = None
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASES_DIR = os.path.join(BASE_DIR, "Bases")
 CACHE_DIR = os.path.join(BASE_DIR, ".cache", "v2_parquet")
 
 def get_connection_string(mdb_path):
+    if pyodbc is None:
+        return None
     drivers = [d for d in pyodbc.drivers() if 'Access' in d or 'ACE' in d]
     if 'Microsoft Access Driver (*.mdb, *.accdb)' in drivers:
         return f"DRIVER={{Microsoft Access Driver (*.mdb, *.accdb)}};DBQ={mdb_path};"
     elif 'Microsoft Access Driver (*.mdb)' in drivers:
         return f"DRIVER={{Microsoft Access Driver (*.mdb)}};DBQ={mdb_path};"
-    return f"DRIVER={{Microsoft Access Driver (*.mdb, *.accdb)}};DBQ={mdb_path};"
+    return None
+
+def _read_mdb_via_access_parser(mdb_path):
+    """Lee la tabla Balance desde un archivo .mdb usando access_parser (compatible con macOS/Linux)."""
+    from access_parser import AccessParser
+    import access_parser.access_parser as ap
+
+    def _fixed_parse_row(self, record):
+        original_record = record
+        reverse_record = record[::-1]
+        null_table_len = (self.table_header.column_count + 7) // 8
+        if null_table_len and null_table_len < len(original_record):
+            null_table = record[-null_table_len:]
+            null_table = [((null_table[i // 8]) & (1 << (i % 8))) != 0 for i in range(len(null_table) * 8)]
+        else:
+            return
+        if self.version > 3:
+            record = record[2:]
+        else:
+            record = record[1:]
+
+        relative_records_column_map = {}
+        for i, column in self.columns.items():
+            if not column.column_flags.fixed_length:
+                var_idx = getattr(column, 'variable_column_number', i)
+                relative_records_column_map[var_idx] = column
+                continue
+            self._parse_fixed_length_data(record, column, null_table)
+        if relative_records_column_map:
+            relative_records_column_map = dict(sorted(relative_records_column_map.items()))
+            metadata = self._parse_dynamic_length_records_metadata(reverse_record, original_record, null_table_len)
+            if not metadata:
+                return
+            if metadata.variable_length_field_offsets:
+                self._parse_dynamic_length_data(original_record, metadata, relative_records_column_map, null_table)
+
+    ap.AccessTable._parse_row = _fixed_parse_row
+
+    # Materializar archivo en Google Drive CloudStorage antes de parsear
+    with open(mdb_path, "rb") as f:
+        _ = f.read(65536)
+
+    db = AccessParser(mdb_path)
+    tbl = db.parse_table("Balance")
+    df = pd.DataFrame.from_dict(tbl)
+    cols = ["cod_cia", "razon_social", "periodo", "cod_subramo", "desc_subramo", "importe", "cod_cuenta", "desc_cuenta", "nivel", "id_padre"]
+    return df[[c for c in cols if c in df.columns]]
 
 def get_all_periods():
     mdb_files = sorted(glob.glob(os.path.join(BASES_DIR, "*.mdb")))
@@ -29,7 +83,9 @@ def load_period_data(period, force_reload=False):
     
     if not force_reload and os.path.exists(parquet_path):
         try:
-            return pd.read_parquet(parquet_path)
+            with open(parquet_path, "rb") as f:
+                buf = io.BytesIO(f.read())
+            return pd.read_parquet(buf)
         except Exception as e:
             print(f"Error reading cache {parquet_path}: {e}")
 
@@ -38,10 +94,13 @@ def load_period_data(period, force_reload=False):
         raise FileNotFoundError(f"Database not found: {mdb_path}")
 
     conn_str = get_connection_string(mdb_path)
-    conn = pyodbc.connect(conn_str)
-    query = "SELECT cod_cia, razon_social, periodo, cod_subramo, desc_subramo, importe, cod_cuenta, desc_cuenta, nivel, id_padre FROM Balance"
-    df = pd.read_sql(query, conn)
-    conn.close()
+    if conn_str:
+        conn = pyodbc.connect(conn_str)
+        query = "SELECT cod_cia, razon_social, periodo, cod_subramo, desc_subramo, importe, cod_cuenta, desc_cuenta, nivel, id_padre FROM Balance"
+        df = pd.read_sql(query, conn)
+        conn.close()
+    else:
+        df = _read_mdb_via_access_parser(mdb_path)
 
     # Standardize types and strings
     df['cod_cia'] = df['cod_cia'].astype(str).str.strip().str.zfill(4)
@@ -87,7 +146,10 @@ def load_period_data(period, force_reload=False):
     df['tipo_entidad'] = df['cod_cia'].map(seg_map)
 
     try:
-        df.to_parquet(parquet_path, index=False)
+        buf = io.BytesIO()
+        df.to_parquet(buf, index=False)
+        with open(parquet_path, "wb") as f:
+            f.write(buf.getvalue())
     except Exception as e:
         print(f"Failed to cache parquet {parquet_path}: {e}")
 
