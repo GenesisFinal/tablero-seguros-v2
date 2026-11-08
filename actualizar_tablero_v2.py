@@ -79,15 +79,24 @@ from build_v2_data import build_all_v2_datasets
 
 
 def notify_windows(title, message, is_error=False):
-    """Muestra una notificación nativa en Windows."""
+    """Muestra una notificación nativa en Windows o macOS."""
     try:
+        if sys.platform == "darwin":
+            safe_title = title.replace('"', '\\"')
+            safe_msg = message.replace('"', '\\"')
+            subprocess.run(
+                ["osascript", "-e", f'display notification "{safe_msg}" with title "{safe_title}"'],
+                capture_output=True,
+                text=True
+            )
+            return
         ps_script = f"""
         [reflection.assembly]::loadwithpartialname('System.Windows.Forms') | Out-Null
         $notify = New-Object System.Windows.Forms.NotifyIcon
         $notify.Icon = [System.Drawing.SystemIcons]::Information
         $notify.BalloonTipTitle = "{title}"
         $notify.BalloonTipText = "{message}"
-        $notify.BalloonTipIcon = [System.Windows.Forms.ToolTipIcon]::{"Error" if is_error else "Info"}
+        $notify.BalloonTipIcon = [System.Drawing.Forms.ToolTipIcon]::{"Error" if is_error else "Info"}
         $notify.Visible = $True
         $notify.ShowBalloonTip(10000)
         Start-Sleep -Seconds 1
