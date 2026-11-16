@@ -119,76 +119,114 @@ def get_local_periods():
     return sorted(periods)
 
 
-def get_ssn_calendar_status():
+def get_ssn_calendar_status(local_periods=None):
     """
-    Evalúa el calendario regulatorio exacto de la SSN (RGAA Punto 39.8.1):
-    - Cierre 30-09 (Período YYYY-3): Vence 15-Nov -> Ventana de sondeo: 10-Nov a 31-Dic
-    - Cierre 31-12 (Período YYYY-4): Vence 15-Feb -> Ventana de sondeo: 10-Feb a 31-Mar
-    - Cierre 31-03 (Período YYYY-1): Vence 15-May -> Ventana de sondeo: 10-May a 30-Jun
-    - Cierre 30-06 (Período YYYY-2): Vence 15-Ago -> Ventana de sondeo: 10-Ago a 30-Sep
+    Evalúa la regla de los 45 días posteriores a cada cierre trimestral (31-03, 30-06, 30-09 y 31-12):
+    - Cierre 31-03 (YYYY-1) + 45 días -> 15-05-YYYY
+    - Cierre 30-06 (YYYY-2) + 45 días -> 14-08-YYYY
+    - Cierre 30-09 (YYYY-3) + 45 días -> 14-11-YYYY
+    - Cierre 31-12 (YYYY-4) + 45 días -> 14-02-(YYYY+1)
+    Comienza a intentar la actualización a los 45 días del cierre y mantiene los intentos
+    únicamente hasta que el período esté descargado y actualizado en 'Bases/'.
+    Una vez actualizado, se detiene hasta cumplirse 45 días del cierre siguiente.
     """
+    if local_periods is None:
+        local_periods = get_local_periods()
+
     today = datetime.date.today()
     yr = today.year
 
-    windows = [
-        (
-            datetime.date(yr, 2, 10),
-            datetime.date(yr, 3, 31),
-            datetime.date(yr - 1, 12, 31),
-            f"{yr - 1}-4",
-            f"2º Trimestre Ej. {yr-1}/{yr} (31-12-{yr-1} • 6 Meses)"
-        ),
-        (
-            datetime.date(yr, 5, 10),
-            datetime.date(yr, 6, 30),
-            datetime.date(yr, 3, 31),
-            f"{yr}-1",
-            f"3º Trimestre Ej. {yr-1}/{yr} (31-03-{yr} • 9 Meses)"
-        ),
-        (
-            datetime.date(yr, 8, 10),
-            datetime.date(yr, 9, 30),
-            datetime.date(yr, 6, 30),
-            f"{yr}-2",
-            f"4º Trimestre Cierre Anual Ej. {yr-1}/{yr} (30-06-{yr} • 12 Meses)"
-        ),
-        (
-            datetime.date(yr, 11, 10),
-            datetime.date(yr, 12, 31),
-            datetime.date(yr, 9, 30),
-            f"{yr}-3",
-            f"1º Trimestre Ej. {yr}/{yr+1} (30-09-{yr} • 3 Meses)"
-        ),
+    closes = []
+    for y in (yr - 1, yr, yr + 1):
+        closes.extend([
+            (datetime.date(y, 3, 31), f"{y}-1", f"3º Trimestre Ej. {y-1}/{y} (31-03-{y} • 9 Meses)"),
+            (datetime.date(y, 6, 30), f"{y}-2", f"4º Trimestre Cierre Anual Ej. {y-1}/{y} (30-06-{y} • 12 Meses)"),
+            (datetime.date(y, 9, 30), f"{y}-3", f"1º Trimestre Ej. {y}/{y+1} (30-09-{y} • 3 Meses)"),
+            (datetime.date(y, 12, 31), f"{y}-4", f"2º Trimestre Ej. {y}/{y+1} (31-12-{y} • 6 Meses)"),
+        ])
+    closes.sort(key=lambda x: x[0])
+
+    past_closes = [c for c in closes if c[0] <= today]
+    future_closes = [c for c in closes if c[0] > today]
+
+    close_d, p_code, desc = past_closes[-1]
+    next_close_d, next_p_code, _ = future_closes[0]
+
+    days_since_close = (today - close_d).days
+    start_attempt_d = close_d + datetime.timedelta(days=45)
+    next_attempt_d = next_close_d + datetime.timedelta(days=45)
+    already_updated = p_code in local_periods
+
+    # Si algún período anterior ya cumplió 45 días y aún no está en Bases/, sigue pendiente
+    pending_older = [
+        c for c in past_closes[:-1]
+        if (today - c[0]).days >= 45 and c[1] not in local_periods and c[1] >= "2021-2"
     ]
 
-    for start_d, end_d, close_d, p_code, desc in windows:
-        if start_d <= today <= end_d:
-            days_since_close = (today - close_d).days
-            return {
-                "in_window": True,
-                "expected_period": p_code,
-                "description": desc,
-                "days_since_close": days_since_close,
-                "deadline_passed": days_since_close > 45
-            }
+    if pending_older:
+        old_d, old_p, old_desc = pending_older[-1]
+        old_days = (today - old_d).days
+        return {
+            "in_window": True,
+            "should_attempt": True,
+            "already_updated": False,
+            "expected_period": old_p,
+            "close_date": old_d.isoformat(),
+            "start_attempt_date": (old_d + datetime.timedelta(days=45)).isoformat(),
+            "next_attempt_date": start_attempt_d.isoformat(),
+            "days_since_close": old_days,
+            "deadline_passed": True,
+            "description": f"[INTENTO ACTIVO] {old_p} ({old_desc}): {old_days} días desde el cierre (>= 45d) y pendiente en Bases/."
+        }
 
-    # Si estamos antes del día 40 post-cierre (ej. 1 de Noviembre -> 32 días desde el 30-09)
-    if datetime.date(yr, 10, 1) <= today < datetime.date(yr, 11, 10):
-        days_since = (today - datetime.date(yr, 9, 30)).days
+    if days_since_close < 45:
         return {
             "in_window": False,
-            "expected_period": f"{yr}-3",
-            "description": f"En plazo legal de presentación para {yr}-3 (30-09-{yr}): día {days_since}/45 (Vence 15-Nov; publicación SSN estimada 18-Nov a 05-Dic)",
-            "days_since_close": days_since,
-            "deadline_passed": False
+            "should_attempt": False,
+            "already_updated": already_updated,
+            "expected_period": p_code,
+            "close_date": close_d.isoformat(),
+            "start_attempt_date": start_attempt_d.isoformat(),
+            "next_attempt_date": start_attempt_d.isoformat(),
+            "days_since_close": days_since_close,
+            "deadline_passed": False,
+            "description": (
+                f"[EN ESPERA 45 DÍAS] Cierre {close_d.strftime('%d-%m-%Y')} ({p_code}): "
+                f"día {days_since_close}/45. Intentos comienzan el {start_attempt_d.strftime('%d-%m-%Y')}."
+            )
+        }
+
+    if not already_updated:
+        return {
+            "in_window": True,
+            "should_attempt": True,
+            "already_updated": False,
+            "expected_period": p_code,
+            "close_date": close_d.isoformat(),
+            "start_attempt_date": start_attempt_d.isoformat(),
+            "next_attempt_date": next_attempt_d.isoformat(),
+            "days_since_close": days_since_close,
+            "deadline_passed": True,
+            "description": (
+                f"[INTENTO ACTIVO] {p_code} ({desc}): día {days_since_close} post-cierre (>= 45d). "
+                f"Buscando publicación en SINENSUP hasta actualizar."
+            )
         }
 
     return {
         "in_window": False,
-        "expected_period": None,
-        "description": "Al día según calendario regulatorio SSN (45 días post-cierre)",
-        "days_since_close": 0,
-        "deadline_passed": False
+        "should_attempt": False,
+        "already_updated": True,
+        "expected_period": p_code,
+        "close_date": close_d.isoformat(),
+        "start_attempt_date": start_attempt_d.isoformat(),
+        "next_attempt_date": next_attempt_d.isoformat(),
+        "days_since_close": days_since_close,
+        "deadline_passed": True,
+        "description": (
+            f"[ACTUALIZADO] {p_code} ({desc}) ya descargado. "
+            f"En pausa hasta 45 días del próximo cierre ({next_close_d.strftime('%d-%m-%Y')} -> {next_attempt_d.strftime('%d-%m-%Y')} para {next_p_code})."
+        )
     }
 
 
@@ -411,11 +449,12 @@ def main():
     parser.add_argument("--force", action="store_true", help="Forzar recompilación de todas las bases locales y despliegue")
     parser.add_argument("--period", type=str, help="Forzar descarga de un período específico desde SINENSUP (ej: 2026-3)")
     parser.add_argument("--deploy-only", action="store_true", help="Solo desplegar los archivos actuales a GitHub Pages")
+    parser.add_argument("--scheduled", action="store_true", help="Modo programado: solo intenta actualizar si pasaron >=45 días del cierre y aún no está actualizado")
     args = parser.parse_args()
 
     local_periods = get_local_periods()
     latest_local = local_periods[-1] if local_periods else "Ninguno"
-    cal_status = get_ssn_calendar_status()
+    cal_status = get_ssn_calendar_status(local_periods)
 
     print("=" * 80)
     print("  TABLERO DE SEGUROS V2 - MONITOR AUTOMÁTICO SINENSUP (SSN)")
@@ -426,6 +465,11 @@ def main():
 
     if args.deploy_only:
         deploy_to_github_pages(commit_msg="Update Tablero de Seguros V2", force_upload_datasets=False)
+        return
+
+    if args.scheduled and not cal_status["should_attempt"]:
+        print(f"\n[PROGRAMADOR 45D] {cal_status['description']}")
+        print("[PROGRAMADOR 45D] No se ejecuta consulta SINENSUP hasta cumplirse los 45 días del cierre correspondiente.")
         return
 
     new_periods_downloaded = []
