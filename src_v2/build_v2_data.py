@@ -215,8 +215,8 @@ def aggregate_standard_branches(market_subramos):
         desc = str(s.get('desc_subramo', '')).lower()
         p = float(s.get('primas', 0.0))
         
-        # 1. Automotores / Motos / TPP
-        if cod.startswith('1.030.') or cod.startswith('1.180.') or cod.startswith('1.040.'):
+        # 1. Automotores / Motos (1.030 + 1.180, idéntico a BRANCH_TAXONOMY['automotores'] y Boletín SSN)
+        if cod.startswith('1.030.') or cod.startswith('1.180.'):
             b_map["ramo_automotores"] += p
         # 2. ART
         elif cod.startswith('1.050.'):
@@ -230,8 +230,8 @@ def aggregate_standard_branches(market_subramos):
         # 5. Retiro
         elif cod.startswith('2.060.') or cod.startswith('2.070.') or 'retiro' in desc:
             b_map["ramo_retiro"] += p
-        # 6. Accidentes Personales
-        elif cod.startswith('2.010.') or cod.startswith('1.120.') or 'acc. personales' in desc or 'acc. a pasaj' in desc:
+        # 6. Accidentes Personales (2.010, idéntico a BRANCH_TAXONOMY['ap'] y Boletín SSN)
+        elif cod.startswith('2.010.') or 'acc. personales' in desc:
             b_map["ramo_accidentes_personales"] += p
         # 7. Salud
         elif cod.startswith('2.020.') or 'salud' in desc:
@@ -319,10 +319,6 @@ def compute_rankings_for_df(df_raw, df_summary, groups_dict):
                 anul_b = anul_sub[anul_sub['cod_subramo'].str.startswith(prefix)]
         else:
             continue
-
-        if b_key == 'agro':
-            sub_b = sub_b[sub_b['cod_cia'] != '0880']
-            anul_b = anul_b[anul_b['cod_cia'] != '0880']
 
         em_agg = sub_b.groupby(['cod_cia', 'razon_social'])['importe'].sum().reset_index().rename(columns={'importe': 'emision_bruta'})
         an_agg = anul_b.groupby(['cod_cia', 'razon_social'])['importe'].sum().reset_index().rename(columns={'importe': 'anulaciones'})
@@ -446,18 +442,21 @@ def process_single_period(period_code):
         "participacion": 100.0
     }
 
-    # Cross-selling breakdown for Personas (how much is sold by Mixtas vs Exclusivas)
+    # Cross-selling breakdown for Personas (how much is sold by Mixtas vs Exclusivas - Emisión Directa Neta)
     pers_p_df = p_df[p_df['macro_prod'] == 'personas']
-    pers_in_mixtas = float(pers_p_df[pers_p_df['tipo_entidad'] == 'Patrimoniales y Mixtas']['importe'].sum())
-    pers_in_personas = float(pers_p_df[pers_p_df['tipo_entidad'] == 'Seguros de Personas']['importe'].sum())
-    pers_in_art = float(pers_p_df[pers_p_df['tipo_entidad'] == 'Riesgos del Trabajo (ART)']['importe'].sum())
+    pers_a_df = a_df[a_df['macro_prod'] == 'personas']
+    pers_in_mixtas = max(0.0, float(pers_p_df[pers_p_df['tipo_entidad'] == 'Patrimoniales y Mixtas']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Patrimoniales y Mixtas']['importe'].sum()))
+    pers_in_personas = max(0.0, float(pers_p_df[pers_p_df['tipo_entidad'] == 'Seguros de Personas']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Seguros de Personas']['importe'].sum()))
+    pers_in_art = max(0.0, float(pers_p_df[pers_p_df['tipo_entidad'] == 'Riesgos del Trabajo (ART)']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Riesgos del Trabajo (ART)']['importe'].sum()))
+    tot_pers_cs = pers_in_mixtas + pers_in_personas + pers_in_art
 
     macro_productos['personas_cross_selling'] = {
         "en_mixtas": round(pers_in_mixtas, 2),
         "en_personas": round(pers_in_personas, 2),
         "en_art": round(pers_in_art, 2),
-        "pct_en_mixtas": round((pers_in_mixtas / macro_productos['personas']['primas'] * 100.0), 1) if macro_productos['personas']['primas'] > 0 else 0.0,
-        "pct_en_personas": round((pers_in_personas / macro_productos['personas']['primas'] * 100.0), 1) if macro_productos['personas']['primas'] > 0 else 0.0
+        "pct_en_mixtas": round((pers_in_mixtas / tot_pers_cs * 100.0), 1) if tot_pers_cs > 0 else 0.0,
+        "pct_en_personas": round((pers_in_personas / tot_pers_cs * 100.0), 1) if tot_pers_cs > 0 else 0.0,
+        "pct_en_art": round((pers_in_art / tot_pers_cs * 100.0), 1) if tot_pers_cs > 0 else 0.0
     }
 
     macro_productos['total'] = {
@@ -533,12 +532,18 @@ def process_single_period(period_code):
         tot_g_emit = 0.0
         tot_g_dev = 0.0
         tot_g_sin = 0.0
+        tot_g_resc = 0.0
+        tot_g_gtos_op = 0.0
         tot_g_res_tec = 0.0
         tot_g_res_fin = 0.0
         tot_g_res_neto = 0.0
         tot_g_activo = 0.0
         tot_g_inv = 0.0
+        tot_g_disp = 0.0
+        tot_g_inm = 0.0
+        tot_g_comp_tec = 0.0
         tot_g_pn = 0.0
+        grp_subramos_map = {}
 
         for cd in gdef['codes']:
             if cd in companies_dict:
@@ -547,17 +552,44 @@ def process_single_period(period_code):
                 tot_g_emit += float(c.get('primas_emitidas', 0.0))
                 tot_g_dev += float(c.get('primas_devengadas', 0.0))
                 tot_g_sin += float(c.get('siniestros', 0.0))
+                tot_g_resc += float(c.get('rescates', 0.0))
+                tot_g_gtos_op += float(c.get('gtos_operativos', 0.0))
                 tot_g_res_tec += float(c.get('resultado_tecnico', 0.0))
                 tot_g_res_fin += float(c.get('resultado_financiero', 0.0))
                 tot_g_res_neto += float(c.get('resultado_neto', 0.0))
                 tot_g_activo += float(c.get('activo', 0.0))
                 tot_g_inv += float(c.get('inversiones', 0.0))
+                tot_g_disp += float(c.get('disponibilidades', 0.0))
+                tot_g_inm += float(c.get('inmuebles', 0.0))
+                tot_g_comp_tec += float(c.get('compromisos_tecnicos', 0.0))
                 tot_g_pn += float(c.get('patrimonio_neto', 0.0))
+                for sr in c.get('subramos', []):
+                    scod = sr.get('cod_subramo', '')
+                    if scod not in grp_subramos_map:
+                        grp_subramos_map[scod] = {
+                            'cod_subramo': scod,
+                            'desc_subramo': sr.get('desc_subramo', ''),
+                            'primas': 0.0,
+                            'siniestros': 0.0
+                        }
+                    grp_subramos_map[scod]['primas'] += float(sr.get('primas', 0.0))
+                    grp_subramos_map[scod]['siniestros'] += float(sr.get('siniestros', 0.0))
 
         if not members:
             continue
 
-        loss_ratio = (tot_g_sin / tot_g_dev * 100.0) if tot_g_dev > 0 else 0.0
+        grp_subramos_list = []
+        for sr_obj in grp_subramos_map.values():
+            p_sr = sr_obj['primas']
+            s_sr = sr_obj['siniestros']
+            sr_obj['primas'] = round(p_sr, 2)
+            sr_obj['siniestros'] = round(s_sr, 2)
+            sr_obj['siniestralidad_%'] = round((s_sr / p_sr * 100.0), 2) if p_sr > 0 else 0.0
+            grp_subramos_list.append(sr_obj)
+        grp_subramos_list.sort(key=lambda x: x['primas'], reverse=True)
+
+        base_g_primas = tot_g_dev if tot_g_dev > 0 else (tot_g_emit if tot_g_emit > 0 else 1.0)
+        loss_ratio = ((tot_g_sin + tot_g_resc) / base_g_primas * 100.0) if base_g_primas > 0 else 0.0
         mkt_share = (tot_g_emit / tot_emit * 100.0) if tot_emit > 0 else 0.0
 
         members_summary = []
@@ -574,9 +606,11 @@ def process_single_period(period_code):
             })
         members_summary.sort(key=lambda x: x['primas_emitidas'], reverse=True)
 
-        g_m_tec = (tot_g_res_tec / tot_g_dev * 100.0) if tot_g_dev > 0 else 0.0
+        g_m_tec = (tot_g_res_tec / base_g_primas * 100.0) if base_g_primas > 0 else 0.0
         g_roi = (tot_g_res_fin / tot_g_inv * 100.0) if tot_g_inv > 0 else 0.0
-        g_comb = (tot_g_sin + (tot_g_emit - tot_g_dev)) / tot_g_dev * 100.0 if tot_g_dev > 0 else 100.0
+        g_comb = ((tot_g_sin + tot_g_resc + tot_g_gtos_op) / base_g_primas * 100.0) if base_g_primas > 0 else 100.0
+        g_cob_res = ((tot_g_inv + tot_g_inm + tot_g_disp) / tot_g_comp_tec) if tot_g_comp_tec > 0 else 1.0
+        g_roe = (tot_g_res_neto / tot_g_pn * 100.0) if tot_g_pn > 0 else 0.0
 
         if g_m_tec >= 0 and g_roi >= 0:
             g_quad = "Q1_LIDERES"
@@ -601,19 +635,27 @@ def process_single_period(period_code):
             "primas_emitidas": round(tot_g_emit, 2),
             "primas_devengadas": round(tot_g_dev, 2),
             "siniestros": round(tot_g_sin, 2),
+            "rescates": round(tot_g_resc, 2),
+            "gtos_operativos": round(tot_g_gtos_op, 2),
             "resultado_tecnico": round(tot_g_res_tec, 2),
             "resultado_financiero": round(tot_g_res_fin, 2),
             "resultado_neto": round(tot_g_res_neto, 2),
             "activo": round(tot_g_activo, 2),
             "inversiones": round(tot_g_inv, 2),
+            "disponibilidades": round(tot_g_disp, 2),
+            "inmuebles": round(tot_g_inm, 2),
+            "compromisos_tecnicos": round(tot_g_comp_tec, 2),
             "patrimonio_neto": round(tot_g_pn, 2),
             "margen_tecnico": round(g_m_tec, 2),
             "roi_inversiones": round(g_roi, 2),
             "combined_ratio": round(g_comb, 2),
             "loss_ratio": round(loss_ratio, 2),
+            "cobertura_reservas": round(g_cob_res, 2),
+            "roe": round(g_roe, 2),
             "market_share": round(mkt_share, 2),
             "quadrant": g_quad,
-            "quadrant_label": g_quad_label
+            "quadrant_label": g_quad_label,
+            "subramos": grp_subramos_list
         }
 
     # Strategic matrix for groups
@@ -649,6 +691,8 @@ def process_single_period(period_code):
                 "primas_emitidas": 0.0,
                 "primas_devengadas": 0.0,
                 "siniestros": 0.0,
+                "rescates": 0.0,
+                "gtos_operativos": 0.0,
                 "resultado_tecnico": 0.0,
                 "resultado_financiero": 0.0,
                 "resultado_neto": 0.0,
@@ -661,6 +705,8 @@ def process_single_period(period_code):
         s["primas_emitidas"] += float(c.get('primas_emitidas', 0.0))
         s["primas_devengadas"] += float(c.get('primas_devengadas', 0.0))
         s["siniestros"] += float(c.get('siniestros', 0.0))
+        s["rescates"] += float(c.get('rescates', 0.0))
+        s["gtos_operativos"] += float(c.get('gtos_operativos', 0.0))
         s["resultado_tecnico"] += float(c.get('resultado_tecnico', 0.0))
         s["resultado_financiero"] += float(c.get('resultado_financiero', 0.0))
         s["resultado_neto"] += float(c.get('resultado_neto', 0.0))
@@ -670,9 +716,10 @@ def process_single_period(period_code):
 
     strategic_matrix_segments = []
     for tipo, s in segments_agg.items():
-        m_tec = (s["resultado_tecnico"] / s["primas_devengadas"] * 100.0) if s["primas_devengadas"] > 0 else 0.0
+        base_s_primas = s["primas_devengadas"] if s["primas_devengadas"] > 0 else (s["primas_emitidas"] if s["primas_emitidas"] > 0 else 1.0)
+        m_tec = (s["resultado_tecnico"] / base_s_primas * 100.0) if base_s_primas > 0 else 0.0
         roi = (s["resultado_financiero"] / s["inversiones"] * 100.0) if s["inversiones"] > 0 else 0.0
-        loss_r = (s["siniestros"] / s["primas_devengadas"] * 100.0) if s["primas_devengadas"] > 0 else 0.0
+        loss_r = ((s["siniestros"] + s["rescates"]) / base_s_primas * 100.0) if base_s_primas > 0 else 0.0
         mkt_sh = (s["primas_emitidas"] / tot_emit * 100.0) if tot_emit > 0 else 0.0
         
         if m_tec >= 0 and roi >= 0:
@@ -688,7 +735,7 @@ def process_single_period(period_code):
             quad = "Q4_RIESGO"
             quad_lbl = "En Riesgo Operativo (Técnico - / Financiero -)"
 
-        comb = (s["siniestros"] + (s["primas_emitidas"] - s["primas_devengadas"])) / s["primas_devengadas"] * 100.0 if s["primas_devengadas"] > 0 else 100.0
+        comb = ((s["siniestros"] + s["rescates"] + s["gtos_operativos"]) / base_s_primas * 100.0) if base_s_primas > 0 else 100.0
 
         item = {
             "id": "SEG_" + tipo.upper().replace(" ", "_").replace("/", "_"),
@@ -703,6 +750,9 @@ def process_single_period(period_code):
             "roi_inversiones": round(roi, 2),
             "primas_emitidas": round(s["primas_emitidas"], 2),
             "primas_devengadas": round(s["primas_devengadas"], 2),
+            "siniestros": round(s["siniestros"], 2),
+            "rescates": round(s["rescates"], 2),
+            "gtos_operativos": round(s["gtos_operativos"], 2),
             "resultado_tecnico": round(s["resultado_tecnico"], 2),
             "resultado_financiero": round(s["resultado_financiero"], 2),
             "resultado_neto": round(s["resultado_neto"], 2),
@@ -733,6 +783,9 @@ def process_single_period(period_code):
         "companies": [c for c in companies_dict.values() if c['cod_cia'] in ["0317", "0618", "0117", "0436"]]
     }
 
+    # 8. Retiro Full Suite Details (Compromisos Técnicos, Primas Colectivo/Individual, Asegurados)
+    retiro_details = compute_retiro_details_for_df(df_raw, df_summary, period_code)
+
     return {
         "periodo": period_code,
         "period_label": get_period_label(period_code),
@@ -749,7 +802,328 @@ def process_single_period(period_code):
         "rankings": rankings,
         "market_investments": market_investments,
         "market_subramos": market_subramos,
-        "la_segunda": ls_details
+        "la_segunda": ls_details,
+        "retiro_details": retiro_details
+    }
+
+
+_ASEGURADOS_CACHE = None
+
+def _load_retiro_asegurados_cache():
+    global _ASEGURADOS_CACHE
+    if _ASEGURADOS_CACHE is not None:
+        return _ASEGURADOS_CACHE
+
+    cache_file = os.path.join(BASE_DIR, ".cache", "retiro_asegurados_by_period.json")
+    os.makedirs(os.path.dirname(cache_file), exist_ok=True)
+    cached = {}
+    if os.path.exists(cache_file):
+        try:
+            with open(cache_file, "r", encoding="utf-8") as f:
+                cached = json.load(f)
+        except Exception:
+            cached = {}
+
+    import io, re, zipfile, requests, urllib3
+    urllib3.disable_warnings()
+
+    period_urls = {
+        "2024-3": ("Septiembre 2024", "https://www.argentina.gob.ar/sites/default/files/ssn_2024_sep_reserva_matematica.xlsx"),
+        "2024-4": ("Diciembre 2024", "https://www.argentina.gob.ar/sites/default/files/ssn_2024_dic_reserva_matematica.xlsx"),
+        "2025-1": ("Marzo 2025", "https://www.argentina.gob.ar/sites/default/files/ssn_2025_mar_reserva_matematica.xlsx"),
+        "2025-2": ("Junio 2025", "https://www.argentina.gob.ar/sites/default/files/ssn_202506_reserva_matematica.xlsx"),
+        "2025-3": ("Septiembre 2025", "https://www.argentina.gob.ar/sites/default/files/ssn_202509_reserva_matematica.xlsx"),
+        "2025-4": ("Diciembre 2025", "https://www.argentina.gob.ar/sites/default/files/ssn_202512_reserva_matematica.xlsx"),
+        "2026-1": ("Marzo 2026", "https://www.argentina.gob.ar/sites/default/files/ssn_202603_reserva_matematica.xlsx"),
+        "2026-2": ("Junio 2026", "https://www.argentina.gob.ar/sites/default/files/ssn_202606_reserva_matematica.xlsx"),
+        "2026-3": ("Septiembre 2026", "https://www.argentina.gob.ar/sites/default/files/ssn_202609_reserva_matematica.xlsx"),
+    }
+
+    updated = False
+    for p_key, (p_lbl, url) in period_urls.items():
+        if p_key in cached and cached[p_key].get("asegurados"):
+            continue
+        try:
+            r = requests.get(url, verify=False, timeout=20)
+            if r.status_code != 200 or len(r.content) < 5000:
+                continue
+            fixed_zip = io.BytesIO()
+            with zipfile.ZipFile(io.BytesIO(r.content), 'r') as zin:
+                with zipfile.ZipFile(fixed_zip, 'w') as zout:
+                    for item in zin.infolist():
+                        c = zin.read(item.filename)
+                        if item.filename.endswith(('.xml', '.rels')):
+                            c = c.replace(b'http://purl.oclc.org/ooxml/spreadsheetml/main', b'http://schemas.openxmlformats.org/spreadsheetml/2006/main')
+                            c = c.replace(b'http://purl.oclc.org/ooxml/officeDocument/relationships', b'http://schemas.openxmlformats.org/officeDocument/2006/relationships')
+                        zout.writestr(item, c)
+            fixed_zip.seek(0)
+            xls = pd.read_excel(fixed_zip, sheet_name=None, header=None)
+
+            def get_cols(df):
+                for col_idx in [0, 1]:
+                    vals = df.iloc[:, col_idx].astype(str).str.strip().str.upper().tolist()
+                    if 'TOTAL' in vals or 'SUBTOTAL' in vals:
+                        return col_idx, col_idx + 1
+                return 0, 1
+
+            results = {}
+            def ensure_ent(ent):
+                ent_c = re.sub(r'\(\d+\)$', '', str(ent).strip().upper()).strip()
+                if ent_c not in results:
+                    results[ent_c] = {'entidad': ent_c, 'ahorro_indiv': 0, 'ahorro_colec': 0, 'renta_indiv': 0, 'renta_colec': 0, 'rvp': 0, 'art': 0}
+                return ent_c
+
+            def parse_stacked(sheet_name, k_ind, k_col):
+                df_s = xls.get(sheet_name)
+                if df_s is None:
+                    return
+                ent_col, val_col = get_cols(df_s)
+                sub_idxs = df_s[df_s.iloc[:, ent_col].astype(str).str.strip().str.upper() == 'SUBTOTAL'].index.tolist()
+                if len(sub_idxs) >= 2:
+                    for idx in range(sub_idxs[0] + 1, sub_idxs[1]):
+                        raw_ent = df_s.iloc[idx, ent_col]
+                        if pd.isna(raw_ent) or str(raw_ent).strip().startswith(('*', '(')):
+                            continue
+                        ent_c = ensure_ent(raw_ent)
+                        v = pd.to_numeric(df_s.iloc[idx, val_col], errors='coerce')
+                        results[ent_c][k_ind] = int(round(v)) if not pd.isna(v) else 0
+                    for idx in range(sub_idxs[1] + 1, len(df_s)):
+                        raw_ent = df_s.iloc[idx, ent_col]
+                        if pd.isna(raw_ent) or str(raw_ent).strip().startswith(('*', '(')):
+                            continue
+                        ent_c = ensure_ent(raw_ent)
+                        v = pd.to_numeric(df_s.iloc[idx, val_col], errors='coerce')
+                        results[ent_c][k_col] = int(round(v)) if not pd.isna(v) else 0
+
+            def parse_simple(sheet_names, k_val):
+                df_s = None
+                for sn in sheet_names:
+                    if sn in xls:
+                        df_s = xls[sn]
+                        break
+                if df_s is None:
+                    return
+                ent_col, val_col = get_cols(df_s)
+                tot_idxs = df_s[df_s.iloc[:, ent_col].astype(str).str.strip().str.upper() == 'TOTAL'].index.tolist()
+                if not tot_idxs:
+                    return
+                for idx in range(tot_idxs[0] + 1, len(df_s)):
+                    raw_ent = df_s.iloc[idx, ent_col]
+                    if pd.isna(raw_ent) or str(raw_ent).strip().startswith(('*', '(')):
+                        continue
+                    ent_c = ensure_ent(raw_ent)
+                    v = pd.to_numeric(df_s.iloc[idx, val_col], errors='coerce')
+                    results[ent_c][k_val] = int(round(v)) if not pd.isna(v) else 0
+
+            parse_stacked('3 Aseg.  Indiv y  Colec', 'ahorro_indiv', 'ahorro_colec')
+            parse_stacked('4 Rentistas Indiv y Colec', 'renta_indiv', 'renta_colec')
+            parse_simple(['5 Rentistas Previsional'], 'rvp')
+            parse_simple(['6 Rentistas ART ', '6 Rentistas ART'], 'art')
+
+            aseg_list = []
+            for ent_c, d in results.items():
+                ah_tot = d['ahorro_indiv'] + d['ahorro_colec']
+                re_vol = d['renta_indiv'] + d['renta_colec']
+                rvp_art = d['rvp'] + d['art']
+                re_tot = re_vol + rvp_art
+                tot_v = ah_tot + re_tot
+                if tot_v > 0:
+                    aseg_list.append({
+                        "entidad": ent_c,
+                        "total_asegurados": tot_v,
+                        "ahorro_total": ah_tot,
+                        "ahorro_indiv": d['ahorro_indiv'],
+                        "ahorro_colec": d['ahorro_colec'],
+                        "renta_total": re_tot,
+                        "renta_indiv": d['renta_indiv'],
+                        "renta_colec": d['renta_colec'],
+                        "rvp_art": rvp_art
+                    })
+            aseg_list.sort(key=lambda x: x["total_asegurados"], reverse=True)
+            if aseg_list:
+                tot_row = {
+                    "entidad": "TOTAL MERCADO",
+                    "total_asegurados": sum(x["total_asegurados"] for x in aseg_list),
+                    "ahorro_total": sum(x["ahorro_total"] for x in aseg_list),
+                    "ahorro_indiv": sum(x["ahorro_indiv"] for x in aseg_list),
+                    "ahorro_colec": sum(x["ahorro_colec"] for x in aseg_list),
+                    "renta_total": sum(x["renta_total"] for x in aseg_list),
+                    "renta_indiv": sum(x["renta_indiv"] for x in aseg_list),
+                    "renta_colec": sum(x["renta_colec"] for x in aseg_list),
+                    "rvp_art": sum(x["rvp_art"] for x in aseg_list)
+                }
+                cached[p_key] = {
+                    "periodo": p_lbl,
+                    "asegurados": aseg_list,
+                    "asegurados_total_row": tot_row
+                }
+                updated = True
+                print(f"[SSN Retiro Asegurados] Cached {p_key} ({p_lbl}): {tot_row['total_asegurados']:,} vidas")
+        except Exception as e:
+            print(f"[SSN Retiro Asegurados] Note for {p_key}: {e}")
+
+    if updated:
+        try:
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump(cached, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
+    _ASEGURADOS_CACHE = cached
+    return cached
+
+
+def compute_retiro_details_for_df(df_raw, df_summary, period_code):
+    """
+    Calcula directamente de la base .mdb del período:
+    1. Compromisos Técnicos y Reservas Matemáticas (en miles de pesos, idéntico al Cuadro 1 de SSN).
+    2. Primas Emitidas de Retiro desglosadas en Retiro Colectivo vs Retiro Individual (en pesos).
+    3. Población de Asegurados (del boletín de Reserva Matemática del período o el más cercano disponible).
+    """
+    ret_cias = df_summary[df_summary['tipo_entidad'] == 'Seguros de Retiro'][['cod_cia', 'razon_social']].drop_duplicates()
+
+    # 1. Compromisos Técnicos y Reservas Matemáticas (Cuentas 2.02.02.02.03.*)
+    comp_rows = []
+    for _, c in ret_cias.iterrows():
+        cod = c['cod_cia']
+        name = c['razon_social']
+        sub = df_raw[(df_raw['cod_cia'] == cod) & (df_raw['cod_subramo'] != '') & (df_raw['cod_subramo'].notna())]
+
+        ah_ind = float(sub[(sub['cod_cuenta'] == '2.02.02.02.03.01.00.00') & (sub['cod_subramo'] == '2.060.01')]['importe'].sum()) / 1000.0
+        ah_col = float(sub[(sub['cod_cuenta'] == '2.02.02.02.03.01.00.00') & (sub['cod_subramo'] == '2.060.02')]['importe'].sum()) / 1000.0
+        ah_tot = ah_ind + ah_col
+
+        re_ind = float(sub[(sub['cod_cuenta'] == '2.02.02.02.03.04.00.00') & (sub['cod_subramo'] == '2.060.01')]['importe'].sum()) / 1000.0
+        re_col = float(sub[(sub['cod_cuenta'] == '2.02.02.02.03.04.00.00') & (sub['cod_subramo'] == '2.060.02')]['importe'].sum()) / 1000.0
+        re_tot = re_ind + re_col
+
+        rvp_art = float(sub[sub['cod_cuenta'].isin([
+            '2.02.02.02.03.03.00.00', '2.02.02.02.03.05.00.00', '2.02.02.02.03.06.00.00',
+            '2.02.02.02.03.20.00.00', '2.02.02.02.03.21.00.00', '2.02.02.02.03.22.00.00'
+        ])]['importe'].sum()) / 1000.0
+
+        tot_rm = float(df_raw[(df_raw['cod_cia'] == cod) & (df_raw['cod_cuenta'] == '2.02.02.02.03.00.00.00') & (df_raw['cod_subramo'] == '')]['importe'].sum()) / 1000.0
+        if tot_rm <= 0:
+            otros_sub = float(sub[sub['cod_cuenta'].isin([
+                '2.02.02.02.03.23.00.00', '2.02.02.02.03.24.00.00', '2.02.02.02.03.26.00.00',
+                '2.02.02.02.03.30.00.00', '2.02.02.02.03.31.00.00', '2.02.02.02.03.32.00.00',
+                '2.02.02.02.03.40.00.00', '2.02.02.02.03.50.00.00'
+            ])]['importe'].sum()) / 1000.0
+            otros = max(0.0, otros_sub)
+            tot_rm = ah_tot + re_tot + rvp_art + otros
+        else:
+            otros = max(0.0, tot_rm - (ah_tot + re_tot + rvp_art))
+
+        if tot_rm > 0:
+            comp_rows.append({
+                "cod_cia": cod,
+                "entidad": name,
+                "total": round(tot_rm, 2),
+                "ahorro_total": round(ah_tot, 2),
+                "ahorro_indiv": round(ah_ind, 2),
+                "ahorro_colec": round(ah_col, 2),
+                "rentas_total": round(re_tot, 2),
+                "rentas_indiv": round(re_ind, 2),
+                "rentas_colec": round(re_col, 2),
+                "rvp_art": round(rvp_art, 2),
+                "otros": round(otros, 2)
+            })
+
+    comp_rows.sort(key=lambda x: x["total"], reverse=True)
+    tot_comp_all = sum(x["total"] for x in comp_rows)
+    tot_ah_all = sum(x["ahorro_total"] for x in comp_rows)
+    tot_re_all = sum(x["rentas_total"] for x in comp_rows)
+
+    for r in comp_rows:
+        r["total_pct"] = round((r["total"] / tot_comp_all * 100.0), 2) if tot_comp_all > 0 else 0.0
+        r["ahorro_pct"] = round((r["ahorro_total"] / tot_ah_all * 100.0), 2) if tot_ah_all > 0 else 0.0
+        r["rentas_pct"] = round((r["rentas_total"] / tot_re_all * 100.0), 2) if tot_re_all > 0 else 0.0
+
+    comp_total_row = {
+        "entidad": "TOTAL MERCADO",
+        "total": round(tot_comp_all, 2),
+        "total_pct": 100.0,
+        "ahorro_total": round(tot_ah_all, 2),
+        "ahorro_pct": 100.0 if tot_ah_all > 0 else 0.0,
+        "ahorro_indiv": round(sum(x["ahorro_indiv"] for x in comp_rows), 2),
+        "ahorro_colec": round(sum(x["ahorro_colec"] for x in comp_rows), 2),
+        "rentas_total": round(tot_re_all, 2),
+        "rentas_pct": 100.0 if tot_re_all > 0 else 0.0,
+        "rentas_indiv": round(sum(x["rentas_indiv"] for x in comp_rows), 2),
+        "rentas_colec": round(sum(x["rentas_colec"] for x in comp_rows), 2),
+        "rvp_art": round(sum(x["rvp_art"] for x in comp_rows), 2),
+        "otros": round(sum(x["otros"] for x in comp_rows), 2)
+    }
+
+    # 2. Primas Emitidas de Retiro (Colectivo vs Individual)
+    cuentas_emision_directa = (
+        '5.01.01.01.01.01.01', '5.01.01.01.01.01.99',
+        '5.01.01.01.01.02.01', '5.01.01.01.01.02.99',
+        '5.01.01.01.01.03.02', '5.01.01.01.01.03.99'
+    )
+    cuentas_anulaciones_directas = (
+        '4.01.04.04.04.01.01', '4.01.04.04.04.01.99',
+        '4.01.04.04.04.02.01', '4.01.04.04.04.02.99'
+    )
+    ret_sub = df_raw[df_raw['cod_subramo'].isin(['2.060.01', '2.060.02', '2.070.01', '2.070.02'])]
+    em_ret = ret_sub[ret_sub['cod_cuenta'].str.startswith(cuentas_emision_directa)].groupby(['cod_cia', 'razon_social', 'cod_subramo'])['importe'].sum().unstack(fill_value=0.0)
+    an_ret = ret_sub[ret_sub['cod_cuenta'].str.startswith(cuentas_anulaciones_directas)].groupby(['cod_cia', 'razon_social', 'cod_subramo'])['importe'].sum().unstack(fill_value=0.0)
+    net_ret = em_ret.subtract(an_ret, fill_value=0.0)
+
+    primas_rows = []
+    for (cod, name), row_s in net_ret.iterrows():
+        p_ind = max(0.0, float(row_s.get('2.060.01', 0.0)) + float(row_s.get('2.070.01', 0.0)))
+        p_col = max(0.0, float(row_s.get('2.060.02', 0.0)) + float(row_s.get('2.070.02', 0.0)))
+        p_tot = p_ind + p_col
+        if p_tot > 0:
+            primas_rows.append({
+                "cod_cia": cod,
+                "entidad": name,
+                "primas_total": round(p_tot, 2),
+                "primas_colectivo": round(p_col, 2),
+                "primas_individual": round(p_ind, 2)
+            })
+
+    primas_rows.sort(key=lambda x: x["primas_total"], reverse=True)
+    tot_p_all = sum(x["primas_total"] for x in primas_rows)
+    tot_p_col = sum(x["primas_colectivo"] for x in primas_rows)
+    tot_p_ind = sum(x["primas_individual"] for x in primas_rows)
+
+    for idx, r in enumerate(primas_rows, 1):
+        r["rank_total"] = idx
+        r["total_pct"] = round((r["primas_total"] / tot_p_all * 100.0), 2) if tot_p_all > 0 else 0.0
+        r["colectivo_pct"] = round((r["primas_colectivo"] / tot_p_col * 100.0), 2) if tot_p_col > 0 else 0.0
+        r["individual_pct"] = round((r["primas_individual"] / tot_p_ind * 100.0), 2) if tot_p_ind > 0 else 0.0
+
+    primas_total_row = {
+        "entidad": "TOTAL MERCADO",
+        "primas_total": round(tot_p_all, 2),
+        "total_pct": 100.0,
+        "primas_colectivo": round(tot_p_col, 2),
+        "colectivo_pct": round((tot_p_col / tot_p_all * 100.0), 2) if tot_p_all > 0 else 0.0,
+        "primas_individual": round(tot_p_ind, 2),
+        "individual_pct": round((tot_p_ind / tot_p_all * 100.0), 2) if tot_p_all > 0 else 0.0
+    }
+
+    # 3. Asegurados
+    aseg_cache = _load_retiro_asegurados_cache()
+    aseg_entry = aseg_cache.get(period_code)
+    if not aseg_entry and aseg_cache:
+        # Use closest available prior period or earliest available
+        avail_k = sorted(aseg_cache.keys())
+        prior_k = [k for k in avail_k if k <= period_code]
+        chosen_k = prior_k[-1] if prior_k else avail_k[0]
+        aseg_entry = aseg_cache[chosen_k]
+
+    return {
+        "periodo": get_period_label(period_code),
+        "compromisos_tecnicos": comp_rows,
+        "compromisos_total_row": comp_total_row,
+        "primas_emitidas": primas_rows,
+        "primas_emitidas_total_row": primas_total_row,
+        "asegurados": aseg_entry.get("asegurados", []) if aseg_entry else [],
+        "asegurados_total_row": aseg_entry.get("asegurados_total_row", {}) if aseg_entry else {},
+        "asegurados_periodo": aseg_entry.get("periodo", "Junio 2026") if aseg_entry else "Junio 2026"
     }
 
 def build_all_v2_datasets():
@@ -870,20 +1244,22 @@ def build_all_v2_datasets():
             with open(old_dataset_path, "r", encoding="utf-8") as f:
                 old_d = json.load(f)
                 supplementary_data["monthly_flash_series"] = old_d.get("ssn_produccion_mensual", {})
-                sr_d = old_d.get("ssn_seg_retiro", {})
-                supplementary_data["ssn_seg_retiro"] = sr_d
-                supplementary_data["retiro_vidas_stats"] = sr_d.get("asegurados", [])
-                supplementary_data["retiro_vidas_total_row"] = sr_d.get("asegurados_total_row", {})
-                supplementary_data["retiro_compromisos"] = sr_d.get("compromisos_tecnicos", [])
-                supplementary_data["retiro_compromisos_total_row"] = sr_d.get("compromisos_total_row", {})
-                supplementary_data["retiro_primas_desglose"] = sr_d.get("primas_emitidas", [])
-                supplementary_data["retiro_primas_total_row"] = sr_d.get("primas_emitidas_total_row", {})
-                supplementary_data["retiro_periodo"] = sr_d.get("periodo", "Marzo 2026")
         except Exception as e:
             print(f"Warning reading old supplementary data: {e}")
 
     latest_period = periods[-1] if periods else "2026-2"
     latest_ipc = PERIOD_IPC.get(latest_period, 11979.38)
+
+    if latest_period in periods_data and "retiro_details" in periods_data[latest_period]:
+        rd = periods_data[latest_period]["retiro_details"]
+        supplementary_data["ssn_seg_retiro"] = rd
+        supplementary_data["retiro_vidas_stats"] = rd.get("asegurados", [])
+        supplementary_data["retiro_vidas_total_row"] = rd.get("asegurados_total_row", {})
+        supplementary_data["retiro_compromisos"] = rd.get("compromisos_tecnicos", [])
+        supplementary_data["retiro_compromisos_total_row"] = rd.get("compromisos_total_row", {})
+        supplementary_data["retiro_primas_desglose"] = rd.get("primas_emitidas", [])
+        supplementary_data["retiro_primas_total_row"] = rd.get("primas_emitidas_total_row", {})
+        supplementary_data["retiro_periodo"] = rd.get("periodo", get_period_label(latest_period))
 
     # Build Ejercicios Fiscales structure (Exact SSN Fiscal Calendar)
     ejercicios_map = {}

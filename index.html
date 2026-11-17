@@ -870,7 +870,7 @@
 
                 <button onclick="switchTab('rankings')" id="tab-btn-rankings" class="nav-tab px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 txt-muted hover:text-[#e20039] hover:bg-slate-100 dark:hover:bg-slate-800/60">
 
-                    <i class="fas fa-trophy"></i> <span>Rankings SSN (12)</span>
+                    <i class="fas fa-trophy"></i> <span>Rankings SSN (19)</span>
 
                 </button>
 
@@ -1176,7 +1176,7 @@
 
                                     <option value="SEGMENTOS">🏛️ Consolidado por Tipos de Aseguradora / Segmentos</option>
 
-                                    <option value="GRUPOS">👥 Grupos Económicos (12 Consolidaciones)</option>
+                                    <option value="GRUPOS">👥 Grupos Económicos (18 Consolidaciones)</option>
 
                                     <option value="Patrimoniales y Mixtas">Patrimoniales y Mixtas</option>
 
@@ -1634,17 +1634,43 @@
 
                                     </optgroup>
 
-                                    <optgroup label="👥 Grupos Aseguradores Líderes">
+                                    <optgroup label="👥 Grupos Aseguradores Líderes (18)">
 
-                                        <option value="grupo_la_segunda">Grupo La Segunda</option>
+                                        <option value="grupo_la_segunda">Grupo Asegurador La Segunda</option>
 
                                         <option value="grupo_sancor">Grupo Sancor Seguros</option>
 
-                                        <option value="grupo_federacion_patronal">Federación Patronal</option>
+                                        <option value="grupo_federacion_patronal">Grupo Federación Patronal</option>
 
                                         <option value="grupo_provincia">Grupo Provincia</option>
 
                                         <option value="grupo_san_cristobal">Grupo San Cristóbal</option>
+
+                                        <option value="grupo_la_caja_generali">Grupo La Caja / Generali</option>
+
+                                        <option value="grupo_zurich">Grupo Zurich</option>
+
+                                        <option value="grupo_experta_werthein">Grupo Experta / Werthein</option>
+
+                                        <option value="grupo_mercantil_andina">Grupo Mercantil Andina</option>
+
+                                        <option value="grupo_nacion">Grupo Nación</option>
+
+                                        <option value="grupo_rivadavia">Grupo Asegurador Rivadavia</option>
+
+                                        <option value="grupo_galicia">Grupo Galicia Seguros</option>
+
+                                        <option value="grupo_swiss_medical">Grupo Swiss Medical (SMG)</option>
+
+                                        <option value="grupo_st">Grupo ST</option>
+
+                                        <option value="grupo_meridional">Grupo La Meridional</option>
+
+                                        <option value="grupo_mapfre">Grupo Mapfre</option>
+
+                                        <option value="grupo_barbuss_hdi">Grupo Barbuss / HDI</option>
+
+                                        <option value="grupo_galeno">Grupo Galeno</option>
 
                                     </optgroup>
 
@@ -1860,7 +1886,7 @@
 
                         <div class="flex items-center gap-2 mb-1">
 
-                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#e20039] text-white uppercase">12 Rankings Oficiales</span>
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-[#e20039] text-white uppercase">19 Rankings Oficiales</span>
 
                             <span class="text-xs txt-muted font-mono" id="rankings-period-desc">Período: -</span>
 
@@ -2844,75 +2870,7 @@
 
 
 
-            <!-- SECCIÓN 2: INDICADORES DE GESTIÓN • SEGUROS DE RETIRO -->
-
-            <div class="main-card rounded-2xl p-5 border space-y-4">
-
-                <h3 class="text-base font-bold txt-primary flex items-center gap-2">
-
-                    <i class="fas fa-piggy-bank text-[#f8cc59]"></i> 2. Indicadores de Gestión &bull; Seguros de Retiro
-
-                </h3>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-                    <!-- Table: Ratios Retiro -->
-
-                    <div class="lg:col-span-7 subtle-card p-5 rounded-2xl border">
-
-                        <div class="overflow-x-auto">
-
-                            <table class="w-full text-xs text-left data-table font-mono" id="tbl-sp-retiro">
-
-                                <thead class="uppercase text-[10px] sticky-header">
-
-                                    <tr>
-
-                                        <th class="py-2.5 px-3">Indicador de Solvencia / Rendimiento</th>
-
-                                        <th class="py-2.5 px-3 text-right">Exclusivas de Retiro</th>
-
-                                        <th class="py-2.5 px-3 text-right text-[#e20039]">La Segunda Retiro</th>
-
-                                    </tr>
-
-                                </thead>
-
-                                <tbody id="tbl-sp-retiro-body">
-
-                                    <!-- Dynamic JS -->
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Bar Chart: Retiro Ratios -->
-
-                    <div class="lg:col-span-5 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
-
-                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-2">Comparativo Visual &bull; Ratios Retiro (%)</h4>
-
-                        <div class="relative w-full h-[260px]">
-
-                            <canvas id="sp-chart-retiro"></canvas>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- SECCIÓN 3: PRIMAS EMITIDAS POR RAMOS Y SIMULADOR DE MERCADO -->
+            <!-- SECCIÓN 2: PRIMAS EMITIDAS POR RAMOS Y SIMULADOR DE MERCADO -->
 
             <div class="main-card rounded-2xl p-5 border space-y-4">
 
@@ -2922,7 +2880,7 @@
 
                         <h3 class="text-base font-bold txt-primary flex items-center gap-2">
 
-                            <i class="fas fa-layer-group text-[#e20039]"></i> 3. Primas Emitidas por Ramos y Simulador de Mercado
+                            <i class="fas fa-layer-group text-[#e20039]"></i> 2. Primas Emitidas por Ramos y Simulador de Mercado
 
                         </h3>
 
@@ -3098,7 +3056,7 @@
 
                     <!-- Sub-view Navigation Pills -->
 
-                    <div class="flex items-center bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs font-semibold">
+                    <div class="flex flex-wrap items-center bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700/60 text-xs font-semibold gap-1">
 
                         <button id="btn-sr-subtab-compromisos" onclick="switchRetiroSubtab('compromisos')" class="btn-sr-subtab px-3.5 py-1.5 rounded-lg bg-[#e20039] text-white shadow-sm transition-all flex items-center gap-1.5">
 
@@ -3115,6 +3073,12 @@
                         <button id="btn-sr-subtab-asegurados" onclick="switchRetiroSubtab('asegurados')" class="btn-sr-subtab px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5">
 
                             <i class="fas fa-users"></i> <span>Asegurados</span>
+
+                        </button>
+
+                        <button id="btn-sr-subtab-indicadores" onclick="switchRetiroSubtab('indicadores')" class="btn-sr-subtab px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-all flex items-center gap-1.5">
+
+                            <i class="fas fa-gauge-high"></i> <span>Indicadores de Gestión</span>
 
                         </button>
 
@@ -3330,11 +3294,14 @@
 
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 
-                        <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
+                        <div>
+                            <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
 
-                            <i class="fas fa-users text-[#3ac792]"></i> Población de Asegurados en Retiro (Cantidad de Vidas y Cuentas)
+                                <i class="fas fa-users text-[#3ac792]"></i> Población de Asegurados en Retiro (Cantidad de Vidas y Cuentas)
 
-                        </h3>
+                            </h3>
+                            <p class="text-xs txt-muted mt-0.5" id="sr-asegurados-period-badge">Boletín Estadístico Reserva Matemática SSN</p>
+                        </div>
 
                         <button onclick="exportTableToCSV('tbl-sr-asegurados', 'asegurados_retiro.csv')" class="btn-export" title="Exportar Tabla a CSV">
 
@@ -3386,6 +3353,59 @@
 
                     </div>
 
+                    <!-- Gráfico Asegurados Retiro -->
+                    <div class="subtle-card p-5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fas fa-chart-bar text-[#3ac792]"></i> Top Aseguradoras por Cantidad de Asegurados y Rentistas
+                        </h4>
+                        <div class="relative w-full h-[320px]">
+                            <canvas id="chart-sr-asegurados"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SUB-VISTA 4: INDICADORES DE GESTIÓN • SEGUROS DE RETIRO -->
+                <div id="sr-view-indicadores" class="sr-subtab-pane hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-sm font-bold txt-primary flex items-center gap-2">
+                                <i class="fas fa-gauge-high text-[#f8cc59]"></i> Indicadores de Gestión y Solvencia &bull; Seguros de Retiro
+                            </h3>
+                            <p class="text-xs txt-muted mt-0.5">Comparativa contable oficial entre el promedio de Aseguradoras Exclusivas de Retiro y La Segunda Retiro (0436).</p>
+                        </div>
+                        <button onclick="exportTableToCSV('tbl-sp-retiro', 'indicadores_retiro.csv')" class="btn-export" title="Exportar Tabla a CSV">
+                            <i class="fas fa-file-csv text-emerald-500"></i> <span>CSV</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        <!-- Table: Ratios Retiro -->
+                        <div class="lg:col-span-7 subtle-card p-5 rounded-2xl border">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs text-left data-table font-mono" id="tbl-sp-retiro">
+                                    <thead class="uppercase text-[10px] sticky-header">
+                                        <tr>
+                                            <th class="py-2.5 px-3">Indicador de Solvencia / Rendimiento</th>
+                                            <th class="py-2.5 px-3 text-right">Exclusivas de Retiro</th>
+                                            <th class="py-2.5 px-3 text-right text-[#e20039]">La Segunda Retiro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-sp-retiro-body">
+                                        <!-- Dynamic JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Bar Chart: Retiro Ratios -->
+                        <div class="lg:col-span-5 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
+                            <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-2">Comparativo Visual &bull; Ratios Retiro (%)</h4>
+                            <div class="relative w-full h-[280px]">
+                                <canvas id="sp-chart-retiro"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -5122,6 +5142,10 @@
 
                         siniestros: 0,
 
+                        rescates: 0,
+
+                        gtos_operativos: 0,
+
                         resultado_tecnico: 0,
 
                         resultado_financiero: 0,
@@ -5148,6 +5172,10 @@
 
                 s.siniestros += (c.siniestros || 0);
 
+                s.rescates += (c.rescates || 0);
+
+                s.gtos_operativos += (c.gtos_operativos || 0);
+
                 s.resultado_tecnico += (c.resultado_tecnico || 0);
 
                 s.resultado_financiero += (c.resultado_financiero || 0);
@@ -5170,15 +5198,17 @@
 
                 const s = segmentsAgg[tipo];
 
-                const mTec = s.primas_devengadas > 0 ? (s.resultado_tecnico / s.primas_devengadas) * 100 : 0;
+                const basePrimas = s.primas_devengadas > 0 ? s.primas_devengadas : (s.primas_emitidas > 0 ? s.primas_emitidas : 1);
+
+                const mTec = basePrimas > 0 ? (s.resultado_tecnico / basePrimas) * 100 : 0;
 
                 const roi = s.inversiones > 0 ? (s.resultado_financiero / s.inversiones) * 100 : 0;
 
-                const lossR = s.primas_devengadas > 0 ? (s.siniestros / s.primas_devengadas) * 100 : 0;
+                const lossR = basePrimas > 0 ? ((s.siniestros + s.rescates) / basePrimas) * 100 : 0;
 
                 const mktSh = totEmit > 0 ? (s.primas_emitidas / totEmit) * 100 : 0;
 
-                const comb = s.primas_devengadas > 0 ? (s.siniestros + (s.primas_emitidas - s.primas_devengadas)) / s.primas_devengadas * 100 : 100;
+                const comb = basePrimas > 0 ? ((s.siniestros + s.rescates + s.gtos_operativos) / basePrimas) * 100 : 100;
 
 
 
@@ -5956,7 +5986,7 @@
 
             let val = 0;
 
-            if (metricKey === 'total_mercado') val = metricsObj.total_mercado || 0;
+            if (metricKey === 'total_mercado' || metricKey === 'multi_segmentos') val = metricsObj.total_mercado || 0;
 
             else if (metricKey === 'patrimoniales') val = metricsObj.patrimoniales || 0;
 
@@ -6576,6 +6606,18 @@
 
             const sel = document.getElementById('select-ranking-category');
 
+            if (sel) {
+                Array.from(sel.options).forEach(opt => {
+                    const oKey = opt.value;
+                    const oList = pData.rankings[oKey] ||
+                                  pData.rankings[oKey.replace('total_accidentes_personales', 'total_ap')] ||
+                                  pData.rankings['total_' + oKey] ||
+                                  pData.rankings[oKey.replace('total_', '')] || [];
+                    const unitLbl = oKey === 'grupos_aseguradores' ? 'Grupos' : 'Cías';
+                    opt.text = opt.text.replace(/\(\d+\s+(Cías|Grupos)\)/, `(${oList.length} ${unitLbl})`);
+                });
+            }
+
             const cat = (sel && sel.value) ? sel.value : 'total_mercado';
 
 
@@ -6664,7 +6706,7 @@
 
             }
 
-            if (kpiCount) kpiCount.innerText = `${rkList.length} Entidades`;
+            if (kpiCount) kpiCount.innerText = `${rkList.length} ${cat === 'grupos_aseguradores' ? 'Grupos' : 'Entidades'}`;
 
 
 
@@ -6848,9 +6890,17 @@
 
             const items = [
 
-                { value: 'TOTAL_MERCADO', label: 'Total Mercado Consolidado', subtext: 'Consolidación oficial de 186 aseguradoras' }
+                { value: 'TOTAL_MERCADO', label: 'Total Mercado Consolidado', subtext: `Consolidación oficial de ${pData.companies.length} aseguradoras` }
 
             ];
+
+            (pData.groups || Object.values(pData.groups_by_id || {})).slice().sort((a, b) => a.name.localeCompare(b.name)).forEach(g => {
+                items.push({
+                    value: g.id,
+                    label: `[Grupo] ${g.name}`,
+                    subtext: `${g.entities_count} entidades • Primas: ${fmtARS(g.primas_emitidas)}`
+                });
+            });
 
             pData.companies.slice().sort((a, b) => a.razon_social.localeCompare(b.razon_social)).forEach(c => {
 
@@ -6913,31 +6963,47 @@
             if (code === 'TOTAL_MERCADO') {
 
                 const m = pData.macro_entidades;
+                const totAct = pData.companies.reduce((a, b) => a + (b.activo || 0), 0);
+                const totInv = pData.companies.reduce((a, b) => a + (b.inversiones || 0), 0);
+                const totDisp = pData.companies.reduce((a, b) => a + (b.disponibilidades || 0), 0);
+                const totInm = pData.companies.reduce((a, b) => a + (b.inmuebles || 0), 0);
+                const totCompTec = pData.companies.reduce((a, b) => a + (b.compromisos_tecnicos || 0), 0);
+                const totPn = pData.companies.reduce((a, b) => a + (b.patrimonio_neto || 0), 0);
+                const totDev = m.total_mercado_devengadas || pData.companies.reduce((a, b) => a + (b.primas_devengadas || 0), 0);
+                const totSin = pData.companies.reduce((a, b) => a + (b.siniestros || 0), 0);
+                const totResc = pData.companies.reduce((a, b) => a + (b.rescates || 0), 0);
+                const totGtosOp = pData.companies.reduce((a, b) => a + (b.gtos_operativos || 0), 0);
+                const totResTec = pData.companies.reduce((a, b) => a + (b.resultado_tecnico || 0), 0);
+                const totResNeto = pData.companies.reduce((a, b) => a + (b.resultado_neto || 0), 0);
 
                 c = {
 
-                    activo: pData.companies.reduce((a, b) => a + (b.activo || 0), 0),
+                    activo: totAct,
 
-                    inversiones: pData.companies.reduce((a, b) => a + (b.inversiones || 0), 0),
+                    inversiones: totInv,
 
-                    patrimonio_neto: pData.companies.reduce((a, b) => a + (b.patrimonio_neto || 0), 0),
+                    patrimonio_neto: totPn,
 
                     primas_emitidas: m.total_mercado_emitidas,
 
-                    resultado_tecnico: pData.companies.reduce((a, b) => a + (b.resultado_tecnico || 0), 0),
+                    resultado_tecnico: totResTec,
 
-                    resultado_neto: pData.companies.reduce((a, b) => a + (b.resultado_neto || 0), 0),
+                    resultado_neto: totResNeto,
 
-                    loss_ratio: 60.5,
+                    loss_ratio: totDev > 0 ? ((totSin + totResc) / totDev) * 100 : 0,
 
-                    combined_ratio: 98.2,
+                    combined_ratio: totDev > 0 ? ((totSin + totResc + totGtosOp) / totDev) * 100 : 0,
 
-                    cobertura_reservas: 1.45,
+                    cobertura_reservas: totCompTec > 0 ? ((totInv + totInm + totDisp) / totCompTec) : 1.0,
+
+                    roe: totPn > 0 ? (totResNeto / totPn) * 100 : 0,
 
                     subramos: pData.market_subramos
 
                 };
 
+            } else if (pData.groups_by_id && pData.groups_by_id[code]) {
+                c = pData.groups_by_id[code];
             } else {
 
                 c = pData.companies_by_code[code];
@@ -7156,19 +7222,24 @@
 
                 const patrimComps = compList.filter(c => c.cod_cia === '0317' || c.cod_cia === '0618');
 
-                const patrimSubramos = [];
+                const patrimMap = {};
 
                 patrimComps.forEach(c => {
 
                     (c.subramos || []).forEach(r => {
 
-                        if ((r.primas || 0) > 0) patrimSubramos.push(r);
+                        if ((r.primas || 0) > 0) {
+                            const k = r.cod_subramo || r.desc_subramo;
+                            if (!patrimMap[k]) patrimMap[k] = { cod_subramo: r.cod_subramo, desc_subramo: r.desc_subramo, primas: 0, siniestros: 0 };
+                            patrimMap[k].primas += (r.primas || 0);
+                            patrimMap[k].siniestros += (r.siniestros || 0);
+                        }
 
                     });
 
                 });
 
-                patrimSubramos.sort((a, b) => (b.primas || 0) - (a.primas || 0));
+                const patrimSubramos = Object.values(patrimMap).sort((a, b) => (b.primas || 0) - (a.primas || 0));
 
 
 
@@ -7206,6 +7277,19 @@
 
                 });
 
+                if (patrimSubramos.length > 0) {
+                    const gPatPct = totGrupo > 0 ? (totPatrim / totGrupo) * 100 : 0;
+                    patHtml += `
+                        <tr class="bg-blue-50/70 dark:bg-blue-950/30 border-t-2 border-[#4183ca] font-bold">
+                            <td class="py-2.5 px-3 text-center text-[#4183ca] font-mono text-xs">-</td>
+                            <td class="py-2.5 px-3 font-sans text-[#4183ca] uppercase tracking-wider">TOTAL PATRIMONIALES Y RIESGOS DEL TRABAJO</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-extrabold">$ ${(totPatrim / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-extrabold">100,00%</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#4183ca] font-extrabold">${gPatPct.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                        </tr>
+                    `;
+                }
+
                 tbodyPatrim.innerHTML = patHtml || '<tr><td colspan="5" class="text-center py-6 text-slate-400">Sin datos de subramos patrimoniales.</td></tr>';
 
             }
@@ -7220,19 +7304,24 @@
 
                 const persComps = compList.filter(c => c.cod_cia === '0117' || c.cod_cia === '0436');
 
-                const persSubramos = [];
+                const persMap = {};
 
                 persComps.forEach(c => {
 
                     (c.subramos || []).forEach(r => {
 
-                        if ((r.primas || 0) > 0) persSubramos.push(r);
+                        if ((r.primas || 0) > 0) {
+                            const k = r.cod_subramo || r.desc_subramo;
+                            if (!persMap[k]) persMap[k] = { cod_subramo: r.cod_subramo, desc_subramo: r.desc_subramo, primas: 0, siniestros: 0 };
+                            persMap[k].primas += (r.primas || 0);
+                            persMap[k].siniestros += (r.siniestros || 0);
+                        }
 
                     });
 
                 });
 
-                persSubramos.sort((a, b) => (b.primas || 0) - (a.primas || 0));
+                const persSubramos = Object.values(persMap).sort((a, b) => (b.primas || 0) - (a.primas || 0));
 
 
 
@@ -7269,6 +7358,19 @@
                     `;
 
                 });
+
+                if (persSubramos.length > 0) {
+                    const gPerPct = totGrupo > 0 ? (totPersRet / totGrupo) * 100 : 0;
+                    perHtml += `
+                        <tr class="bg-emerald-50/70 dark:bg-emerald-950/30 border-t-2 border-[#3ac792] font-bold">
+                            <td class="py-2.5 px-3 text-center text-[#3ac792] font-mono text-xs">-</td>
+                            <td class="py-2.5 px-3 font-sans text-[#3ac792] uppercase tracking-wider">TOTAL PERSONAS Y RETIRO</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-extrabold">$ ${(totPersRet / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-extrabold">100,00%</td>
+                            <td class="py-2.5 px-3 text-right font-mono text-[#3ac792] font-extrabold">${gPerPct.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                        </tr>
+                    `;
+                }
 
                 tbodyPers.innerHTML = perHtml || '<tr><td colspan="5" class="text-center py-6 text-slate-400">Sin datos de subramos de personas y retiro.</td></tr>';
 
@@ -7369,10 +7471,7 @@
             // 1. Ratios Contables Oficiales de Personas (Total Mercado vs La Segunda Personas)
             renderPersonasRatios(pData);
 
-            // 2. Ratios Contables Oficiales de Retiro (Exclusivas Retiro vs La Segunda Retiro)
-            renderRetiroRatios(pData);
-
-            // 3. Simulador Dinámico de Ramos
+            // 2. Simulador Dinámico de Ramos
             renderPersonasSimulator();
         }
 
@@ -7789,10 +7888,17 @@
         function renderRetiroTab(pData) {
             if (!window.INSURANCE_DATA_V2) return;
             const supp = window.INSURANCE_DATA_V2.supplementary_data || {};
-            const srData = supp.ssn_seg_retiro || {};
+            const srData = (pData && pData.retiro_details) || supp.ssn_seg_retiro || {};
 
             const pDesc = document.getElementById('sr-period-desc');
-            if (pDesc) pDesc.innerText = `Bases Oficiales SSN • ${srData.periodo || (pData ? (pData.period_label || pData.periodo) : 'Marzo 2026')}`;
+            if (pDesc) pDesc.innerText = `Bases Oficiales SSN • ${pData ? (pData.period_label || pData.periodo) : (srData.periodo || '')}`;
+
+            const asegBadge = document.getElementById('sr-asegurados-period-badge');
+            if (asegBadge) {
+                asegBadge.innerText = `Boletín Estadístico Reserva Matemática SSN • Corte de Vidas: ${srData.asegurados_periodo || 'Junio 2026'}`;
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
 
             // Formatting helpers
             const fmtM_from_thousands = (n) => {
@@ -7819,8 +7925,8 @@
 
             // 1. SUB-TAB 1: COMPROMISOS TÉCNICOS & RESERVAS MATEMÁTICAS
             const compBody = document.getElementById('tbl-sr-compromisos-body');
-            const compList = supp.retiro_compromisos || srData.compromisos_tecnicos || [];
-            const compTotal = supp.retiro_compromisos_total_row || srData.compromisos_total_row;
+            const compList = srData.compromisos_tecnicos || supp.retiro_compromisos || [];
+            const compTotal = srData.compromisos_total_row || supp.retiro_compromisos_total_row;
 
             if (compBody) {
                 if (compList.length > 0) {
@@ -7872,41 +7978,59 @@
                         `;
                     });
                     compBody.innerHTML = htmlRows;
-                } else if (pData) {
-                    // Fallback to pData.companies for any period
-                    const retComps = (pData.companies || []).filter(c => c.tipo_entidad === 'Seguros de Retiro').sort((a, b) => (b.compromisos_tecnicos || b.inversiones || 0) - (a.compromisos_tecnicos || a.inversiones || 0));
-                    const totCompTec = retComps.reduce((a, b) => a + (b.compromisos_tecnicos || b.inversiones || 0), 0);
-                    let htmlFallback = '';
-                    retComps.forEach(r => {
-                        const isL2 = (r.razon_social || '').toUpperCase().includes('SEGUNDA');
-                        const cTec = r.compromisos_tecnicos || r.inversiones || 0;
-                        const cPct = totCompTec > 0 ? ((cTec / totCompTec) * 100) : 0;
-                        htmlFallback += `
-                            <tr class="${isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition'}">
-                                <td class="py-2.5 px-3 ${isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold'}">${r.razon_social}</td>
-                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${Math.round(cTec / 1e6).toLocaleString('es-AR')}</td>
-                                <td class="py-2.5 px-3 text-right font-mono font-bold">${cPct.toFixed(2)}%</td>
-                                <td class="py-2.5 px-3 text-right font-mono">${Math.round((r.inversiones || 0) / 1e6).toLocaleString('es-AR')}</td>
-                                <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono col-sr-ahorro hidden text-[#4183ca]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono">${Math.round((r.primas_emitidas || 0) / 1e6).toLocaleString('es-AR')}</td>
-                                <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono col-sr-rentas hidden text-[#3ac792]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-amber-500">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono txt-muted">-</td>
-                            </tr>
-                        `;
-                    });
-                    compBody.innerHTML = htmlFallback;
                 }
+            }
+
+            // Chart 1: Compromisos Técnicos Top 10
+            const ctxComp = document.getElementById('chart-sr-compromisos');
+            if (ctxComp && compList.length > 0) {
+                if (chartInstances['sr-compromisos']) chartInstances['sr-compromisos'].destroy();
+                const top10Comp = compList.slice(0, 10);
+                const labelsComp = top10Comp.map(r => r.entidad.length > 26 ? r.entidad.substring(0, 26) + '...' : r.entidad);
+                const dataComp = top10Comp.map(r => Math.round((r.total || 0) / 1000.0));
+                const colorsComp = top10Comp.map(r => (r.entidad || '').toUpperCase().includes('SEGUNDA') ? '#e20039' : '#4183ca');
+
+                chartInstances['sr-compromisos'] = new Chart(ctxComp, {
+                    type: 'bar',
+                    data: {
+                        labels: labelsComp,
+                        datasets: [{
+                            label: 'Compromisos Técnicos ($M)',
+                            data: dataComp,
+                            backgroundColor: colorsComp,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                                ticks: { callback: v => '$' + Math.round(v).toLocaleString('es-AR') + 'M', font: { family: 'JetBrains Mono', size: 10 } }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: c => ` Compromisos Técnicos: $ ${Math.round(c.raw).toLocaleString('es-AR')} M (${fmtP(top10Comp[c.dataIndex]?.total_pct)})`
+                                }
+                            }
+                        }
+                    }
+                });
             }
 
             // 2. SUB-TAB 2: PRIMAS EMITIDAS (COLECTIVO vs INDIVIDUAL)
             const primasBody = document.getElementById('tbl-sr-primas-body');
-            const primasList = supp.retiro_primas_desglose || srData.primas_emitidas || [];
-            const primasTotal = supp.retiro_primas_total_row || srData.primas_emitidas_total_row;
+            const primasList = srData.primas_emitidas || supp.retiro_primas_desglose || [];
+            const primasTotal = srData.primas_emitidas_total_row || supp.retiro_primas_total_row;
 
             if (primasBody) {
                 if (primasList.length > 0) {
@@ -7948,32 +8072,69 @@
                         `;
                     });
                     primasBody.innerHTML = htmlPrimas;
-                } else if (pData) {
-                    const primasRankings = (pData.rankings && pData.rankings.total_retiro) || [];
-                    let htmlFallbackPrimas = '';
-                    primasRankings.forEach(r => {
-                        const isL2 = (r.entidad || '').toUpperCase().includes('SEGUNDA');
-                        htmlFallbackPrimas += `
-                            <tr class="${isL2 ? 'bg-rose-50 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition'}">
-                                <td class="py-2.5 px-3 ${isL2 ? 'text-[#e20039] font-bold' : 'txt-primary font-semibold'}">${r.entidad}</td>
-                                <td class="py-2.5 px-3 text-right font-mono font-bold text-[#e20039]">${Math.round(r.prima / 1e6).toLocaleString('es-AR')}</td>
-                                <td class="py-2.5 px-3 text-right font-mono font-bold">${r.participacion.toFixed(2)}%</td>
-                                <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">#${r.posicion || '-'}</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-[#4183ca]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
-                                <td class="py-2.5 px-3 text-right font-mono text-[#3ac792]">-</td>
-                            </tr>
-                        `;
-                    });
-                    primasBody.innerHTML = htmlFallbackPrimas;
                 }
+            }
+
+            // Chart 2: Ranking de Primas Emitidas en Retiro (Colectivo vs Individual)
+            const ctxPrimas = document.getElementById('chart-sr-primas');
+            if (ctxPrimas && primasList.length > 0) {
+                if (chartInstances['sr-primas']) chartInstances['sr-primas'].destroy();
+                const top10Primas = primasList.filter(r => (r.primas_total || 0) > 0).slice(0, 12);
+                const labelsPrimas = top10Primas.map(r => r.entidad.length > 26 ? r.entidad.substring(0, 26) + '...' : r.entidad);
+                const dColec = top10Primas.map(r => Math.round((r.primas_colectivo || 0) / 1e6));
+                const dIndiv = top10Primas.map(r => Math.round((r.primas_individual || 0) / 1e6));
+
+                chartInstances['sr-primas'] = new Chart(ctxPrimas, {
+                    type: 'bar',
+                    data: {
+                        labels: labelsPrimas,
+                        datasets: [
+                            {
+                                label: 'Retiro Colectivo ($M)',
+                                data: dColec,
+                                backgroundColor: '#4183ca',
+                                borderRadius: 3
+                            },
+                            {
+                                label: 'Retiro Individual ($M)',
+                                data: dIndiv,
+                                backgroundColor: '#3ac792',
+                                borderRadius: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                stacked: true,
+                                grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                                ticks: { callback: v => '$' + Math.round(v).toLocaleString('es-AR') + 'M', font: { family: 'JetBrains Mono', size: 10 } }
+                            },
+                            y: {
+                                stacked: true,
+                                grid: { display: false },
+                                ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                            }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Sora', size: 10, weight: '600' } } },
+                            tooltip: {
+                                callbacks: {
+                                    label: c => ` ${c.dataset.label}: $ ${Math.round(c.raw).toLocaleString('es-AR')} M`
+                                }
+                            }
+                        }
+                    }
+                });
             }
 
             // 3. SUB-TAB 3: ASEGURADOS / VIDAS
             const vidasBody = document.getElementById('tbl-sr-asegurados-body');
-            const vidasList = supp.retiro_vidas_stats || srData.asegurados || [];
-            const vidasTotal = supp.retiro_vidas_total_row || srData.asegurados_total_row;
+            const vidasList = srData.asegurados || supp.retiro_vidas_stats || [];
+            const vidasTotal = srData.asegurados_total_row || supp.retiro_vidas_total_row;
 
             if (vidasBody) {
                 if (vidasList.length > 0) {
@@ -8018,6 +8179,57 @@
                     });
                     vidasBody.innerHTML = htmlVidas;
                 }
+            }
+
+            // Chart 3: Asegurados / Vidas Top 10
+            const ctxVidas = document.getElementById('chart-sr-asegurados');
+            if (ctxVidas && vidasList.length > 0) {
+                if (chartInstances['sr-asegurados']) chartInstances['sr-asegurados'].destroy();
+                const top10Vidas = vidasList.slice(0, 10);
+                const labelsVidas = top10Vidas.map(r => r.entidad.length > 26 ? r.entidad.substring(0, 26) + '...' : r.entidad);
+                const dataVidas = top10Vidas.map(r => r.total_asegurados || 0);
+                const colorsVidas = top10Vidas.map(r => (r.entidad || '').toUpperCase().includes('SEGUNDA') ? '#e20039' : '#8b5cf6');
+
+                chartInstances['sr-asegurados'] = new Chart(ctxVidas, {
+                    type: 'bar',
+                    data: {
+                        labels: labelsVidas,
+                        datasets: [{
+                            label: 'Total Asegurados (Vidas)',
+                            data: dataVidas,
+                            backgroundColor: colorsVidas,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                                ticks: { callback: v => Math.round(v).toLocaleString('es-AR'), font: { family: 'JetBrains Mono', size: 10 } }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Sora', size: 10, weight: '600' }, color: isDark ? '#cbd5e1' : '#334155' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: c => ` Asegurados: ${Math.round(c.raw).toLocaleString('es-AR')} vidas`
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 4. SUB-TAB 4: INDICADORES DE GESTIÓN DE RETIRO
+            if (pData) {
+                renderRetiroRatios(pData);
             }
         }
 
@@ -8102,135 +8314,126 @@
         // --- TAB 9: COMPARADOR ---
 
         function renderComparatorDropdowns(pData) {
-
             const selA = document.getElementById('comparator-select-a');
-
             const selB = document.getElementById('comparator-select-b');
-
-            if (!selA || !selB || selA.options.length > 0) return;
-
-
-
-            pData.companies.sort((a, b) => a.razon_social.localeCompare(b.razon_social)).forEach((c, idx) => {
-
-                const optA = document.createElement('option');
-
-                optA.value = c.cod_cia;
-
-                optA.innerText = `[${c.cod_cia}] ${c.razon_social}`;
-
-                selA.appendChild(optA);
-
-
-
-                const optB = document.createElement('option');
-
-                optB.value = c.cod_cia;
-
-                optB.innerText = `[${c.cod_cia}] ${c.razon_social}`;
-
-                selB.appendChild(optB);
-
-            });
-
-
-
-            // Set default: La Segunda vs Fed Patronal
-
-            if (pData.companies_by_code['0317']) selA.value = '0317';
-
-            if (pData.companies_by_code['0726']) selB.value = '0726';
-
-            renderComparator();
-
-        }
-
-
-
-        function renderComparator() {
-
-            if (!window.INSURANCE_DATA_V2 || !currentPeriod) return;
-
-            const pData = window.INSURANCE_DATA_V2.periods_data[currentPeriod];
-
-            const codA = document.getElementById('comparator-select-a')?.value;
-
-            const codB = document.getElementById('comparator-select-b')?.value;
-
-
-
-            const cA = pData.companies_by_code[codA];
-
-            const cB = pData.companies_by_code[codB];
-
-            if (!cA || !cB) return;
-
-
-
-            document.getElementById('comp-th-a').innerText = cA.razon_social;
-
-            document.getElementById('comp-th-b').innerText = cB.razon_social;
-
-
-
-            const metrics = [
-
-                { name: 'Primas Emitidas', valA: cA.primas_emitidas, valB: cB.primas_emitidas, isMoney: true, higherBetter: true },
-
-                { name: 'Resultado Neto', valA: cA.resultado_neto, valB: cB.resultado_neto, isMoney: true, higherBetter: true },
-
-                { name: 'Patrimonio Neto', valA: cA.patrimonio_neto, valB: cB.patrimonio_neto, isMoney: true, higherBetter: true },
-
-                { name: 'Activo Total', valA: cA.activo, valB: cB.activo, isMoney: true, higherBetter: true },
-
-                { name: 'Inversiones', valA: cA.inversiones, valB: cB.inversiones, isMoney: true, higherBetter: true },
-
-                { name: 'Siniestralidad Neta (%)', valA: cA.loss_ratio, valB: cB.loss_ratio, isMoney: false, higherBetter: false },
-
-                { name: 'Ratio Combinado (%)', valA: cA.combined_ratio, valB: cB.combined_ratio, isMoney: false, higherBetter: false }
-
-            ];
-
-
-
-            const tbody = document.getElementById('tbl-comparator-body');
-
-            if (tbody) {
-
-                tbody.innerHTML = '';
-
-                metrics.forEach(m => {
-
-                    const diff = m.valA - m.valB;
-
-                    const aWins = m.higherBetter ? m.valA > m.valB : m.valA < m.valB;
-
-                    const winner = m.valA === m.valB ? 'Empate' : (aWins ? cA.razon_social : cB.razon_social);
-
-
-
-                    const tr = document.createElement('tr');
-
-                    tr.innerHTML = `
-
-                        <td class="p-3 font-semibold">${m.name}</td>
-
-                        <td class="p-3 text-right font-mono font-bold">${m.isMoney ? fmtARS(m.valA) : fmtPct(m.valA)}</td>
-
-                        <td class="p-3 text-right font-mono font-bold">${m.isMoney ? fmtARS(m.valB) : fmtPct(m.valB)}</td>
-
-                        <td class="p-3 text-right font-mono ${diff >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${m.isMoney ? fmtARS(diff) : fmtPct(diff)}</td>
-
-                        <td class="p-3 text-center font-bold text-xs"><span class="px-2 py-0.5 rounded-full ${aWins ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'}">${winner}</span></td>
-
-                    `;
-
-                    tbody.appendChild(tr);
-
+            if (!selA || !selB || !pData) return;
+
+            const prevA = selA.value || '0317';
+            const prevB = selB.value || '0726';
+
+            selA.innerHTML = '';
+            selB.innerHTML = '';
+
+            // 1. Grupos Aseguradores Consolidados
+            const groups = [...(pData.strategic_matrix_groups || [])].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            if (groups.length > 0) {
+                const grpOptGroupA = document.createElement('optgroup');
+                grpOptGroupA.label = '👥 Grupos Aseguradores Consolidados';
+                const grpOptGroupB = document.createElement('optgroup');
+                grpOptGroupB.label = '👥 Grupos Aseguradores Consolidados';
+
+                groups.forEach(g => {
+                    const optA = document.createElement('option');
+                    optA.value = 'GRP_' + g.id;
+                    optA.innerText = `[GRUPO] ${g.name}`;
+                    grpOptGroupA.appendChild(optA);
+
+                    const optB = document.createElement('option');
+                    optB.value = 'GRP_' + g.id;
+                    optB.innerText = `[GRUPO] ${g.name}`;
+                    grpOptGroupB.appendChild(optB);
                 });
 
+                selA.appendChild(grpOptGroupA);
+                selB.appendChild(grpOptGroupB);
             }
 
+            // 2. Aseguradoras Individuales
+            const compOptGroupA = document.createElement('optgroup');
+            compOptGroupA.label = '🏢 Aseguradoras Individuales';
+            const compOptGroupB = document.createElement('optgroup');
+            compOptGroupB.label = '🏢 Aseguradoras Individuales';
+
+            [...(pData.companies || [])].sort((a, b) => a.razon_social.localeCompare(b.razon_social)).forEach(c => {
+                const optA = document.createElement('option');
+                optA.value = c.cod_cia;
+                optA.innerText = `[${c.cod_cia}] ${c.razon_social}`;
+                compOptGroupA.appendChild(optA);
+
+                const optB = document.createElement('option');
+                optB.value = c.cod_cia;
+                optB.innerText = `[${c.cod_cia}] ${c.razon_social}`;
+                compOptGroupB.appendChild(optB);
+            });
+
+            selA.appendChild(compOptGroupA);
+            selB.appendChild(compOptGroupB);
+
+            const hasVal = (sel, val) => Array.from(sel.options).some(o => o.value === val);
+            selA.value = hasVal(selA, prevA) ? prevA : (hasVal(selA, '0317') ? '0317' : (selA.options[0]?.value || ''));
+            selB.value = hasVal(selB, prevB) ? prevB : (hasVal(selB, '0726') ? '0726' : (selB.options[1]?.value || ''));
+
+            renderComparator();
+        }
+
+        function resolveComparatorEntity(pData, code) {
+            if (!pData || !code) return null;
+            if (code.startsWith('GRP_')) {
+                const gId = code.replace('GRP_', '');
+                const gObj = (pData.strategic_matrix_groups || []).find(g => g.id === gId);
+                if (gObj) return { ...gObj, razon_social: gObj.name };
+            }
+            return (pData.companies_by_code || {})[code] || null;
+        }
+
+        function renderComparator() {
+            if (!window.INSURANCE_DATA_V2 || !currentPeriod) return;
+            const pData = window.INSURANCE_DATA_V2.periods_data[currentPeriod];
+            const codA = document.getElementById('comparator-select-a')?.value;
+            const codB = document.getElementById('comparator-select-b')?.value;
+
+            const cA = resolveComparatorEntity(pData, codA);
+            const cB = resolveComparatorEntity(pData, codB);
+            if (!cA || !cB) return;
+
+            document.getElementById('comp-th-a').innerText = cA.razon_social;
+            document.getElementById('comp-th-b').innerText = cB.razon_social;
+
+            const metrics = [
+                { name: 'Primas Emitidas', valA: cA.primas_emitidas || 0, valB: cB.primas_emitidas || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Primas Devengadas', valA: cA.primas_devengadas || 0, valB: cB.primas_devengadas || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Siniestros Netos Devengados', valA: cA.siniestros || 0, valB: cB.siniestros || 0, fmt: fmtARS, higherBetter: false },
+                { name: 'Resultado Técnico', valA: cA.resultado_tecnico || 0, valB: cB.resultado_tecnico || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Resultado Financiero', valA: cA.resultado_financiero || 0, valB: cB.resultado_financiero || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Resultado Neto del Ejercicio', valA: cA.resultado_neto || 0, valB: cB.resultado_neto || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Patrimonio Neto', valA: cA.patrimonio_neto || 0, valB: cB.patrimonio_neto || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Activo Total', valA: cA.activo || 0, valB: cB.activo || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Inversiones Totales', valA: cA.inversiones || 0, valB: cB.inversiones || 0, fmt: fmtARS, higherBetter: true },
+                { name: 'Siniestralidad Neta (%)', valA: cA.loss_ratio || 0, valB: cB.loss_ratio || 0, fmt: fmtPct, higherBetter: false },
+                { name: 'Ratio Combinado (%)', valA: cA.combined_ratio || 0, valB: cB.combined_ratio || 0, fmt: fmtPct, higherBetter: false },
+                { name: 'Rentabilidad s/ Patrimonio (ROE %)', valA: cA.roe || 0, valB: cB.roe || 0, fmt: fmtPct, higherBetter: true },
+                { name: 'Cobertura de Reservas (x)', valA: cA.cobertura_reservas || 0, valB: cB.cobertura_reservas || 0, fmt: v => Number(v || 0).toFixed(2) + 'x', higherBetter: true }
+            ];
+
+            const tbody = document.getElementById('tbl-comparator-body');
+            if (tbody) {
+                tbody.innerHTML = '';
+                metrics.forEach(m => {
+                    const diff = m.valA - m.valB;
+                    const aWins = m.higherBetter ? m.valA > m.valB : m.valA < m.valB;
+                    const winner = Math.abs(diff) < 1e-6 ? 'Empate' : (aWins ? cA.razon_social : cB.razon_social);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold">${m.name}</td>
+                        <td class="p-3 text-right font-mono font-bold">${m.fmt(m.valA)}</td>
+                        <td class="p-3 text-right font-mono font-bold">${m.fmt(m.valB)}</td>
+                        <td class="p-3 text-right font-mono ${aWins ? 'text-emerald-500' : 'text-rose-500'}">${m.fmt(diff)}</td>
+                        <td class="p-3 text-center font-bold text-xs"><span class="px-2 py-0.5 rounded-full ${aWins ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'}">${winner}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
         }
 
 
