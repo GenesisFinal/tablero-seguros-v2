@@ -41,8 +41,8 @@ GROUPS_DEFINITIONS = [
         "id": "san_cristobal",
         "name": "Grupo San Cristóbal",
         "short_name": "San Cristóbal",
-        "codes": ["0192", "0620", "0442", "0856"],
-        "description": "San Cristóbal Seguros, Asociart ART, San Cristóbal Retiro, Iunigo"
+        "codes": ["0192", "0620", "0442", "0823"],
+        "description": "San Cristóbal Seguros, Asociart ART, San Cristóbal Retiro, Iúnigo"
     },
     {
         "id": "la_segunda",
@@ -62,15 +62,15 @@ GROUPS_DEFINITIONS = [
         "id": "zurich",
         "name": "Grupo Zurich",
         "short_name": "Zurich",
-        "codes": ["0228", "0692", "0541"],
-        "description": "Zurich Argentina, Zurich Santander, Zurich International Life"
+        "codes": ["0228", "0692", "0541", "0039", "0422"],
+        "description": "Zurich Argentina, Zurich Santander, Zurich International Life, Zurich Aseguradora, Zurich Retiro"
     },
     {
         "id": "experta_werthein",
         "name": "Grupo Experta / Werthein",
         "short_name": "Experta / Werthein",
-        "codes": ["0880", "0616", "0419"],
-        "description": "Experta Seguros, Experta ART, La Estrella Retiro"
+        "codes": ["0880", "0616", "0419", "0433"],
+        "description": "Experta Seguros, Experta ART, La Estrella Retiro, Experta Retiro"
     },
     {
         "id": "mercantil_andina",
@@ -97,8 +97,8 @@ GROUPS_DEFINITIONS = [
         "id": "galicia",
         "name": "Grupo Galicia Seguros",
         "short_name": "Galicia Seguros",
-        "codes": ["0025", "0589", "0443", "0426"],
-        "description": "Galicia Seguros, Sudamericana Seguros Galicia, Galicia Retiro"
+        "codes": ["0025", "0589", "0516", "0443", "0426"],
+        "description": "Seguros Galicia (ex Sura), Galicia Seguros, GGAL Seguros, Galicia Retiro"
     },
     {
         "id": "swiss_medical",
@@ -111,8 +111,8 @@ GROUPS_DEFINITIONS = [
         "id": "st",
         "name": "Grupo ST",
         "short_name": "Grupo ST",
-        "codes": ["0251", "0423"],
-        "description": "Life Seguros, Orígenes Retiro"
+        "codes": ["0251", "0694", "0294", "0423", "0420"],
+        "description": "Life Seguros, Life Group, Orígenes Seguros, Orígenes Retiro, Genes II Retiro"
     },
     {
         "id": "meridional",
@@ -139,8 +139,8 @@ GROUPS_DEFINITIONS = [
         "id": "galeno",
         "name": "Grupo Galeno",
         "short_name": "Galeno",
-        "codes": ["0878"],
-        "description": "Galeno Seguros (Patrimoniales y ART)"
+        "codes": ["0878", "0619"],
+        "description": "Galeno Seguros, Galeno ART"
     }
 ]
 
@@ -151,18 +151,18 @@ BRANCH_TAXONOMY = {
     "art": {"name": "Riesgos del Trabajo (ART)", "codes": ["1.050.01", "1.050.99"]},
     "agro": {"name": "Agropecuario y Forestal", "codes": ["1.070.01", "1.070.02", "1.070.99"]},
     "incendio_comb": {"name": "Incendio y Combinados", "codes": ["1.010.99", "1.020.01", "1.020.02", "1.020.99"]},
-    "rc": {"name": "Responsabilidad Civil", "codes": ["1.080.01", "1.080.02", "1.080.03", "1.080.99"]},
+    "rc": {"name": "Responsabilidad Civil", "codes": ["1.080.01", "1.080.02", "1.080.03", "1.080.04", "1.080.05", "1.080.99"]},
     "caucion": {"name": "Caución y Créditos", "codes": ["1.100.01", "1.100.99", "1.110.01", "1.110.02", "1.110.99"]},
     "transporte": {"name": "Transporte y Cascos", "codes": ["1.040.99", "1.120.99", "1.130.01", "1.130.99", "1.140.99", "1.150.99"]},
-    "otros_patrimoniales": {"name": "Otros Patrimoniales", "codes": ["1.010.99", "1.020.01", "1.020.02", "1.020.99", "1.080.01", "1.080.02", "1.080.03", "1.080.99", "1.100.01", "1.100.99", "1.110.01", "1.110.02", "1.110.99", "1.040.99", "1.120.99", "1.130.01", "1.130.99", "1.140.99", "1.150.99", "1.090.99", "1.160.99", "1.170.01", "1.170.02", "1.170.03", "1.170.99"]},
+    "otros_patrimoniales": {"name": "Otros Patrimoniales", "codes": ["1.010.99", "1.020.01", "1.020.02", "1.020.99", "1.080.01", "1.080.02", "1.080.03", "1.080.04", "1.080.05", "1.080.99", "1.100.01", "1.100.99", "1.110.01", "1.110.02", "1.110.99", "1.040.99", "1.120.99", "1.130.01", "1.130.99", "1.140.99", "1.150.99", "1.090.99", "1.160.99", "1.170.01", "1.170.02", "1.170.03", "1.170.99"]},
     "personas": {"name": "Personas Total", "prefix": "2."},
     "vida": {"name": "Seguros de Vida", "codes": ["2.030.01", "2.030.02", "2.030.03", "2.030.04", "2.030.05"]},
     "ap": {"name": "Accidentes Personales", "codes": ["2.010.01", "2.010.02"]},
     "salud": {"name": "Salud", "codes": ["2.020.01", "2.020.02"]},
     "sepelio": {"name": "Sepelio", "codes": ["2.050.01", "2.050.02"]},
     "retiro": {"name": "Seguros de Retiro", "codes": ["2.060.01", "2.060.02", "2.070.01", "2.070.02"]},
-    "retiro_individual": {"name": "Retiro Individual", "codes": ["2.060.01"]},
-    "retiro_colectivo": {"name": "Retiro Colectivo", "codes": ["2.060.02"]}
+    "retiro_individual": {"name": "Retiro Individual", "codes": ["2.060.01", "2.070.01"]},
+    "retiro_colectivo": {"name": "Retiro Colectivo", "codes": ["2.060.02", "2.070.02"]}
 }
 
 def get_period_label(p_str):
@@ -314,6 +314,9 @@ def compute_rankings_for_df(df_raw, df_summary, groups_dict):
             if b_key == 'patrimoniales':
                 sub_b = primas_sub[primas_sub['cod_subramo'].str.startswith('1.') & (~primas_sub['cod_subramo'].str.startswith('1.050'))]
                 anul_b = anul_sub[anul_sub['cod_subramo'].str.startswith('1.') & (~anul_sub['cod_subramo'].str.startswith('1.050'))]
+            elif b_key == 'personas':
+                sub_b = primas_sub[primas_sub['cod_subramo'].str.startswith('2.') & (~primas_sub['cod_subramo'].str.startswith(('2.06', '2.07', '2.08')))]
+                anul_b = anul_sub[anul_sub['cod_subramo'].str.startswith('2.') & (~anul_sub['cod_subramo'].str.startswith(('2.06', '2.07', '2.08')))]
             else:
                 sub_b = primas_sub[primas_sub['cod_subramo'].str.startswith(prefix)]
                 anul_b = anul_sub[anul_sub['cod_subramo'].str.startswith(prefix)]
@@ -325,7 +328,7 @@ def compute_rankings_for_df(df_raw, df_summary, groups_dict):
         
         b_agg = pd.merge(em_agg, an_agg, on=['cod_cia', 'razon_social'], how='outer').fillna(0)
         b_agg['importe'] = b_agg['emision_bruta'] - b_agg['anulaciones']
-        b_agg = b_agg[b_agg['importe'] > 0].sort_values(by='importe', ascending=False)
+        b_agg = b_agg[b_agg['importe'].abs() > 0.01].sort_values(by='importe', ascending=False)
         tot_b = float(b_agg['importe'].sum())
 
         b_list = []
@@ -381,7 +384,7 @@ def process_single_period(period_code):
         "retiro_entidades": retiro_ent['entidades']
     }
 
-    # 2. Macro Totals BY REAL PRODUCT LINE (SUBRAMOS PUROS CON EMISIÓN DIRECTA NETA)
+    # 2. Macro Totals BY REAL PRODUCT LINE (SUBRAMOS PUROS CON EMISIÓN DIRECTA NETA Y SINIESTRALIDAD DEVENGADA SSN)
     cuentas_emision_directa = (
         '5.01.01.01.01.01.01', '5.01.01.01.01.01.99',
         '5.01.01.01.01.02.01', '5.01.01.01.01.02.99',
@@ -393,7 +396,6 @@ def process_single_period(period_code):
     )
     primas_sub = df_raw[df_raw['cod_cuenta'].str.startswith(cuentas_emision_directa) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
     anul_sub = df_raw[df_raw['cod_cuenta'].str.startswith(cuentas_anulaciones_directas) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
-    sin_sub = df_raw[df_raw['cod_cuenta'].str.startswith(('4.01.01.01.01.01', '4.01.01.01.01.99', '4.01.01.01.02.01', '4.01.01.01.02.99', '4.01.01.01.03.01', '4.01.01.01.03.99', '4.01.01.01.04.01', '4.01.01.01.04.99', '4.01.02.01', '4.01.02.02', '4.01.02.03')) & (df_raw['desc_subramo'] != '') & (df_raw['desc_subramo'].notna())]
 
     def get_macro_product(cod_sub):
         cod_str = str(cod_sub).strip()
@@ -409,60 +411,60 @@ def process_single_period(period_code):
 
     p_df = primas_sub.copy()
     a_df = anul_sub.copy()
-    s_df = sin_sub.copy()
     p_df['macro_prod'] = p_df['cod_subramo'].apply(get_macro_product)
     a_df['macro_prod'] = a_df['cod_subramo'].apply(get_macro_product)
-    s_df['macro_prod'] = s_df['cod_subramo'].apply(get_macro_product)
+
+    market_subramos = get_company_subramos(df_raw)
 
     tot_prod_p = float(p_df['importe'].sum()) - float(a_df['importe'].sum())
-    tot_prod_s = float(s_df['importe'].sum())
+    tot_prod_dev = sum(float(s.get('primas_devengadas', 0.0)) for s in market_subramos)
+    tot_prod_dev_non_ret = sum(float(s.get('primas_devengadas', 0.0)) for s in market_subramos if get_macro_product(s.get('cod_subramo', '')) != 'retiro')
+    tot_prod_s = sum(float(s.get('siniestros', 0.0)) for s in market_subramos)
 
     macro_productos = {}
     for k in ['patrimoniales', 'art', 'personas', 'retiro']:
         em_val = float(p_df[p_df['macro_prod'] == k]['importe'].sum())
         an_val = float(a_df[a_df['macro_prod'] == k]['importe'].sum())
-        p_val = max(0.0, em_val - an_val)
-        s_val = float(s_df[s_df['macro_prod'] == k]['importe'].sum())
-        sin_pct = (s_val / p_val * 100.0) if p_val > 0 else 0.0
+        p_val = em_val - an_val
+        sub_k = [s for s in market_subramos if get_macro_product(s.get('cod_subramo', '')) == k]
+        dev_val = sum(float(s.get('primas_devengadas', 0.0)) for s in sub_k)
+        s_val = 0.0 if k == 'retiro' else sum(float(s.get('siniestros', 0.0)) for s in sub_k)
+        sin_pct = 0.0 if k == 'retiro' else ((s_val / dev_val * 100.0) if dev_val > 0 else 0.0)
         part_pct = (p_val / tot_prod_p * 100.0) if tot_prod_p > 0 else 0.0
 
         macro_productos[k] = {
             "primas": round(p_val, 2),
+            "primas_devengadas": round(dev_val, 2),
             "emision_bruta": round(em_val, 2),
             "anulaciones": round(an_val, 2),
             "siniestros": round(s_val, 2),
-            "siniestralidad": round(sin_pct, 1),
-            "participacion": round(part_pct, 1)
+            "siniestralidad": round(sin_pct, 2),
+            "participacion": round(part_pct, 2)
         }
-
-    macro_productos['total'] = {
-        "primas": round(tot_prod_p, 2),
-        "siniestros": round(tot_prod_s, 2),
-        "siniestralidad": round((tot_prod_s / tot_prod_p * 100.0) if tot_prod_p > 0 else 0.0, 1),
-        "participacion": 100.0
-    }
 
     # Cross-selling breakdown for Personas (how much is sold by Mixtas vs Exclusivas - Emisión Directa Neta)
     pers_p_df = p_df[p_df['macro_prod'] == 'personas']
     pers_a_df = a_df[a_df['macro_prod'] == 'personas']
-    pers_in_mixtas = max(0.0, float(pers_p_df[pers_p_df['tipo_entidad'] == 'Patrimoniales y Mixtas']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Patrimoniales y Mixtas']['importe'].sum()))
-    pers_in_personas = max(0.0, float(pers_p_df[pers_p_df['tipo_entidad'] == 'Seguros de Personas']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Seguros de Personas']['importe'].sum()))
-    pers_in_art = max(0.0, float(pers_p_df[pers_p_df['tipo_entidad'] == 'Riesgos del Trabajo (ART)']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Riesgos del Trabajo (ART)']['importe'].sum()))
+    pers_in_mixtas = float(pers_p_df[pers_p_df['tipo_entidad'] == 'Patrimoniales y Mixtas']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Patrimoniales y Mixtas']['importe'].sum())
+    pers_in_personas = float(pers_p_df[pers_p_df['tipo_entidad'] == 'Seguros de Personas']['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'] == 'Seguros de Personas']['importe'].sum())
+    pers_in_art = float(pers_p_df[pers_p_df['tipo_entidad'].isin(['Riesgos del Trabajo (ART)', 'Seguros de Retiro'])]['importe'].sum()) - float(pers_a_df[pers_a_df['tipo_entidad'].isin(['Riesgos del Trabajo (ART)', 'Seguros de Retiro'])]['importe'].sum())
     tot_pers_cs = pers_in_mixtas + pers_in_personas + pers_in_art
 
     macro_productos['personas_cross_selling'] = {
         "en_mixtas": round(pers_in_mixtas, 2),
         "en_personas": round(pers_in_personas, 2),
         "en_art": round(pers_in_art, 2),
-        "pct_en_mixtas": round((pers_in_mixtas / tot_pers_cs * 100.0), 1) if tot_pers_cs > 0 else 0.0,
-        "pct_en_personas": round((pers_in_personas / tot_pers_cs * 100.0), 1) if tot_pers_cs > 0 else 0.0,
-        "pct_en_art": round((pers_in_art / tot_pers_cs * 100.0), 1) if tot_pers_cs > 0 else 0.0
+        "pct_en_mixtas": round((pers_in_mixtas / tot_pers_cs * 100.0), 2) if tot_pers_cs > 0 else 0.0,
+        "pct_en_personas": round((pers_in_personas / tot_pers_cs * 100.0), 2) if tot_pers_cs > 0 else 0.0,
+        "pct_en_art": round((pers_in_art / tot_pers_cs * 100.0), 2) if tot_pers_cs > 0 else 0.0
     }
 
     macro_productos['total'] = {
         "primas": round(tot_prod_p, 2),
+        "primas_devengadas": round(tot_prod_dev, 2),
         "siniestros": round(tot_prod_s, 2),
-        "siniestralidad": round((tot_prod_s / tot_prod_p * 100.0), 1) if tot_prod_p > 0 else 0.0
+        "siniestralidad": round((tot_prod_s / tot_prod_dev_non_ret * 100.0), 2) if tot_prod_dev_non_ret > 0 else 0.0,
+        "participacion": 100.0
     }
 
     # 3. Company profiles
@@ -512,8 +514,10 @@ def process_single_period(period_code):
                 "cod_cia": c_code,
                 "razon_social": c_data['razon_social'],
                 "tipo_entidad": c_data['tipo_entidad'],
-                "x": round(max(-150.0, min(150.0, m_tec)), 2), # Margen Técnico (%)
-                "y": round(max(-60.0, min(120.0, roi)), 2),     # Rendimiento Financiero (%)
+                "x": round(max(-150.0, min(150.0, m_tec)), 2), # Margen Técnico acotado para gráfico (%)
+                "y": round(max(-60.0, min(120.0, roi)), 2),     # Rendimiento Financiero acotado para gráfico (%)
+                "margen_tecnico": round(m_tec, 2),
+                "roi_inversiones": round(roi, 2),
                 "primas_devengadas": p_dev,
                 "primas_emitidas": p_emit,
                 "resultado_tecnico": float(c_data.get('resultado_tecnico', 0.0)),
@@ -533,11 +537,14 @@ def process_single_period(period_code):
         tot_g_dev = 0.0
         tot_g_sin = 0.0
         tot_g_resc = 0.0
+        tot_g_gtos_prod = 0.0
+        tot_g_gtos_expl = 0.0
         tot_g_gtos_op = 0.0
         tot_g_res_tec = 0.0
         tot_g_res_fin = 0.0
         tot_g_res_neto = 0.0
         tot_g_activo = 0.0
+        tot_g_pasivo = 0.0
         tot_g_inv = 0.0
         tot_g_disp = 0.0
         tot_g_inm = 0.0
@@ -553,11 +560,14 @@ def process_single_period(period_code):
                 tot_g_dev += float(c.get('primas_devengadas', 0.0))
                 tot_g_sin += float(c.get('siniestros', 0.0))
                 tot_g_resc += float(c.get('rescates', 0.0))
+                tot_g_gtos_prod += float(c.get('gtos_produccion', 0.0))
+                tot_g_gtos_expl += float(c.get('gtos_explotacion', 0.0))
                 tot_g_gtos_op += float(c.get('gtos_operativos', 0.0))
                 tot_g_res_tec += float(c.get('resultado_tecnico', 0.0))
                 tot_g_res_fin += float(c.get('resultado_financiero', 0.0))
                 tot_g_res_neto += float(c.get('resultado_neto', 0.0))
                 tot_g_activo += float(c.get('activo', 0.0))
+                tot_g_pasivo += float(c.get('pasivo', 0.0))
                 tot_g_inv += float(c.get('inversiones', 0.0))
                 tot_g_disp += float(c.get('disponibilidades', 0.0))
                 tot_g_inm += float(c.get('inmuebles', 0.0))
@@ -570,9 +580,11 @@ def process_single_period(period_code):
                             'cod_subramo': scod,
                             'desc_subramo': sr.get('desc_subramo', ''),
                             'primas': 0.0,
+                            'primas_devengadas': 0.0,
                             'siniestros': 0.0
                         }
                     grp_subramos_map[scod]['primas'] += float(sr.get('primas', 0.0))
+                    grp_subramos_map[scod]['primas_devengadas'] += float(sr.get('primas_devengadas', 0.0))
                     grp_subramos_map[scod]['siniestros'] += float(sr.get('siniestros', 0.0))
 
         if not members:
@@ -581,15 +593,20 @@ def process_single_period(period_code):
         grp_subramos_list = []
         for sr_obj in grp_subramos_map.values():
             p_sr = sr_obj['primas']
+            d_sr = sr_obj['primas_devengadas']
             s_sr = sr_obj['siniestros']
+            is_ret_sr = str(sr_obj['cod_subramo']).startswith(('2.06', '2.07'))
             sr_obj['primas'] = round(p_sr, 2)
-            sr_obj['siniestros'] = round(s_sr, 2)
-            sr_obj['siniestralidad_%'] = round((s_sr / p_sr * 100.0), 2) if p_sr > 0 else 0.0
+            sr_obj['primas_devengadas'] = round(d_sr, 2)
+            sr_obj['siniestros'] = 0.0 if is_ret_sr else round(s_sr, 2)
+            sr_obj['siniestralidad_%'] = 0.0 if is_ret_sr else (round((s_sr / d_sr * 100.0), 2) if d_sr > 0 else 0.0)
             grp_subramos_list.append(sr_obj)
         grp_subramos_list.sort(key=lambda x: x['primas'], reverse=True)
 
         base_g_primas = tot_g_dev if tot_g_dev > 0 else (tot_g_emit if tot_g_emit > 0 else 1.0)
-        loss_ratio = ((tot_g_sin + tot_g_resc) / base_g_primas * 100.0) if base_g_primas > 0 else 0.0
+        # Siniestralidad Neta Devengada excluye aseguradoras exclusivas de retiro en el denominador si no tienen siniestros
+        dev_non_ret = sum(float(m.get('primas_devengadas', 0.0)) for m in members if m.get('tipo_entidad') != 'Seguros de Retiro')
+        loss_ratio = (tot_g_sin / dev_non_ret * 100.0) if dev_non_ret > 0 else 0.0
         mkt_share = (tot_g_emit / tot_emit * 100.0) if tot_emit > 0 else 0.0
 
         members_summary = []
@@ -636,11 +653,14 @@ def process_single_period(period_code):
             "primas_devengadas": round(tot_g_dev, 2),
             "siniestros": round(tot_g_sin, 2),
             "rescates": round(tot_g_resc, 2),
+            "gtos_produccion": round(tot_g_gtos_prod, 2),
+            "gtos_explotacion": round(tot_g_gtos_expl, 2),
             "gtos_operativos": round(tot_g_gtos_op, 2),
             "resultado_tecnico": round(tot_g_res_tec, 2),
             "resultado_financiero": round(tot_g_res_fin, 2),
             "resultado_neto": round(tot_g_res_neto, 2),
             "activo": round(tot_g_activo, 2),
+            "pasivo": round(tot_g_pasivo, 2),
             "inversiones": round(tot_g_inv, 2),
             "disponibilidades": round(tot_g_disp, 2),
             "inmuebles": round(tot_g_inm, 2),
@@ -664,17 +684,29 @@ def process_single_period(period_code):
         strategic_matrix_groups.append({
             "id": gid,
             "cod_cia": gid,
+            "name": g['name'],
             "razon_social": g['name'],
             "short_name": g['short_name'],
             "tipo_entidad": "Grupos Aseguradores",
             "x": round(max(-150.0, min(150.0, g['margen_tecnico'])), 2),
             "y": round(max(-60.0, min(120.0, g['roi_inversiones'])), 2),
+            "margen_tecnico": g['margen_tecnico'],
+            "roi_inversiones": g['roi_inversiones'],
             "primas_devengadas": g['primas_devengadas'],
             "primas_emitidas": g['primas_emitidas'],
+            "siniestros": g['siniestros'],
             "resultado_tecnico": g['resultado_tecnico'],
             "resultado_financiero": g['resultado_financiero'],
             "resultado_neto": g['resultado_neto'],
+            "activo": g['activo'],
+            "pasivo": g['pasivo'],
+            "inversiones": g['inversiones'],
+            "compromisos_tecnicos": g['compromisos_tecnicos'],
+            "patrimonio_neto": g['patrimonio_neto'],
+            "loss_ratio": g['loss_ratio'],
             "combined_ratio": g['combined_ratio'],
+            "cobertura_reservas": g['cobertura_reservas'],
+            "roe": g['roe'],
             "quadrant": g['quadrant'],
             "quadrant_label": g['quadrant_label'],
             "entities_count": g['entities_count']
@@ -719,7 +751,7 @@ def process_single_period(period_code):
         base_s_primas = s["primas_devengadas"] if s["primas_devengadas"] > 0 else (s["primas_emitidas"] if s["primas_emitidas"] > 0 else 1.0)
         m_tec = (s["resultado_tecnico"] / base_s_primas * 100.0) if base_s_primas > 0 else 0.0
         roi = (s["resultado_financiero"] / s["inversiones"] * 100.0) if s["inversiones"] > 0 else 0.0
-        loss_r = ((s["siniestros"] + s["rescates"]) / base_s_primas * 100.0) if base_s_primas > 0 else 0.0
+        loss_r = 0.0 if tipo == 'Seguros de Retiro' else ((s["siniestros"] / base_s_primas * 100.0) if base_s_primas > 0 else 0.0)
         mkt_sh = (s["primas_emitidas"] / tot_emit * 100.0) if tot_emit > 0 else 0.0
         
         if m_tec >= 0 and roi >= 0:
@@ -771,9 +803,8 @@ def process_single_period(period_code):
     # 5. Rankings
     rankings = compute_rankings_for_df(df_raw, df_summary, groups_dict)
 
-    # 6. Market investments & subramos
+    # 6. Market investments
     market_investments = get_company_investments_breakdown(df_raw)
-    market_subramos = get_company_subramos(df_raw)
 
     # 7. La Segunda Group Details
     ls_group = groups_dict.get('la_segunda', {})
@@ -796,9 +827,7 @@ def process_single_period(period_code):
         "strategic_matrix_groups": strategic_matrix_groups,
         "strategic_matrix_segments": strategic_matrix_segments,
         "companies_by_code": companies_dict,
-        "companies": list(companies_dict.values()),
         "groups_by_id": groups_dict,
-        "groups": list(groups_dict.values()),
         "rankings": rankings,
         "market_investments": market_investments,
         "market_subramos": market_subramos,
@@ -1009,10 +1038,10 @@ def compute_retiro_details_for_df(df_raw, df_summary, period_code):
                 '2.02.02.02.03.30.00.00', '2.02.02.02.03.31.00.00', '2.02.02.02.03.32.00.00',
                 '2.02.02.02.03.40.00.00', '2.02.02.02.03.50.00.00'
             ])]['importe'].sum()) / 1000.0
-            otros = max(0.0, otros_sub)
+            otros = otros_sub
             tot_rm = ah_tot + re_tot + rvp_art + otros
         else:
-            otros = max(0.0, tot_rm - (ah_tot + re_tot + rvp_art))
+            otros = tot_rm - (ah_tot + re_tot + rvp_art)
 
         if tot_rm > 0:
             comp_rows.append({
@@ -1072,10 +1101,10 @@ def compute_retiro_details_for_df(df_raw, df_summary, period_code):
 
     primas_rows = []
     for (cod, name), row_s in net_ret.iterrows():
-        p_ind = max(0.0, float(row_s.get('2.060.01', 0.0)) + float(row_s.get('2.070.01', 0.0)))
-        p_col = max(0.0, float(row_s.get('2.060.02', 0.0)) + float(row_s.get('2.070.02', 0.0)))
+        p_ind = float(row_s.get('2.060.01', 0.0)) + float(row_s.get('2.070.01', 0.0))
+        p_col = float(row_s.get('2.060.02', 0.0)) + float(row_s.get('2.070.02', 0.0))
         p_tot = p_ind + p_col
-        if p_tot > 0:
+        if abs(p_tot) > 0.01 or abs(p_ind) > 0.01 or abs(p_col) > 0.01:
             primas_rows.append({
                 "cod_cia": cod,
                 "entidad": name,
@@ -1100,9 +1129,11 @@ def compute_retiro_details_for_df(df_raw, df_summary, period_code):
         "primas_total": round(tot_p_all, 2),
         "total_pct": 100.0,
         "primas_colectivo": round(tot_p_col, 2),
-        "colectivo_pct": round((tot_p_col / tot_p_all * 100.0), 2) if tot_p_all > 0 else 0.0,
+        "colectivo_pct": 100.0 if tot_p_col > 0 else 0.0,
+        "mix_colectivo_pct": round((tot_p_col / tot_p_all * 100.0), 2) if tot_p_all > 0 else 0.0,
         "primas_individual": round(tot_p_ind, 2),
-        "individual_pct": round((tot_p_ind / tot_p_all * 100.0), 2) if tot_p_all > 0 else 0.0
+        "individual_pct": 100.0 if tot_p_ind > 0 else 0.0,
+        "mix_individual_pct": round((tot_p_ind / tot_p_all * 100.0), 2) if tot_p_all > 0 else 0.0
     }
 
     # 3. Asegurados
@@ -1203,40 +1234,55 @@ def build_all_v2_datasets():
         }
     }
 
+    # Índice IPC Nivel General Nacional Oficial INDEC (Base Dic 2016 = 100)
     PERIOD_IPC = {
-        "2021-2": 483.60,   # 30-06-2021 (12M Cierre 20/21)
-        "2021-3": 532.06,   # 30-09-2021 (3M 21/22)
-        "2021-4": 582.46,   # 31-12-2021 (6M 21/22)
-        "2022-1": 676.06,   # 31-03-2022 (9M 21/22)
-        "2022-2": 788.62,   # 30-06-2022 (12M Cierre 21/22)
-        "2022-3": 950.89,   # 30-09-2022 (3M 22/23)
-        "2022-4": 1134.59,  # 31-12-2022 (6M 22/23)
-        "2023-1": 1381.18,  # 31-03-2023 (9M 22/23)
-        "2023-2": 1710.22,  # 30-06-2023 (12M Cierre 22/23)
-        "2023-3": 2304.59,  # 30-09-2023 (3M 23/24)
-        "2023-4": 3533.22,  # 31-12-2023 (6M 23/24)
-        "2024-1": 5357.65,  # 31-03-2024 (9M 23/24)
-        "2024-2": 6314.15,  # 30-06-2024 (12M Cierre 23/24)
-        "2024-3": 7083.82,  # 30-09-2024 (3M 24/25)
-        "2024-4": 7752.48,  # 31-12-2024 (6M 24/25)
-        "2025-1": 8432.22,  # 31-03-2025 (9M 24/25)
-        "2025-2": 9054.40,  # 30-06-2025 (12M Cierre 24/25)
-        "2025-3": 9688.21,  # 30-09-2025 (3M 25/26)
-        "2025-4": 10366.38, # 31-12-2025 (6M 25/26)
-        "2026-1": 11195.69, # 31-03-2026 (9M 25/26)
-        "2026-2": 11979.38, # 30-06-2026 (12M Cierre 25/26)
-        "2026-3": 12722.10, # 30-09-2026 (3M 26/27)
-        "2026-4": 13485.40, # 31-12-2026 (6M 26/27)
-        "2027-1": 14294.55, # 31-03-2027 (9M 26/27)
-        "2027-2": 15152.20  # 30-06-2027 (12M Cierre 26/27)
+        "2021-2": 483.6049,   # 30-06-2021 (12M Cierre 20/21)
+        "2021-3": 528.4968,   # 30-09-2021 (3M 21/22)
+        "2021-4": 582.4575,   # 31-12-2021 (6M 21/22)
+        "2022-1": 676.0566,   # 31-03-2022 (9M 21/22)
+        "2022-2": 793.0278,   # 30-06-2022 (12M Cierre 21/22)
+        "2022-3": 967.3076,   # 30-09-2022 (3M 22/23)
+        "2022-4": 1134.5875,  # 31-12-2022 (6M 22/23)
+        "2023-1": 1381.1601,  # 31-03-2023 (9M 22/23)
+        "2023-2": 1709.6115,  # 30-06-2023 (12M Cierre 22/23)
+        "2023-3": 2304.9242,  # 30-09-2023 (3M 23/24)
+        "2023-4": 3533.1922,  # 31-12-2023 (6M 23/24)
+        "2024-1": 5357.0929,  # 31-03-2024 (9M 23/24)
+        "2024-2": 6351.7145,  # 30-06-2024 (12M Cierre 23/24)
+        "2024-3": 7122.2421,  # 30-09-2024 (3M 24/25)
+        "2024-4": 7694.0075,  # 31-12-2024 (6M 24/25)
+        "2025-1": 8353.3158,  # 31-03-2025 (9M 24/25)
+        "2025-2": 8855.5681,  # 30-06-2025 (12M Cierre 24/25)
+        "2025-3": 9384.0922,  # 30-09-2025 (3M 25/26)
+        "2025-4": 10121.3715, # 31-12-2025 (6M 25/26)
+        "2026-1": 11077.0608, # 31-03-2026 (9M 25/26)
+        "2026-2": 11826.4103, # 30-06-2026 (12M Cierre 25/26)
+        "2026-3": 12514.1508  # 30-09-2026 (3M 26/27)
     }
-    # Garantizar que cualquier período futuro tenga un IPC estimado si aún no está en el diccionario
-    last_known_ipc = 11979.38
+    # Consulta automática a la API oficial de Series de Tiempo de la República Argentina (INDEC)
+    # para incorporar automáticamente cualquier trimestre futuro publicado (ej. 2026-4, 2027-1, etc.)
+    try:
+        import requests
+        r_ipc = requests.get(
+            "https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26&start_date=2021-06-01&limit=240",
+            timeout=10
+        )
+        if r_ipc.status_code == 200:
+            month_to_q = {"03": "1", "06": "2", "09": "3", "12": "4"}
+            for dt_str, ipc_val in r_ipc.json().get("data", []):
+                if ipc_val is not None and len(dt_str) >= 7:
+                    yr_s, mo_s = dt_str[:4], dt_str[5:7]
+                    if mo_s in month_to_q:
+                        PERIOD_IPC[f"{yr_s}-{month_to_q[mo_s]}"] = round(float(ipc_val), 4)
+    except Exception as e_ipc:
+        print(f"[IPC INDEC] Usando serie oficial local de respaldo ({e_ipc})")
+
+    last_known_ipc = 12514.1508
     for p in periods:
         if p in PERIOD_IPC:
             last_known_ipc = PERIOD_IPC[p]
         else:
-            last_known_ipc = round(last_known_ipc * 1.06, 2)
+            last_known_ipc = round(last_known_ipc * 1.06, 4)
             PERIOD_IPC[p] = last_known_ipc
 
     if os.path.exists(old_dataset_path):
@@ -1247,8 +1293,8 @@ def build_all_v2_datasets():
         except Exception as e:
             print(f"Warning reading old supplementary data: {e}")
 
-    latest_period = periods[-1] if periods else "2026-2"
-    latest_ipc = PERIOD_IPC.get(latest_period, 11979.38)
+    latest_period = periods[-1] if periods else "2026-3"
+    latest_ipc = PERIOD_IPC.get(latest_period, 12514.1508)
 
     if latest_period in periods_data and "retiro_details" in periods_data[latest_period]:
         rd = periods_data[latest_period]["retiro_details"]
@@ -1392,14 +1438,14 @@ def build_all_v2_datasets():
     # Save to JSON
     print(f"Saving {JSON_OUTPUT}...")
     with open(JSON_OUTPUT, "w", encoding="utf-8") as f:
-        json.dump(master_payload, f, ensure_ascii=False)
+        json.dump(master_payload, f, ensure_ascii=False, separators=(",", ":"))
 
     # Save to JS for standalone distribution
     print(f"Saving {JS_OUTPUT}...")
     with open(JS_OUTPUT, "w", encoding="utf-8") as f:
         f.write("/* Tablero de Seguros v2 - Dataset Multi-Trimestral SSN */\n")
         f.write("window.INSURANCE_DATA_V2 = ")
-        json.dump(master_payload, f, ensure_ascii=False)
+        json.dump(master_payload, f, ensure_ascii=False, separators=(",", ":"))
         f.write(";\n")
 
     elapsed = time.time() - start_time

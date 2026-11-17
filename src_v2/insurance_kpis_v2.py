@@ -62,84 +62,53 @@ def compute_all_companies_summary(df):
         emision_directa_bruta = float(df_c[df_c['cod_cuenta'].str.startswith(cuentas_emision_directa)]['importe'].sum())
         anulaciones_directas = float(df_c[df_c['cod_cuenta'].str.startswith(cuentas_anulaciones_directas)]['importe'].sum())
         
-        # Emisión Directa Neta como base unificada de producción
+        # Emisión Directa Neta como base unificada de producción (idéntico a Boletín de Producción SSN)
         primas_emit = max(0.0, emision_directa_bruta - anulaciones_directas)
 
-        # Paso 2: Cesiones y Anulaciones Totales de Balance
-        primas_cedidas = get_account_value(df_c, '4.01.03.00.00.00.00.00', exact=True)
+        # Paso 2: Primas Netas Devengadas Oficiales SSN (Seguros Directos + Reaseguros Activos)
+        # 5.01.01 (Primas y Recargos Totales) - 4.01.04 (Anulaciones Totales)
+        # - [4.01.03 (Primas Cedidas) - 5.01.02 (Créditos por Anulaciones de Primas Cedidas)]
+        # - [4.01.05 (Cargo Compromisos Técnicos) - 5.01.04.04.04.{11,12,13,16,18,21} (Liberación Compromisos Técnicos)]
+        primas_y_recargos_tot = get_account_value(df_c, '5.01.01.00.00.00.00.00', exact=True)
         anulaciones = get_account_value(df_c, '4.01.04.00.00.00.00.00', exact=True)
+        primas_cedidas_brutas = get_account_value(df_c, '4.01.03.00.00.00.00.00', exact=True)
+        anulaciones_cedidas = get_account_value(df_c, '5.01.02.00.00.00.00.00', exact=True)
+        primas_cedidas = primas_cedidas_brutas - anulaciones_cedidas
         cesiones_anul = primas_cedidas + anulaciones
 
-        # Paso 3: Variación Neta de Compromisos Técnicos / Reservas Matemáticas
-        if is_retiro:
-            var_reservas_cargo = get_account_value(df_c, '4.01.05.00.00.00.00.00', exact=True)
-            var_reservas_liberacion = get_account_value(df_c, '5.01.04.04.04.12.00.00', exact=True)
-            var_comp_tec = var_reservas_cargo - var_reservas_liberacion
-        else:
-            var_riesgos_cargo = get_account_value(df_c, '4.01.05.00.00.00.00.00', exact=True)
-            var_riesgos_lib = (
-                get_account_value(df_c, '5.01.04.04.04.11.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.12.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.13.00.00', exact=True)
-            )
-            if var_riesgos_lib == 0:
-                var_riesgos_lib = (
-                    get_account_value(df_c, '5.01.04.04.04.11', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.12', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.13', exact=False)
-                )
-            var_comp_tec = var_riesgos_cargo - var_riesgos_lib
+        comp_tec_cargo = get_account_value(df_c, '4.01.05.00.00.00.00.00', exact=True)
+        comp_tec_liberacion = sum(
+            get_account_value(df_c, f'5.01.04.04.04.{k:02d}.00.00', exact=True)
+            for k in (11, 12, 13, 16, 18, 21)
+        )
+        var_comp_tec = comp_tec_cargo - comp_tec_liberacion
 
-        # Primas Devengadas Técnicas
-        primas_dev = primas_emit - cesiones_anul - var_comp_tec
+        # Primas Netas Devengadas (Exacto Cuadro 3 SSN)
+        primas_dev = (primas_y_recargos_tot - anulaciones) - primas_cedidas - var_comp_tec
 
-        # Paso 4: Siniestros Devengados Netos
-        if is_retiro:
-            siniestros_dev = 0.0
-        else:
-            siniestros_cargo = get_account_value(df_c, '4.01.01.00.00.00.00.00', exact=True)
-            recup_sin = (
-                get_account_value(df_c, '5.01.04.04.04.01.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.06.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.07.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.08.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.09.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.10.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.14.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.15.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.16.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.17.00.00', exact=True) +
-                get_account_value(df_c, '5.01.04.04.04.20.00.00', exact=True)
-            )
-            if recup_sin == 0:
-                recup_sin = (
-                    get_account_value(df_c, '5.01.04.04.04.01', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.06', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.07', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.08', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.09', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.10', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.14', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.15', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.16', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.17', exact=False) +
-                    get_account_value(df_c, '5.01.04.04.04.20', exact=False)
-                )
-            siniestros_dev = max(0.0, siniestros_cargo - recup_sin)
+        # Paso 4: Siniestros Netos Devengados Oficiales SSN (Exacto Cuadro 3 SSN)
+        # 4.01.01 (Siniestros Totales) - [5.01.04 (Créditos por Recuperos Totales) - Liberación Comp. Téc. - 5.01.04.04.04.08 (Part. Utilidades Reaseg.)]
+        part_util_reaseg = get_account_value(df_c, '5.01.04.04.04.08.00.00', exact=True)
+        siniestros_cargo = get_account_value(df_c, '4.01.01.00.00.00.00.00', exact=True)
+        recup_tot = get_account_value(df_c, '5.01.04.00.00.00.00.00', exact=True)
+        recup_sin = recup_tot - comp_tec_liberacion - part_util_reaseg
+        siniestros_dev = siniestros_cargo - recup_sin
 
-        # Paso 5: Rescates y Rentas
+        # Paso 5: Otras Indemnizaciones, Rescates y Rentas Vitalicias (4.01.02)
         rescates = get_account_value(df_c, '4.01.02.00.00.00.00.00', exact=True)
 
-        # Paso 6: Gastos de Producción y Explotación
+        # Paso 6: Gastos de Producción Netos, Explotación y Prevención ART
         gtos_prod_cargo = get_account_value(df_c, '4.01.06.00.00.00.00.00', exact=True)
         recup_gtos_prod = get_account_value(df_c, '5.01.03.00.00.00.00.00', exact=True)
-        gtos_prod = max(0.0, gtos_prod_cargo - recup_gtos_prod)
+        gtos_prod = gtos_prod_cargo - recup_gtos_prod
 
-        gtos_expl = get_account_value(df_c, '4.01.07.00.00.00.00.00', exact=True)
+        gtos_expl_base = get_account_value(df_c, '4.01.07.00.00.00.00.00', exact=True)
+        gtos_prev_art = get_account_value(df_c, '4.01.60.00.00.00.00.00', exact=True)
+        gtos_expl = gtos_expl_base + gtos_prev_art
         gtos_operativos = gtos_prod + gtos_expl
 
         # Paso 7: Otros Ingresos y Egresos Técnicos
-        otros_ing_tec = get_account_value(df_c, '5.01.05.00.00.00.00.00', exact=True)
+        otros_ing_tec = get_account_value(df_c, '5.01.05.00.00.00.00.00', exact=True) + part_util_reaseg
         otros_egr_tec = get_account_value(df_c, '4.01.50.00.00.00.00.00', exact=True)
 
         # Resultados Oficiales
@@ -159,11 +128,11 @@ def compute_all_companies_summary(df):
         base_primas = primas_dev if primas_dev > 0 else (primas_emit if primas_emit > 0 else 1.0)
         
         costo_prestacional = siniestros_dev + rescates
-        loss_ratio = (costo_prestacional / base_primas) * 100.0 if base_primas > 0 else 0.0
+        loss_ratio = 0.0 if is_retiro else ((siniestros_dev / primas_dev * 100.0) if primas_dev > 0 else 0.0)
         rescates_ratio = (rescates / base_primas) * 100.0 if base_primas > 0 else 0.0
         comm_ratio = (gtos_prod / base_primas) * 100.0 if base_primas > 0 else 0.0
         exp_ratio = (gtos_expl / base_primas) * 100.0 if base_primas > 0 else 0.0
-        combined_ratio = loss_ratio + ((gtos_operativos) / base_primas * 100.0) if base_primas > 0 else 0.0
+        combined_ratio = ((costo_prestacional + gtos_operativos) / primas_dev * 100.0) if primas_dev > 0 else 0.0
 
         margen_tecnico = (res_tec / base_primas) * 100.0 if base_primas > 0 else 0.0
         roi_inversiones = (res_fin / inv) * 100.0 if inv > 0 else 0.0
@@ -240,6 +209,10 @@ def get_company_subramos(df, cod_cia=None):
     else:
         sub_df = df
 
+    sub_df = sub_df[(sub_df['cod_subramo'] != '') & (sub_df['cod_subramo'] != '3.000.99') & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
+    if sub_df.empty:
+        return []
+
     cuentas_emision_directa = (
         '5.01.01.01.01.01.01', '5.01.01.01.01.01.99',
         '5.01.01.01.01.02.01', '5.01.01.01.01.02.99',
@@ -249,24 +222,63 @@ def get_company_subramos(df, cod_cia=None):
         '4.01.04.04.04.01.01', '4.01.04.04.04.01.99',
         '4.01.04.04.04.02.01', '4.01.04.04.04.02.99'
     )
+    ct_lib_pfxs = tuple(f'5.01.04.04.04.{k:02d}.' for k in (11, 12, 13, 16, 18, 21))
 
-    primas_rows = sub_df[sub_df['cod_cuenta'].str.startswith(cuentas_emision_directa) & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
-    anul_rows = sub_df[sub_df['cod_cuenta'].str.startswith(cuentas_anulaciones_directas) & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
-    siniestros_rows = sub_df[sub_df['cod_cuenta'].str.startswith(('4.01.01.01.01.01', '4.01.01.01.01.99', '4.01.01.01.02.01', '4.01.01.01.02.99', '4.01.01.01.03.01', '4.01.01.01.03.99', '4.01.01.01.04.01', '4.01.01.01.04.99', '4.01.02.01', '4.01.02.02', '4.01.02.03')) & (sub_df['desc_subramo'] != '') & (sub_df['desc_subramo'].notna())]
+    desc_map = sub_df.groupby('cod_subramo')['desc_subramo'].first()
 
-    primas_by_sub = primas_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index().rename(columns={'importe': 'emision_bruta'})
-    anul_by_sub = anul_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index().rename(columns={'importe': 'anulaciones'})
-    sin_by_sub = siniestros_rows.groupby(['cod_subramo', 'desc_subramo'])['importe'].sum().reset_index().rename(columns={'importe': 'siniestros'})
+    def sum_by_sub(mask):
+        s = sub_df[mask]
+        if s.empty:
+            return pd.Series(dtype=float)
+        return s.groupby('cod_subramo')['importe'].sum()
 
-    merged = pd.merge(primas_by_sub, anul_by_sub, on=['cod_subramo', 'desc_subramo'], how='outer').fillna(0)
-    merged['primas'] = merged['emision_bruta'] - merged['anulaciones']
-    merged = pd.merge(merged, sin_by_sub, on=['cod_subramo', 'desc_subramo'], how='outer').fillna(0)
-    merged['siniestralidad_%'] = np.where(merged['primas'] > 0, (merged['siniestros'] / merged['primas']) * 100.0, 0.0)
+    em_dir = sum_by_sub(sub_df['cod_cuenta'].str.startswith(cuentas_emision_directa))
+    an_dir = sum_by_sub(sub_df['cod_cuenta'].str.startswith(cuentas_anulaciones_directas))
+    primas_emit = em_dir.subtract(an_dir, fill_value=0.0)
 
-    merged = merged[merged['desc_subramo'].notna() & (merged['desc_subramo'] != '') & ((merged['primas'] > 0) | (merged['siniestros'] > 0))]
+    # Primas Netas Devengadas exactas por subramo (Cuadro 3 SSN)
+    p_brut = sum_by_sub(sub_df['cod_cuenta'].str.startswith('5.01.01.'))
+    p_anul = sum_by_sub(sub_df['cod_cuenta'].str.startswith('4.01.04.'))
+    p_ced  = sum_by_sub(sub_df['cod_cuenta'].str.startswith('4.01.03.'))
+    p_aced = sum_by_sub(sub_df['cod_cuenta'].str.startswith('5.01.02.'))
+    ct_car = sum_by_sub(sub_df['cod_cuenta'].str.startswith('4.01.05.'))
+    ct_lib = sum_by_sub(sub_df['cod_cuenta'].str.startswith(ct_lib_pfxs))
+    primas_dev = (p_brut.subtract(p_anul, fill_value=0.0)
+                  .subtract(p_ced.subtract(p_aced, fill_value=0.0), fill_value=0.0)
+                  .subtract(ct_car.subtract(ct_lib, fill_value=0.0), fill_value=0.0))
+
+    # Siniestros Netos Devengados exactos por subramo (Cuadro 3 SSN)
+    part_util = sum_by_sub(sub_df['cod_cuenta'].str.startswith('5.01.04.04.04.08.'))
+    sin_car = sum_by_sub(sub_df['cod_cuenta'].str.startswith('4.01.01.'))
+    rec_tot = sum_by_sub(sub_df['cod_cuenta'].str.startswith('5.01.04.'))
+    sin_lib = rec_tot.subtract(ct_lib, fill_value=0.0).subtract(part_util, fill_value=0.0)
+    sin_dev = sin_car.subtract(sin_lib, fill_value=0.0)
+
+    all_codes = desc_map.index
+    merged = pd.DataFrame({
+        'cod_subramo': all_codes,
+        'desc_subramo': desc_map.values,
+        'primas': primas_emit.reindex(all_codes, fill_value=0.0).values,
+        'primas_devengadas': primas_dev.reindex(all_codes, fill_value=0.0).values,
+        'siniestros': sin_dev.reindex(all_codes, fill_value=0.0).values
+    })
+
+    # Seguros de Retiro (2.060 / 2.070) no registran siniestralidad técnica
+    is_ret_sub = merged['cod_subramo'].str.startswith(('2.06', '2.07'))
+    merged.loc[is_ret_sub, 'siniestros'] = 0.0
+    merged['siniestralidad_%'] = np.where(
+        (~is_ret_sub) & (merged['primas_devengadas'] > 0),
+        (merged['siniestros'] / merged['primas_devengadas']) * 100.0,
+        0.0
+    )
+
+    merged = merged[(merged['primas'].abs() > 0.01) | (merged['siniestros'].abs() > 0.01)]
     merged = merged.sort_values(by='primas', ascending=False)
-    
-    return merged[['cod_subramo', 'desc_subramo', 'primas', 'siniestros', 'siniestralidad_%']].to_dict(orient='records')
+
+    for col in ('primas', 'primas_devengadas', 'siniestros', 'siniestralidad_%'):
+        merged[col] = merged[col].round(2)
+
+    return merged[['cod_subramo', 'desc_subramo', 'primas', 'primas_devengadas', 'siniestros', 'siniestralidad_%']].to_dict(orient='records')
 
 def get_company_investments_breakdown(df_cia):
     inv4 = df_cia[df_cia['cod_cuenta'].str.startswith('1.02.01.') & df_cia['cod_cuenta'].apply(
@@ -285,7 +297,7 @@ def get_company_investments_breakdown(df_cia):
 
     grp = combined.groupby(['cod_cuenta', 'desc_cuenta'])['importe'].sum().reset_index()
     tot = grp['importe'].sum()
-    grp['porcentaje'] = (grp['importe'] / tot * 100.0).round(1) if tot > 0 else 0.0
+    grp['porcentaje'] = (grp['importe'] / tot * 100.0).round(2) if tot > 0 else 0.0
     grp = grp[grp['importe'] > 0].sort_values(by='importe', ascending=False)
 
     records = []

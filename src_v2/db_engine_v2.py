@@ -77,6 +77,44 @@ def get_all_periods():
         periods.append(p)
     return sorted(periods)
 
+# Entidades registradas oficialmente por SSN como Exclusivas de Seguros de Personas
+# que mantienen saldos residuales menores en subramos 1.*
+SSN_PERSONAS_OVERRIDES = {"0080", "0409", "0432", "0574", "0933"}
+
+def _classify_entities(df):
+    """Clasifica cada aseguradora en los 4 segmentos oficiales de licencia SSN."""
+    cias = df[['cod_cia', 'razon_social']].drop_duplicates()
+    sub_all = df[(df['cod_subramo'] != '') & (df['cod_subramo'] != '3.000.99') & (df['importe'] != 0)]
+    subs_by_cia = sub_all.groupby('cod_cia')['cod_subramo'].apply(set).to_dict()
+
+    seg_map = {}
+    for _, row in cias.iterrows():
+        c = row['cod_cia']
+        rs_upper = str(row['razon_social']).upper()
+        subs_used = subs_by_cia.get(c, set())
+
+        has_pat = any(s.startswith('1.') and not s.startswith('1.050') for s in subs_used)
+        has_art = any(s.startswith('1.050') for s in subs_used)
+        has_per = any(s.startswith(('2.01', '2.02', '2.03', '2.05')) for s in subs_used)
+        has_ret = any(s.startswith(('2.06', '2.07')) for s in subs_used)
+
+        if 'RETIRO' in rs_upper or (has_ret and not has_pat and not has_per and not has_art):
+            seg = 'Seguros de Retiro'
+        elif ('RIESGOS DEL TRABAJO' in rs_upper or ' ART' in rs_upper or 'A.R.T.' in rs_upper) or (has_art and not has_pat and not has_per and not has_ret):
+            seg = 'Riesgos del Trabajo (ART)'
+        elif c in SSN_PERSONAS_OVERRIDES or (
+            not has_pat and not has_art and (
+                has_per or (any(w in rs_upper for w in ['PERSONAS', 'VIDA', 'SEPELIO', 'SALUD']) and 'PATRIMONIALES' not in rs_upper)
+            )
+        ):
+            seg = 'Seguros de Personas'
+        else:
+            seg = 'Patrimoniales y Mixtas'
+
+        seg_map[c] = seg
+
+    return df['cod_cia'].map(seg_map)
+
 def load_period_data(period, force_reload=False):
     os.makedirs(CACHE_DIR, exist_ok=True)
     parquet_path = os.path.join(CACHE_DIR, f"{period}.parquet")
@@ -85,7 +123,15 @@ def load_period_data(period, force_reload=False):
         try:
             with open(parquet_path, "rb") as f:
                 buf = io.BytesIO(f.read())
-            return pd.read_parquet(buf)
+            df_cached = pd.read_parquet(buf)
+            new_seg = _classify_entities(df_cached)
+            if not df_cached['tipo_entidad'].equals(new_seg):
+                df_cached['tipo_entidad'] = new_seg
+                out_buf = io.BytesIO()
+                df_cached.to_parquet(out_buf, index=False)
+                with open(parquet_path, "wb") as wf:
+                    wf.write(out_buf.getvalue())
+            return df_cached
         except Exception as e:
             print(f"Error reading cache {parquet_path}: {e}")
 
@@ -113,37 +159,8 @@ def load_period_data(period, force_reload=False):
     df['importe'] = pd.to_numeric(df['importe'], errors='coerce').fillna(0.0)
     df['nivel'] = pd.to_numeric(df['nivel'], errors='coerce').fillna(0).astype(int)
 
-    # Entity classification
-    cias = df[['cod_cia', 'razon_social']].drop_duplicates()
-    seg_map = {}
-
-    for _, row in cias.iterrows():
-        c = row['cod_cia']
-        name = row['razon_social']
-        sub = df[df['cod_cia'] == c]
-        
-        sub_ramos = sub[(sub['desc_subramo'] != '') & (sub['desc_subramo'].notna()) & (sub['cod_cuenta'].str.startswith('5.01'))]
-        
-        patrim = sub_ramos[sub_ramos['cod_subramo'].str.startswith('1.') & (~sub_ramos['cod_subramo'].str.startswith('1.050'))]['importe'].sum()
-        art = sub_ramos[sub_ramos['cod_subramo'].str.startswith('1.050')]['importe'].sum()
-        personas = sub_ramos[sub_ramos['cod_subramo'].str.startswith(('2.01', '2.02', '2.03', '2.05'))]['importe'].sum()
-        retiro = sub_ramos[sub_ramos['cod_subramo'].str.startswith(('2.06', '2.07'))]['importe'].sum()
-        
-        tot_primas = patrim + art + personas + retiro
-        rs_upper = name.upper()
-
-        if 'RETIRO' in rs_upper or retiro > 0.5 * max(1, tot_primas):
-            seg = 'Seguros de Retiro'
-        elif 'RIESGOS DEL TRABAJO' in rs_upper or ' ART' in rs_upper or 'A.R.T.' in rs_upper or art > 0.5 * max(1, tot_primas):
-            seg = 'Riesgos del Trabajo (ART)'
-        elif personas > 0.5 * max(1, tot_primas) or any(w in rs_upper for w in ['PERSONAS', 'VIDA', 'LIFE', 'SALUD', 'SEPELIO', 'CARDIF', 'METLIFE', 'CNP', 'PRUDENTIAL', 'ZURICH INTERNATIONAL LIFE']):
-            seg = 'Seguros de Personas'
-        else:
-            seg = 'Patrimoniales y Mixtas'
-
-        seg_map[c] = seg
-
-    df['tipo_entidad'] = df['cod_cia'].map(seg_map)
+    # Entity classification (100% aligned with official SSN license segments)
+    df['tipo_entidad'] = _classify_entities(df)
 
     try:
         buf = io.BytesIO()
