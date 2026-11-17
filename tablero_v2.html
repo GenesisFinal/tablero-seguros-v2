@@ -8325,7 +8325,7 @@
             selB.innerHTML = '';
 
             // 1. Grupos Aseguradores Consolidados
-            const groups = [...(pData.strategic_matrix_groups || [])].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            const groups = [...(pData.groups || pData.strategic_matrix_groups || [])].sort((a, b) => (a.name || a.razon_social || '').localeCompare(b.name || b.razon_social || ''));
             if (groups.length > 0) {
                 const grpOptGroupA = document.createElement('optgroup');
                 grpOptGroupA.label = '👥 Grupos Aseguradores Consolidados';
@@ -8333,14 +8333,15 @@
                 grpOptGroupB.label = '👥 Grupos Aseguradores Consolidados';
 
                 groups.forEach(g => {
+                    const gLabel = g.name || g.razon_social || g.id;
                     const optA = document.createElement('option');
                     optA.value = 'GRP_' + g.id;
-                    optA.innerText = `[GRUPO] ${g.name}`;
+                    optA.innerText = `[GRUPO] ${gLabel}`;
                     grpOptGroupA.appendChild(optA);
 
                     const optB = document.createElement('option');
                     optB.value = 'GRP_' + g.id;
-                    optB.innerText = `[GRUPO] ${g.name}`;
+                    optB.innerText = `[GRUPO] ${gLabel}`;
                     grpOptGroupB.appendChild(optB);
                 });
 
@@ -8380,8 +8381,8 @@
             if (!pData || !code) return null;
             if (code.startsWith('GRP_')) {
                 const gId = code.replace('GRP_', '');
-                const gObj = (pData.strategic_matrix_groups || []).find(g => g.id === gId);
-                if (gObj) return { ...gObj, razon_social: gObj.name };
+                const gObj = (pData.groups_by_id && pData.groups_by_id[gId]) || (pData.groups || []).find(g => g.id === gId) || (pData.strategic_matrix_groups || []).find(g => g.id === gId);
+                if (gObj) return { ...gObj, razon_social: gObj.name || gObj.razon_social };
             }
             return (pData.companies_by_code || {})[code] || null;
         }
