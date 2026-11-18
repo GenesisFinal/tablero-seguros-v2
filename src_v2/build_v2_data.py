@@ -559,6 +559,10 @@ def process_single_period(period_code):
         tot_g_inv = 0.0
         tot_g_disp = 0.0
         tot_g_inm = 0.0
+        tot_g_deudas_aseg = 0.0
+        tot_g_res_sin_pend = 0.0
+        tot_g_ibnr = 0.0
+        tot_g_res_juicios = 0.0
         tot_g_comp_tec = 0.0
         tot_g_pn = 0.0
         grp_subramos_map = {}
@@ -582,6 +586,10 @@ def process_single_period(period_code):
                 tot_g_inv += float(c.get('inversiones', 0.0))
                 tot_g_disp += float(c.get('disponibilidades', 0.0))
                 tot_g_inm += float(c.get('inmuebles', 0.0))
+                tot_g_deudas_aseg += float(c.get('deudas_asegurados', 0.0))
+                tot_g_res_sin_pend += float(c.get('reserva_siniestros_pendientes', 0.0))
+                tot_g_ibnr += float(c.get('ibnr', 0.0))
+                tot_g_res_juicios += float(c.get('reserva_juicios', 0.0))
                 tot_g_comp_tec += float(c.get('compromisos_tecnicos', 0.0))
                 tot_g_pn += float(c.get('patrimonio_neto', 0.0))
                 for sr in c.get('subramos', []):
@@ -734,6 +742,10 @@ def process_single_period(period_code):
             "inversiones": round(cons_inv, 2),
             "disponibilidades": round(tot_g_disp, 2),
             "inmuebles": round(tot_g_inm, 2),
+            "deudas_asegurados": round(tot_g_deudas_aseg, 2),
+            "reserva_siniestros_pendientes": round(tot_g_res_sin_pend, 2),
+            "ibnr": round(tot_g_ibnr, 2),
+            "reserva_juicios": round(tot_g_res_juicios, 2),
             "compromisos_tecnicos": round(tot_g_comp_tec, 2),
             "patrimonio_neto": round(cons_pn, 2),
             "margen_tecnico": round(g_m_tec, 2),
@@ -775,6 +787,10 @@ def process_single_period(period_code):
             "activo": g['activo'],
             "pasivo": g['pasivo'],
             "inversiones": g['inversiones'],
+            "deudas_asegurados": g['deudas_asegurados'],
+            "reserva_siniestros_pendientes": g['reserva_siniestros_pendientes'],
+            "ibnr": g['ibnr'],
+            "reserva_juicios": g['reserva_juicios'],
             "compromisos_tecnicos": g['compromisos_tecnicos'],
             "patrimonio_neto": g['patrimonio_neto'],
             "loss_ratio": g['loss_ratio'],

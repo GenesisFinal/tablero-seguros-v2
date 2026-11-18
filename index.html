@@ -1604,7 +1604,7 @@
 
                         <h2 class="text-xl md:text-2xl font-bold txt-primary" id="rankings-title-display">Ranking: Total del Mercado</h2>
                         <button type="button" onclick="switchTab('rankings-dinamicos')" class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-[#3ac792] hover:underline cursor-pointer">
-                            <i class="fas fa-sliders"></i> <span>Ir a Rankings Dinámicos Patrimoniales, Resultados y Ratios (11 Criterios) &rarr;</span>
+                            <i class="fas fa-sliders"></i> <span>Ir a Rankings Dinámicos Patrimoniales, Reservas, Resultados y Ratios (19 Criterios) &rarr;</span>
                         </button>
 
                     </div>
@@ -1974,24 +1974,36 @@
                         </div>
                     </div>
 
-                    <!-- 2. Criterio Contable / Ratio (11 criterios) -->
+                    <!-- 2. Criterio Contable / Reservas / Ratio (19 criterios) -->
                     <div class="lg:col-span-5 space-y-2">
-                        <label for="select-dyn-criterion" class="text-[11px] font-bold uppercase tracking-wider txt-muted block">2. Criterio de Ranking (11 Indicadores):</label>
+                        <label for="select-dyn-criterion" class="text-[11px] font-bold uppercase tracking-wider txt-muted block">2. Criterio de Ranking (19 Indicadores):</label>
                         <select id="select-dyn-criterion" onchange="onDynCriterionChange(this.value)" class="ui-select text-xs font-bold w-full">
-                            <optgroup label="📊 Magnitudes Contables y Resultados ($ ARS)">
-                                <option value="patrimonio_neto" selected>1. Patrimonio Neto</option>
-                                <option value="resultado_total">2. Resultado Total (Neto del Ejercicio)</option>
-                                <option value="resultado_tecnico">3. Resultado Estructura Técnica</option>
-                                <option value="resultado_financiero">4. Resultado Estructura Financiera</option>
+                            <optgroup label="📈 Producción y Siniestralidad ($ ARS)">
+                                <option value="primas_emitidas">1. Primas Emitidas</option>
+                                <option value="primas_devengadas">2. Primas Devengadas</option>
+                                <option value="siniestros_devengados">3. Siniestros Devengados</option>
+                            </optgroup>
+                            <optgroup label="🏛️ Patrimonio, Activos, Pasivos y Reservas Técnicas ($ ARS)">
+                                <option value="patrimonio_neto" selected>4. Patrimonio Neto</option>
                                 <option value="activos">5. Activos</option>
                                 <option value="pasivos">6. Pasivos</option>
+                                <option value="deudas_asegurados">7. Deudas con Asegurados</option>
+                                <option value="reserva_siniestros_pendientes">8. Reserva de Siniestros Pendientes</option>
+                                <option value="ibnr">9. IBNR (Siniestros Ocurridos y No Reportados)</option>
+                                <option value="reserva_juicios">10. Reserva de Juicios</option>
+                                <option value="compromisos_tecnicos">11. Compromisos Técnicos</option>
+                            </optgroup>
+                            <optgroup label="💰 Resultados Contables ($ ARS)">
+                                <option value="resultado_total">12. Resultado Total (Neto del Ejercicio)</option>
+                                <option value="resultado_tecnico">13. Resultado Estructura Técnica</option>
+                                <option value="resultado_financiero">14. Resultado Estructura Financiera</option>
                             </optgroup>
                             <optgroup label="📐 Ratios Técnicos, Financieros y de Solvencia (%)">
-                                <option value="siniestralidad_dev">7. Siniestros Devengados / Prima Devengada (%)</option>
-                                <option value="combinado_operativo">8. (Siniestros Dev. + Gastos Prod. y Explot.) / Prima Devengada (%)</option>
-                                <option value="roe_patrimonio">9. Resultado / Patrimonio (%)</option>
-                                <option value="inversiones_activo">10. Inversiones / Activo Total (%)</option>
-                                <option value="res_fin_patrimonio">11. Resultado Estructura Financiera / Patrimonio (%)</option>
+                                <option value="siniestralidad_dev">15. Siniestros Devengados / Prima Devengada (%)</option>
+                                <option value="combinado_operativo">16. (Siniestros Dev. + Gastos Prod. y Explot.) / Prima Devengada (%)</option>
+                                <option value="roe_patrimonio">17. Resultado / Patrimonio (%)</option>
+                                <option value="inversiones_activo">18. Inversiones / Activo Total (%)</option>
+                                <option value="res_fin_patrimonio">19. Resultado Estructura Financiera / Patrimonio (%)</option>
                             </optgroup>
                         </select>
                     </div>
@@ -6897,6 +6909,30 @@
         let dynRankingSortDir = 'desc'; // 'desc' | 'asc'
 
         const DYN_RANKING_CRITERIA = {
+            primas_emitidas: {
+                label: 'Primas Emitidas',
+                formula: 'Emisión Directa Neta de Anulaciones (Cuentas 5.01.01 - 4.01.04 Seguros Directos SSN • Boletín Oficial)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.primas_emitidas
+            },
+            primas_devengadas: {
+                label: 'Primas Devengadas',
+                formula: 'Primas Netas Devengadas Oficiales (Primas y Recargos - Anulaciones - Cesiones Netas - Variación Comp. Técnicos • Cuadro 3 SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.primas_devengadas
+            },
+            siniestros_devengados: {
+                label: 'Siniestros Devengados',
+                formula: 'Siniestros Netos Devengados Oficiales (Cuenta 4.01.01 neta de Recuperos de Reaseguros • Cuadro 3 SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.siniestros
+            },
             patrimonio_neto: {
                 label: 'Patrimonio Neto',
                 formula: 'Patrimonio Neto Contable (Cuenta 3.00 SSN • En Grupos: consolidado con eliminación VPP)',
@@ -6904,6 +6940,62 @@
                 positiveShare: true,
                 defaultSort: 'desc',
                 getVal: (e) => e.patrimonio_neto
+            },
+            activos: {
+                label: 'Activos',
+                formula: 'Activo Total (Cuenta 1.00 SSN • En Grupos: consolidado neto de acciones intragrupo VPP)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.activo
+            },
+            pasivos: {
+                label: 'Pasivos',
+                formula: 'Pasivo Total = Deudas + Compromisos Técnicos + Previsiones (Cuenta 2.00 SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.pasivo
+            },
+            deudas_asegurados: {
+                label: 'Deudas con Asegurados',
+                formula: 'Total Deudas con Asegurados en el Pasivo (Cuenta 2.01.01 SSN = Reserva Siniestros Pendientes + IBNR + Otras Deudas c/ Asegurados)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.deudas_asegurados
+            },
+            reserva_siniestros_pendientes: {
+                label: 'Reserva de Siniestros Pendientes',
+                formula: 'Reserva Neta de Siniestros Pendientes (Administrativos + En Juicio y Mediación + ART/FFEP, neta de Reaseguros; excluye IBNR y Rescates • Rubro 2.01.01 SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.reserva_siniestros_pendientes
+            },
+            ibnr: {
+                label: 'IBNR',
+                formula: 'Pasivo Neto por Siniestros Ocurridos y No Suficientemente Reportados (Cuentas 2.01.01.01.01.{08, 10, 20, 25, 28.13} SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.ibnr
+            },
+            reserva_juicios: {
+                label: 'Reserva de Juicios',
+                formula: 'Reserva Neta por Siniestros en Juicio y Futuros Juicios (Cuentas 2.01.01.01.01.{02, 18.02, 18.03, 26, 28.07, 28.08, 28.16, 29} SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.reserva_juicios
+            },
+            compromisos_tecnicos: {
+                label: 'Compromisos Técnicos',
+                formula: 'Total Compromisos Técnicos del Pasivo: Riesgos en Curso + Reservas Matemáticas y Fondos de Retiro (Cuenta 2.02 SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.compromisos_tecnicos
             },
             resultado_total: {
                 label: 'Resultado Total',
@@ -6934,22 +7026,6 @@
                 getRef: (e) => e.inversiones,
                 defaultSort: 'desc',
                 getVal: (e) => e.resultado_financiero
-            },
-            activos: {
-                label: 'Activos',
-                formula: 'Activo Total (Cuenta 1.00 SSN • En Grupos: consolidado neto de acciones intragrupo VPP)',
-                type: 'currency',
-                positiveShare: true,
-                defaultSort: 'desc',
-                getVal: (e) => e.activo
-            },
-            pasivos: {
-                label: 'Pasivos',
-                formula: 'Pasivo Total = Deudas + Compromisos Técnicos + Previsiones (Cuenta 2.00 SSN)',
-                type: 'currency',
-                positiveShare: true,
-                defaultSort: 'desc',
-                getVal: (e) => e.pasivo
             },
             siniestralidad_dev: {
                 label: 'Siniestros Devengados / Prima Devengada',
@@ -7126,7 +7202,14 @@
                         activo: c.activo || 0,
                         pasivo: c.pasivo || 0,
                         inversiones: c.inversiones || 0,
+                        primas_emitidas: c.primas_emitidas || 0,
                         primas_devengadas: c.primas_devengadas || 0,
+                        siniestros: c.siniestros || 0,
+                        deudas_asegurados: c.deudas_asegurados || 0,
+                        reserva_siniestros_pendientes: c.reserva_siniestros_pendientes || 0,
+                        ibnr: c.ibnr || 0,
+                        reserva_juicios: c.reserva_juicios || 0,
+                        compromisos_tecnicos: c.compromisos_tecnicos || 0,
                         siniestros_riesgo: isRet ? 0 : (c.siniestros || 0),
                         gtos_riesgo: isRet ? 0 : gtos,
                         primas_dev_riesgo: isRet ? 0 : (c.primas_devengadas || 0)
@@ -7165,7 +7248,14 @@
                         activo: g.activo || 0,
                         pasivo: g.pasivo || 0,
                         inversiones: g.inversiones || 0,
+                        primas_emitidas: g.primas_emitidas || 0,
                         primas_devengadas: g.primas_devengadas || 0,
+                        siniestros: g.siniestros || 0,
+                        deudas_asegurados: g.deudas_asegurados || 0,
+                        reserva_siniestros_pendientes: g.reserva_siniestros_pendientes || 0,
+                        ibnr: g.ibnr || 0,
+                        reserva_juicios: g.reserva_juicios || 0,
+                        compromisos_tecnicos: g.compromisos_tecnicos || 0,
                         siniestros_riesgo: sinR,
                         gtos_riesgo: gtosR,
                         primas_dev_riesgo: devR
@@ -7204,7 +7294,14 @@
                     activo: sumF(c => c.activo || 0),
                     pasivo: sumF(c => c.pasivo || 0),
                     inversiones: sumF(c => c.inversiones || 0),
+                    primas_emitidas: sumF(c => c.primas_emitidas || 0),
                     primas_devengadas: sumF(c => c.primas_devengadas || 0),
+                    siniestros: sumF(c => c.siniestros || 0),
+                    deudas_asegurados: sumF(c => c.deudas_asegurados || 0),
+                    reserva_siniestros_pendientes: sumF(c => c.reserva_siniestros_pendientes || 0),
+                    ibnr: sumF(c => c.ibnr || 0),
+                    reserva_juicios: sumF(c => c.reserva_juicios || 0),
+                    compromisos_tecnicos: sumF(c => c.compromisos_tecnicos || 0),
                     siniestros_riesgo: isRet ? 0 : sumF(c => c.siniestros || 0),
                     gtos_riesgo: isRet ? 0 : gtosSum,
                     primas_dev_riesgo: isRet ? 0 : sumF(c => c.primas_devengadas || 0)
@@ -7641,6 +7738,10 @@
                 const totDisp = pData.companies.reduce((a, b) => a + (b.disponibilidades || 0), 0);
                 const totInm = pData.companies.reduce((a, b) => a + (b.inmuebles || 0), 0);
                 const totCompTec = pData.companies.reduce((a, b) => a + (b.compromisos_tecnicos || 0), 0);
+                const totDeudAseg = pData.companies.reduce((a, b) => a + (b.deudas_asegurados || 0), 0);
+                const totResSinPend = pData.companies.reduce((a, b) => a + (b.reserva_siniestros_pendientes || 0), 0);
+                const totIbnr = pData.companies.reduce((a, b) => a + (b.ibnr || 0), 0);
+                const totResJuicios = pData.companies.reduce((a, b) => a + (b.reserva_juicios || 0), 0);
                 const totPn = pData.companies.reduce((a, b) => a + (b.patrimonio_neto || 0), 0);
                 const totDev = m.total_mercado_devengadas || pData.companies.reduce((a, b) => a + (b.primas_devengadas || 0), 0);
                 const totDevNonRet = pData.companies.filter(b => b.tipo_entidad !== 'Seguros de Retiro').reduce((a, b) => a + (b.primas_devengadas || 0), 0);
@@ -7659,6 +7760,14 @@
                     pasivo: totPasivo,
 
                     inversiones: totInv,
+
+                    deudas_asegurados: totDeudAseg,
+
+                    reserva_siniestros_pendientes: totResSinPend,
+
+                    ibnr: totIbnr,
+
+                    reserva_juicios: totResJuicios,
 
                     compromisos_tecnicos: totCompTec,
 
@@ -7735,6 +7844,14 @@
                     ${vppBanner}
 
                     <div class="flex justify-between p-2 rounded subtle-card"><span>Pasivo Total:</span><span class="font-mono font-bold">${fmtARS(c.pasivo || 0)}</span></div>
+
+                    <div class="flex justify-between p-2 rounded subtle-card"><span>Deudas con Asegurados:</span><span class="font-mono font-bold">${fmtARS(c.deudas_asegurados || 0)}</span></div>
+
+                    <div class="flex justify-between p-2 rounded subtle-card"><span>Reserva Siniestros Pendientes:</span><span class="font-mono font-bold">${fmtARS(c.reserva_siniestros_pendientes || 0)}</span></div>
+
+                    <div class="flex justify-between p-2 rounded subtle-card"><span>IBNR:</span><span class="font-mono font-bold">${fmtARS(c.ibnr || 0)}</span></div>
+
+                    <div class="flex justify-between p-2 rounded subtle-card"><span>Reserva de Juicios:</span><span class="font-mono font-bold">${fmtARS(c.reserva_juicios || 0)}</span></div>
 
                     <div class="flex justify-between p-2 rounded subtle-card"><span>Compromisos Técnicos:</span><span class="font-mono font-bold">${fmtARS(c.compromisos_tecnicos || 0)}</span></div>
 
@@ -9241,6 +9358,10 @@
                 { name: 'Resultado Neto del Ejercicio', valA: cA.resultado_neto || 0, valB: cB.resultado_neto || 0, fmt: fmtARS, higherBetter: true },
                 { name: 'Activo Total', valA: cA.activo || 0, valB: cB.activo || 0, fmt: fmtARS, higherBetter: true },
                 { name: 'Pasivo Total', valA: cA.pasivo || 0, valB: cB.pasivo || 0, fmt: fmtARS, higherBetter: false },
+                { name: 'Deudas con Asegurados', valA: cA.deudas_asegurados || 0, valB: cB.deudas_asegurados || 0, fmt: fmtARS, higherBetter: false },
+                { name: 'Reserva de Siniestros Pendientes', valA: cA.reserva_siniestros_pendientes || 0, valB: cB.reserva_siniestros_pendientes || 0, fmt: fmtARS, higherBetter: false },
+                { name: 'IBNR', valA: cA.ibnr || 0, valB: cB.ibnr || 0, fmt: fmtARS, higherBetter: false },
+                { name: 'Reserva de Juicios', valA: cA.reserva_juicios || 0, valB: cB.reserva_juicios || 0, fmt: fmtARS, higherBetter: false },
                 { name: 'Compromisos Técnicos', valA: cA.compromisos_tecnicos || 0, valB: cB.compromisos_tecnicos || 0, fmt: fmtARS, higherBetter: true },
                 { name: 'Patrimonio Neto', valA: cA.patrimonio_neto || 0, valB: cB.patrimonio_neto || 0, fmt: fmtARS, higherBetter: true },
                 { name: 'Inversiones Totales', valA: cA.inversiones || 0, valB: cB.inversiones || 0, fmt: fmtARS, higherBetter: true },

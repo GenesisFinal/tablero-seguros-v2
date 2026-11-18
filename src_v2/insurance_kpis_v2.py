@@ -21,6 +21,37 @@ def compute_all_companies_summary(df):
     companies = df[['cod_cia', 'razon_social', 'tipo_entidad']].drop_duplicates()
     records = []
 
+    # Pre-cálculo vectorizado de subcuentas por subramo de Deudas con Asegurados (2.01.01.01.01.*)
+    sub_liab = df[df['cod_cuenta'].str.startswith('2.01.01.01.01.') & (df['cod_subramo'] != '') & df['cod_subramo'].notna()]
+    ibnr_accts = (
+        '2.01.01.01.01.08.00.00',
+        '2.01.01.01.01.10.00.00',
+        '2.01.01.01.01.20.00.00',
+        '2.01.01.01.01.25.00.00',
+        '2.01.01.01.01.28.13.00'
+    )
+    otras_deudas_aseg_accts = (
+        '2.01.01.01.01.11.00.00',
+        '2.01.01.01.01.12.00.00',
+        '2.01.01.01.01.13.00.00',
+        '2.01.01.01.01.14.00.00',
+        '2.01.01.01.01.50.00.00'
+    )
+    juicios_accts = (
+        '2.01.01.01.01.02.00.00',
+        '2.01.01.01.01.18.02.00',
+        '2.01.01.01.01.18.03.00',
+        '2.01.01.01.01.26.00.00',
+        '2.01.01.01.01.28.07.00',
+        '2.01.01.01.01.28.08.00',
+        '2.01.01.01.01.28.16.00',
+        '2.01.01.01.01.29.00.00'
+    )
+    ibnr_by_cia = sub_liab[sub_liab['cod_cuenta'].isin(ibnr_accts)].groupby('cod_cia')['importe'].sum().to_dict() if not sub_liab.empty else {}
+    juicios_by_cia = sub_liab[sub_liab['cod_cuenta'].isin(juicios_accts)].groupby('cod_cia')['importe'].sum().to_dict() if not sub_liab.empty else {}
+    sin_pend_mask = ~sub_liab['cod_cuenta'].isin(ibnr_accts + otras_deudas_aseg_accts) if not sub_liab.empty else None
+    sin_pend_by_cia = sub_liab[sin_pend_mask].groupby('cod_cia')['importe'].sum().to_dict() if not sub_liab.empty else {}
+
     for _, cia in companies.iterrows():
         cod = cia['cod_cia']
         df_c = df[df['cod_cia'] == cod]
@@ -38,6 +69,10 @@ def compute_all_companies_summary(df):
 
         pasivo_tot = get_account_value(df_c, '2.00.00.00.00.00.00.00', exact=True)
         deudas = get_account_value(df_c, '2.01.00.00.00.00.00.00', exact=True)
+        deudas_asegurados = get_account_value(df_c, '2.01.01.00.00.00.00.00', exact=True)
+        reserva_sin_pendientes = float(sin_pend_by_cia.get(cod, 0.0))
+        ibnr_val = float(ibnr_by_cia.get(cod, 0.0))
+        reserva_juicios_val = float(juicios_by_cia.get(cod, 0.0))
         comp_tec_pasivo = get_account_value(df_c, '2.02.00.00.00.00.00.00', exact=True)
         prev = get_account_value(df_c, '2.03.00.00.00.00.00.00', exact=True)
         pn = get_account_value(df_c, '3.00.00.00.00.00.00.00', exact=True)
@@ -170,6 +205,10 @@ def compute_all_companies_summary(df):
             'otros_activos': otros_act,
             'pasivo': pasivo_tot,
             'deudas': deudas,
+            'deudas_asegurados': deudas_asegurados,
+            'reserva_siniestros_pendientes': reserva_sin_pendientes,
+            'ibnr': ibnr_val,
+            'reserva_juicios': reserva_juicios_val,
             'compromisos_tecnicos': comp_tec_pasivo,
             'previsiones': prev,
             'patrimonio_neto': pn,
