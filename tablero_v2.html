@@ -518,9 +518,9 @@
 
 
 
-            <!-- TABS NAVIGATION (10 PESTAÑAS RESPONSIVAS) -->
+            <!-- TABS NAVIGATION (11 PESTAÑAS RESPONSIVAS) -->
 
-            <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 py-2.5 border-t border-slate-200 dark:border-slate-800">
+            <nav class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 py-2.5 border-t border-slate-200 dark:border-slate-800">
 
                 <button onclick="switchTab('primas')" id="tab-btn-primas" class="nav-tab px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 bg-[#e20039] text-white shadow-sm">
 
@@ -542,7 +542,13 @@
 
                 <button onclick="switchTab('rankings')" id="tab-btn-rankings" class="nav-tab px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 txt-muted hover:text-[#e20039] hover:bg-slate-100 dark:hover:bg-slate-800/60">
 
-                    <i class="fas fa-trophy"></i> <span>Rankings SSN (19)</span>
+                    <i class="fas fa-trophy"></i> <span>Rankings Primas (19)</span>
+
+                </button>
+
+                <button onclick="switchTab('rankings-dinamicos')" id="tab-btn-rankings-dinamicos" class="nav-tab px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 txt-muted hover:text-[#e20039] hover:bg-slate-100 dark:hover:bg-slate-800/60">
+
+                    <i class="fas fa-sliders text-emerald-500"></i> <span>Rankings Dinámicos</span>
 
                 </button>
 
@@ -576,7 +582,7 @@
 
                 </button>
 
-                <button onclick="switchTab('comparador')" id="tab-btn-comparador" class="nav-tab px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 txt-muted hover:text-[#e20039] hover:bg-slate-100 dark:hover:bg-slate-800/60 col-span-2 sm:col-span-1 md:col-span-1">
+                <button onclick="switchTab('comparador')" id="tab-btn-comparador" class="nav-tab px-3 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 txt-muted hover:text-[#e20039] hover:bg-slate-100 dark:hover:bg-slate-800/60 col-span-2 sm:col-span-1 lg:col-span-2">
 
                     <i class="fas fa-arrows-split-up-and-left text-[#4183ca]"></i> <span>Comparador</span>
 
@@ -1597,6 +1603,9 @@
                         </div>
 
                         <h2 class="text-xl md:text-2xl font-bold txt-primary" id="rankings-title-display">Ranking: Total del Mercado</h2>
+                        <button type="button" onclick="switchTab('rankings-dinamicos')" class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-[#3ac792] hover:underline cursor-pointer">
+                            <i class="fas fa-sliders"></i> <span>Ir a Rankings Dinámicos Patrimoniales, Resultados y Ratios (11 Criterios) &rarr;</span>
+                        </button>
 
                     </div>
 
@@ -1624,7 +1633,7 @@
 
                                         <option value="total_mercado" selected>1. Total del Mercado Asegurador (186 Cías)</option>
 
-                                        <option value="grupos_aseguradores">2. Grupos Aseguradores Económicos (17 Grupos)</option>
+                                        <option value="grupos_aseguradores">2. Grupos Aseguradores Económicos (18 Grupos)</option>
 
                                         <option value="total_patrimoniales">3. Total Seguros Patrimoniales (118 Cías)</option>
 
@@ -1916,6 +1925,205 @@
 
                 </div>
 
+            </div>
+
+        </section>
+
+
+
+                <!-- ==================================================================== -->
+
+        <!-- TAB 4B: RANKINGS DINÁMICOS MULTICRITERIO (PATRIMONIALES Y RATIOS)    -->
+
+        <!-- ==================================================================== -->
+
+        <section id="tab-rankings-dinamicos" class="tab-content space-y-6 hidden">
+
+            <!-- Header & Dynamic Controls -->
+            <div class="main-card rounded-2xl p-6 border">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-600 text-white uppercase">Motor Multicriterio SSN</span>
+                            <span class="text-xs txt-muted font-mono" id="rankings-dinamicos-period-desc">Período: -</span>
+                        </div>
+                        <h2 class="text-xl md:text-2xl font-bold txt-primary">Rankings Dinámicos Patrimoniales, Técnicos y de Rentabilidad</h2>
+                        <p class="text-xs txt-muted mt-1">Ordenamiento interactivo por magnitudes contables e indicadores de gestión a nivel de empresas, conjuntos sectoriales o grupos económicos (con eliminación VPP).</p>
+                    </div>
+
+                    <button type="button" onclick="switchTab('rankings')" class="btn-export text-xs self-start lg:self-center shrink-0" title="Ver Rankings de Primas por Ramo">
+                        <i class="fas fa-trophy text-[#e20039]"></i> <span>Ver Rankings de Primas (19 Ramos)</span>
+                    </button>
+                </div>
+
+                <!-- Selector Grid: 1. Nivel de Análisis | 2. Criterio | 3. Orden -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
+                    <!-- 1. Nivel / Universo -->
+                    <div class="lg:col-span-5 space-y-2">
+                        <label class="text-[11px] font-bold uppercase tracking-wider txt-muted block">1. Nivel de Agrupación / Universo:</label>
+                        <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60">
+                            <button type="button" id="btn-dyn-scope-empresas" onclick="setDynRankingScope('EMPRESAS')" class="px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fas fa-building"></i> <span>Empresas</span>
+                            </button>
+                            <button type="button" id="btn-dyn-scope-grupos" onclick="setDynRankingScope('GRUPOS')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fas fa-layer-group"></i> <span>Grupos Económicos (VPP)</span>
+                            </button>
+                            <button type="button" id="btn-dyn-scope-conjuntos" onclick="setDynRankingScope('CONJUNTOS')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fas fa-cubes"></i> <span>Conjuntos Consolidados (4)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. Criterio Contable / Ratio (11 criterios) -->
+                    <div class="lg:col-span-5 space-y-2">
+                        <label for="select-dyn-criterion" class="text-[11px] font-bold uppercase tracking-wider txt-muted block">2. Criterio de Ranking (11 Indicadores):</label>
+                        <select id="select-dyn-criterion" onchange="onDynCriterionChange(this.value)" class="ui-select text-xs font-bold w-full">
+                            <optgroup label="📊 Magnitudes Contables y Resultados ($ ARS)">
+                                <option value="patrimonio_neto" selected>1. Patrimonio Neto</option>
+                                <option value="resultado_total">2. Resultado Total (Neto del Ejercicio)</option>
+                                <option value="resultado_tecnico">3. Resultado Estructura Técnica</option>
+                                <option value="resultado_financiero">4. Resultado Estructura Financiera</option>
+                                <option value="activos">5. Activos</option>
+                                <option value="pasivos">6. Pasivos</option>
+                            </optgroup>
+                            <optgroup label="📐 Ratios Técnicos, Financieros y de Solvencia (%)">
+                                <option value="siniestralidad_dev">7. Siniestros Devengados / Prima Devengada (%)</option>
+                                <option value="combinado_operativo">8. (Siniestros Dev. + Gastos Prod. y Explot.) / Prima Devengada (%)</option>
+                                <option value="roe_patrimonio">9. Resultado / Patrimonio (%)</option>
+                                <option value="inversiones_activo">10. Inversiones / Activo Total (%)</option>
+                                <option value="res_fin_patrimonio">11. Resultado Estructura Financiera / Patrimonio (%)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- 3. Orden -->
+                    <div class="lg:col-span-2 space-y-2">
+                        <label class="text-[11px] font-bold uppercase tracking-wider txt-muted block">3. Orden:</label>
+                        <button type="button" id="btn-dyn-sort-dir" onclick="toggleDynSortDir()" class="w-full px-3 py-2 rounded-xl subtle-card border hover:border-[#e20039] text-xs font-bold txt-primary transition-all flex items-center justify-center gap-2 cursor-pointer" title="Invertir orden del ranking">
+                            <i class="fas fa-arrow-down-wide-short text-[#e20039]" id="icon-dyn-sort-dir"></i>
+                            <span id="lbl-dyn-sort-dir">Mayor a Menor</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sub-filtro de Conjunto de Empresas (visible cuando el nivel es EMPRESAS) -->
+                <div id="dyn-company-subsets-bar" class="mt-4 p-3.5 rounded-xl subtle-card border space-y-2.5">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider txt-secondary flex items-center gap-1.5">
+                            <i class="fas fa-filter text-[#4183ca]"></i> Conjunto de Empresas a Incluir en el Ranking:
+                        </span>
+                        <div class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                            <button type="button" onclick="selectDynCompanyPreset('ALL')" class="px-2.5 py-1 rounded-lg bg-slate-200/70 dark:bg-slate-700/70 hover:bg-[#e20039] hover:text-white font-semibold transition cursor-pointer">Todas (Mercado)</button>
+                            <button type="button" onclick="selectDynCompanyPreset('PATRIMONIALES')" class="px-2.5 py-1 rounded-lg bg-blue-100/70 dark:bg-blue-950/50 text-[#4183ca] hover:bg-[#4183ca] hover:text-white font-semibold transition cursor-pointer">Solo Patrimoniales y Mixtas</button>
+                            <button type="button" onclick="selectDynCompanyPreset('ART')" class="px-2.5 py-1 rounded-lg bg-emerald-100/70 dark:bg-emerald-950/50 text-[#3ac792] hover:bg-[#3ac792] hover:text-white font-semibold transition cursor-pointer">Solo ART</button>
+                            <button type="button" onclick="selectDynCompanyPreset('PERSONAS')" class="px-2.5 py-1 rounded-lg bg-amber-100/70 dark:bg-amber-950/50 text-amber-600 dark:text-[#f8cc59] hover:bg-amber-500 hover:text-white font-semibold transition cursor-pointer">Solo Personas</button>
+                            <button type="button" onclick="selectDynCompanyPreset('RETIRO')" class="px-2.5 py-1 rounded-lg bg-orange-100/70 dark:bg-orange-950/50 text-[#ff593e] hover:bg-[#ff593e] hover:text-white font-semibold transition cursor-pointer">Solo Retiro</button>
+                            <button type="button" onclick="selectDynCompanyPreset('RIESGO_SIN_RETIRO')" class="px-2.5 py-1 rounded-lg bg-rose-100/70 dark:bg-rose-950/50 text-[#e20039] hover:bg-[#e20039] hover:text-white font-semibold transition cursor-pointer">Riesgo (Sin Retiro)</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1">
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-white/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 cursor-pointer text-xs font-semibold">
+                            <input type="checkbox" id="chk-dyn-patrim" checked onchange="renderDynamicRankingsTab()" class="accent-[#4183ca] rounded">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#4183ca]"></span>
+                            <span>Patrimoniales y Mixtas</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-white/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 cursor-pointer text-xs font-semibold">
+                            <input type="checkbox" id="chk-dyn-art" checked onchange="renderDynamicRankingsTab()" class="accent-[#3ac792] rounded">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#3ac792]"></span>
+                            <span>ART Exclusivas</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-white/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 cursor-pointer text-xs font-semibold">
+                            <input type="checkbox" id="chk-dyn-pers" checked onchange="renderDynamicRankingsTab()" class="accent-[#f8cc59] rounded">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#f8cc59]"></span>
+                            <span>Seguros de Personas</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 rounded-lg bg-white/70 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800 cursor-pointer text-xs font-semibold">
+                            <input type="checkbox" id="chk-dyn-ret" checked onchange="renderDynamicRankingsTab()" class="accent-[#ff593e] rounded">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#ff593e]"></span>
+                            <span>Seguros de Retiro</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 4 Dynamic Summary KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-5">
+                    <div class="subtle-card rounded-xl p-3.5 border">
+                        <p class="text-[11px] font-bold uppercase text-[#4183ca]" id="dyn-kpi-agg-title">Total / Promedio Ponderado</p>
+                        <p class="text-lg font-bold font-mono txt-primary mt-1" id="dyn-kpi-agg-val">-</p>
+                        <p class="text-[10px] txt-muted font-mono mt-0.5" id="dyn-kpi-agg-sub">-</p>
+                    </div>
+                    <div class="subtle-card rounded-xl p-3.5 border">
+                        <p class="text-[11px] font-bold uppercase text-emerald-600 dark:text-[#3ac792]" id="dyn-kpi-top1-title">Posición #1 del Ranking</p>
+                        <p class="text-base font-bold font-mono txt-primary mt-1 truncate" id="dyn-kpi-top1-val">-</p>
+                        <p class="text-[10px] txt-muted truncate mt-0.5" id="dyn-kpi-top1-sub">-</p>
+                    </div>
+                    <div class="subtle-card rounded-xl p-3.5 border border-[#e20039]/30 bg-rose-50/40 dark:bg-rose-950/20">
+                        <p class="text-[11px] font-bold uppercase text-[#e20039]" id="dyn-kpi-l2-title">Referencia La Segunda</p>
+                        <p class="text-base font-bold font-mono text-[#e20039] mt-1 truncate" id="dyn-kpi-l2-val">-</p>
+                        <p class="text-[10px] txt-muted truncate mt-0.5" id="dyn-kpi-l2-sub">-</p>
+                    </div>
+                    <div class="subtle-card rounded-xl p-3.5 border">
+                        <p class="text-[11px] font-bold uppercase txt-secondary" id="dyn-kpi-stats-title">Distribución del Universo</p>
+                        <p class="text-lg font-bold font-mono txt-primary mt-1" id="dyn-kpi-stats-val">-</p>
+                        <p class="text-[10px] txt-muted mt-0.5" id="dyn-kpi-stats-sub">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Top 15 Horizontal Chart -->
+            <div class="main-card rounded-2xl p-6 border flex flex-col">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center text-sm shadow-sm">
+                            <i class="fas fa-ranking-star"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm txt-primary leading-tight" id="chart-dyn-ranking-title">Top 15 &bull; Patrimonio Neto</h3>
+                            <p class="text-[11px] txt-muted" id="chart-dyn-ranking-subtitle">Primeras posiciones según el criterio y universo seleccionados (La Segunda resaltada en carmesí).</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="exportChartToPNG('chart-dyn-ranking', 'ranking_dinamico_ssn.png')" class="btn-export text-xs" title="Descargar Gráfico en PNG">
+                        <i class="fas fa-camera text-blue-500"></i> <span>Descargar PNG</span>
+                    </button>
+                </div>
+                <div class="relative w-full h-[400px]">
+                    <canvas id="chart-dyn-ranking"></canvas>
+                </div>
+            </div>
+
+            <!-- Dynamic Complete Ranking Table -->
+            <div class="main-card rounded-2xl p-6 border flex flex-col">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 flex items-center justify-center text-sm shadow-sm">
+                            <i class="fas fa-table-list"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-sm txt-primary leading-tight" id="tbl-dyn-ranking-title">Tabla Completa del Ranking Dinámico</h3>
+                            <p class="text-[11px] txt-muted" id="tbl-dyn-ranking-formula">Fórmula oficial SSN aplicada sobre cada entidad/grupo activo.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex items-center">
+                            <i class="fas fa-search absolute left-2.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="filter-dyn-rankings" onkeyup="filterDynRankingsTable(this.value)" placeholder="Buscar entidad o grupo..." class="ui-input text-xs pl-8 pr-3 py-1.5 rounded-lg w-52">
+                        </div>
+                        <button type="button" onclick="exportTableToCSV('tbl-dyn-ranking', 'ranking_dinamico_contable_ssn.csv')" class="btn-export text-xs" title="Exportar Tabla a CSV">
+                            <i class="fas fa-file-csv text-emerald-600"></i> <span>Exportar CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 max-h-[540px]">
+                    <table id="tbl-dyn-ranking" class="w-full text-left border-collapse data-table text-xs">
+                        <thead id="tbl-dyn-ranking-head" class="sticky top-0 bg-slate-50 dark:bg-slate-800/90 backdrop-blur-sm z-10">
+                            <!-- Dynamic columns -->
+                        </thead>
+                        <tbody id="tbl-dyn-ranking-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </section>
@@ -3648,7 +3856,7 @@
 
             // Update header period labels across all tabs
             const periodFullTxt = `Período: ${pData.periodo} (${pData.period_label})`;
-            ['primas-period-desc', 'rankings-period-desc', 'matriz-period-desc', 'balances-period-desc', 'inversiones-period-desc', 'comparador-period-desc'].forEach(id => {
+            ['primas-period-desc', 'rankings-period-desc', 'rankings-dinamicos-period-desc', 'matriz-period-desc', 'balances-period-desc', 'inversiones-period-desc', 'comparador-period-desc'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerText = periodFullTxt;
             });
@@ -3662,6 +3870,8 @@
             renderStrategicMatrixTab(pData);
 
             renderRankingsTab(pData);
+
+            renderDynamicRankingsTab(pData);
 
             renderBalancesTab(pData);
 
@@ -6672,6 +6882,670 @@
 
             }
 
+        }
+
+
+
+        // --- TAB 3B: RANKINGS DINÁMICOS MULTICRITERIO (11 CRITERIOS OFICIALES) ---
+
+        let dynRankingScope = 'EMPRESAS'; // 'EMPRESAS' | 'GRUPOS' | 'CONJUNTOS'
+        let dynRankingCriterion = 'patrimonio_neto';
+        let dynRankingSortDir = 'desc'; // 'desc' | 'asc'
+
+        const DYN_RANKING_CRITERIA = {
+            patrimonio_neto: {
+                label: 'Patrimonio Neto',
+                formula: 'Patrimonio Neto Contable (Cuenta 3.00 SSN • En Grupos: consolidado con eliminación VPP)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.patrimonio_neto
+            },
+            resultado_total: {
+                label: 'Resultado Total',
+                formula: 'Resultado Neto del Ejercicio (Cuentas 5.00 - 4.00 SSN • En Grupos: consolidado VPP sin duplicar vinculadas)',
+                type: 'currency',
+                positiveShare: false,
+                refLabel: 'Patrimonio Neto ($M)',
+                getRef: (e) => e.patrimonio_neto,
+                defaultSort: 'desc',
+                getVal: (e) => e.resultado_neto
+            },
+            resultado_tecnico: {
+                label: 'Resultado Estructura Técnica',
+                formula: 'Resultado Estructura Técnica Oficial (Cuentas 5.01 - 4.01 SSN)',
+                type: 'currency',
+                positiveShare: false,
+                refLabel: 'Prima Devengada ($M)',
+                getRef: (e) => e.primas_devengadas,
+                defaultSort: 'desc',
+                getVal: (e) => e.resultado_tecnico
+            },
+            resultado_financiero: {
+                label: 'Resultado Estructura Financiera',
+                formula: 'Resultado Estructura Financiera Oficial (Cuentas 5.02 - 4.02 SSN • En Grupos: consolidado neto de VPP)',
+                type: 'currency',
+                positiveShare: false,
+                refLabel: 'Inversiones ($M)',
+                getRef: (e) => e.inversiones,
+                defaultSort: 'desc',
+                getVal: (e) => e.resultado_financiero
+            },
+            activos: {
+                label: 'Activos',
+                formula: 'Activo Total (Cuenta 1.00 SSN • En Grupos: consolidado neto de acciones intragrupo VPP)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.activo
+            },
+            pasivos: {
+                label: 'Pasivos',
+                formula: 'Pasivo Total = Deudas + Compromisos Técnicos + Previsiones (Cuenta 2.00 SSN)',
+                type: 'currency',
+                positiveShare: true,
+                defaultSort: 'desc',
+                getVal: (e) => e.pasivo
+            },
+            siniestralidad_dev: {
+                label: 'Siniestros Devengados / Prima Devengada',
+                formula: '(Siniestros Netos Devengados / Primas Netas Devengadas) × 100 — Cuadro 3 SSN (excluye Retiro)',
+                type: 'ratio',
+                numLabel: 'Siniestros Dev. ($M)',
+                denLabel: 'Prima Devengada ($M)',
+                defaultSort: 'asc',
+                evalRatio: (e) => {
+                    if (e.isRetiroOnly) return { valid: false, reason: 'N/A (Retiro)', num: 0, den: e.primas_devengadas };
+                    if (e.primas_dev_riesgo <= 0) return { valid: false, reason: 'N/C (Prima ≤ 0)', num: e.siniestros_riesgo, den: e.primas_dev_riesgo };
+                    return { valid: true, val: (e.siniestros_riesgo / e.primas_dev_riesgo) * 100, num: e.siniestros_riesgo, den: e.primas_dev_riesgo };
+                }
+            },
+            combinado_operativo: {
+                label: '(Siniestros Dev. + Gastos Prod. y Explot.) / Prima Devengada',
+                formula: '[(Siniestros Netos Devengados + Gastos de Producción Netos + Gastos de Explotación) / Primas Netas Devengadas] × 100',
+                type: 'ratio',
+                numLabel: 'Sin. + Gtos. Prod. y Exp. ($M)',
+                denLabel: 'Prima Devengada ($M)',
+                defaultSort: 'asc',
+                evalRatio: (e) => {
+                    const num = e.siniestros_riesgo + e.gtos_riesgo;
+                    if (e.isRetiroOnly) return { valid: false, reason: 'N/A (Retiro)', num: 0, den: e.primas_devengadas };
+                    if (e.primas_dev_riesgo <= 0) return { valid: false, reason: 'N/C (Prima ≤ 0)', num: num, den: e.primas_dev_riesgo };
+                    return { valid: true, val: (num / e.primas_dev_riesgo) * 100, num: num, den: e.primas_dev_riesgo };
+                }
+            },
+            roe_patrimonio: {
+                label: 'Resultado / Patrimonio',
+                formula: '(Resultado Total del Ejercicio / Patrimonio Neto) × 100 — En Grupos: ambos consolidados por VPP',
+                type: 'ratio',
+                numLabel: 'Resultado Total ($M)',
+                denLabel: 'Patrimonio Neto ($M)',
+                defaultSort: 'desc',
+                evalRatio: (e) => {
+                    if (e.patrimonio_neto <= 0) return { valid: false, reason: 'N/C (PN ≤ 0)', num: e.resultado_neto, den: e.patrimonio_neto };
+                    return { valid: true, val: (e.resultado_neto / e.patrimonio_neto) * 100, num: e.resultado_neto, den: e.patrimonio_neto };
+                }
+            },
+            inversiones_activo: {
+                label: 'Inversiones / Activo Total',
+                formula: '(Inversiones Financieras / Activo Total) × 100 — Cuentas 1.02 / 1.00 SSN',
+                type: 'ratio',
+                numLabel: 'Inversiones ($M)',
+                denLabel: 'Activo Total ($M)',
+                defaultSort: 'desc',
+                evalRatio: (e) => {
+                    if (e.activo <= 0) return { valid: false, reason: 'N/C (Activo ≤ 0)', num: e.inversiones, den: e.activo };
+                    return { valid: true, val: (e.inversiones / e.activo) * 100, num: e.inversiones, den: e.activo };
+                }
+            },
+            res_fin_patrimonio: {
+                label: 'Resultado Estructura Financiera / Patrimonio',
+                formula: '(Resultado Estructura Financiera / Patrimonio Neto) × 100 — En Grupos: consolidados con eliminación VPP',
+                type: 'ratio',
+                numLabel: 'Res. Financiero ($M)',
+                denLabel: 'Patrimonio Neto ($M)',
+                defaultSort: 'desc',
+                evalRatio: (e) => {
+                    if (e.patrimonio_neto <= 0) return { valid: false, reason: 'N/C (PN ≤ 0)', num: e.resultado_financiero, den: e.patrimonio_neto };
+                    return { valid: true, val: (e.resultado_financiero / e.patrimonio_neto) * 100, num: e.resultado_financiero, den: e.patrimonio_neto };
+                }
+            }
+        };
+
+        function updateDynSortButtonUI() {
+            const icon = document.getElementById('icon-dyn-sort-dir');
+            const lbl = document.getElementById('lbl-dyn-sort-dir');
+            if (icon) icon.className = dynRankingSortDir === 'desc' ? 'fas fa-arrow-down-wide-short text-[#e20039]' : 'fas fa-arrow-up-short-wide text-emerald-500';
+            if (lbl) lbl.innerText = dynRankingSortDir === 'desc' ? 'Mayor a Menor' : 'Menor a Mayor';
+        }
+
+        function setDynRankingScope(scope) {
+            dynRankingScope = scope;
+            const activeCls = 'px-3 py-1.5 rounded-lg bg-[#e20039] text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer shadow-sm';
+            const inactiveCls = 'px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer';
+
+            const bEmp = document.getElementById('btn-dyn-scope-empresas');
+            const bGrp = document.getElementById('btn-dyn-scope-grupos');
+            const bCon = document.getElementById('btn-dyn-scope-conjuntos');
+            if (bEmp) bEmp.className = scope === 'EMPRESAS' ? activeCls : inactiveCls;
+            if (bGrp) bGrp.className = scope === 'GRUPOS' ? activeCls : inactiveCls;
+            if (bCon) bCon.className = scope === 'CONJUNTOS' ? activeCls : inactiveCls;
+
+            const subBar = document.getElementById('dyn-company-subsets-bar');
+            if (subBar) {
+                if (scope === 'EMPRESAS') subBar.classList.remove('hidden');
+                else subBar.classList.add('hidden');
+            }
+            renderDynamicRankingsTab();
+        }
+
+        function selectDynCompanyPreset(preset) {
+            const map = {
+                ALL: [true, true, true, true],
+                PATRIMONIALES: [true, false, false, false],
+                ART: [false, true, false, false],
+                PERSONAS: [false, false, true, false],
+                RETIRO: [false, false, false, true],
+                RIESGO_SIN_RETIRO: [true, true, true, false]
+            }[preset] || [true, true, true, true];
+
+            ['chk-dyn-patrim', 'chk-dyn-art', 'chk-dyn-pers', 'chk-dyn-ret'].forEach((id, idx) => {
+                const el = document.getElementById(id);
+                if (el) el.checked = map[idx];
+            });
+            renderDynamicRankingsTab();
+        }
+
+        function drilldownDynConjunto(presetKey) {
+            setDynRankingScope('EMPRESAS');
+            selectDynCompanyPreset(presetKey);
+        }
+
+        function onDynCriterionChange(critKey) {
+            dynRankingCriterion = critKey;
+            const cfg = DYN_RANKING_CRITERIA[critKey];
+            if (cfg && cfg.defaultSort) {
+                dynRankingSortDir = cfg.defaultSort;
+                updateDynSortButtonUI();
+            }
+            renderDynamicRankingsTab();
+        }
+
+        function toggleDynSortDir() {
+            dynRankingSortDir = (dynRankingSortDir === 'desc') ? 'asc' : 'desc';
+            updateDynSortButtonUI();
+            renderDynamicRankingsTab();
+        }
+
+        function filterDynRankingsTable(query) {
+            const q = (query || '').toLowerCase().trim();
+            document.querySelectorAll('#tbl-dyn-ranking-body tr').forEach(tr => {
+                if (tr.getAttribute('data-total-row') === '1') {
+                    tr.style.display = q === '' ? '' : 'none';
+                    return;
+                }
+                tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function buildDynRankingEntities(pData) {
+            const companies = pData.companies || Object.values(pData.companies_by_code || {});
+            const byCode = pData.companies_by_code || {};
+
+            if (dynRankingScope === 'EMPRESAS') {
+                const allowedTypes = new Set();
+                if (document.getElementById('chk-dyn-patrim')?.checked) allowedTypes.add('Patrimoniales y Mixtas');
+                if (document.getElementById('chk-dyn-art')?.checked) allowedTypes.add('Riesgos del Trabajo (ART)');
+                if (document.getElementById('chk-dyn-pers')?.checked) allowedTypes.add('Seguros de Personas');
+                if (document.getElementById('chk-dyn-ret')?.checked) allowedTypes.add('Seguros de Retiro');
+
+                return companies.filter(c => allowedTypes.has(c.tipo_entidad)).map(c => {
+                    const isRet = c.tipo_entidad === 'Seguros de Retiro';
+                    const gtos = (c.gtos_produccion !== undefined && c.gtos_explotacion !== undefined)
+                        ? ((c.gtos_produccion || 0) + (c.gtos_explotacion || 0))
+                        : (c.gtos_operativos || 0);
+                    return {
+                        id: c.cod_cia,
+                        code: c.cod_cia,
+                        name: c.razon_social,
+                        shortName: c.razon_social.length > 28 ? c.razon_social.substring(0, 28) + '...' : c.razon_social,
+                        segment: c.tipo_entidad,
+                        badge: null,
+                        isLaSegunda: ['0317', '0618', '0117', '0436'].includes(c.cod_cia),
+                        isRetiroOnly: isRet,
+                        inspectCode: c.cod_cia,
+                        drillPreset: null,
+                        patrimonio_neto: c.patrimonio_neto || 0,
+                        resultado_neto: c.resultado_neto || 0,
+                        resultado_tecnico: c.resultado_tecnico || 0,
+                        resultado_financiero: c.resultado_financiero || 0,
+                        activo: c.activo || 0,
+                        pasivo: c.pasivo || 0,
+                        inversiones: c.inversiones || 0,
+                        primas_devengadas: c.primas_devengadas || 0,
+                        siniestros_riesgo: isRet ? 0 : (c.siniestros || 0),
+                        gtos_riesgo: isRet ? 0 : gtos,
+                        primas_dev_riesgo: isRet ? 0 : (c.primas_devengadas || 0)
+                    };
+                });
+            }
+
+            if (dynRankingScope === 'GRUPOS') {
+                const groups = pData.groups || Object.values(pData.groups_by_id || {});
+                return groups.map(g => {
+                    const mList = (g.members || []).map(m => byCode[m.cod_cia]).filter(Boolean);
+                    const nonRet = mList.filter(m => m.tipo_entidad !== 'Seguros de Retiro');
+                    const isRetOnly = mList.length > 0 && nonRet.length === 0;
+                    const sinR = nonRet.reduce((a, b) => a + (b.siniestros || 0), 0);
+                    const gtosR = nonRet.reduce((a, b) => a + ((b.gtos_produccion !== undefined && b.gtos_explotacion !== undefined) ? ((b.gtos_produccion || 0) + (b.gtos_explotacion || 0)) : (b.gtos_operativos || 0)), 0);
+                    const devR = nonRet.reduce((a, b) => a + (b.primas_devengadas || 0), 0);
+                    const vppTag = g.consolidation_method === 'vpp_madre'
+                        ? `VPP (${g.parent_code})`
+                        : (g.consolidation_method === 'vpp_parcial' ? 'VPP Parcial' : `${g.entities_count} Cías.`);
+                    return {
+                        id: g.id,
+                        code: 'GRP',
+                        name: g.name,
+                        shortName: g.short_name || g.name,
+                        segment: `${g.entities_count} ${g.entities_count === 1 ? 'entidad' : 'entidades'}`,
+                        badge: vppTag,
+                        isLaSegunda: g.id === 'la_segunda',
+                        isRetiroOnly: isRetOnly,
+                        inspectCode: g.id,
+                        drillPreset: null,
+                        patrimonio_neto: g.patrimonio_neto || 0,
+                        resultado_neto: g.resultado_neto || 0,
+                        resultado_tecnico: g.resultado_tecnico || 0,
+                        resultado_financiero: g.resultado_financiero || 0,
+                        activo: g.activo || 0,
+                        pasivo: g.pasivo || 0,
+                        inversiones: g.inversiones || 0,
+                        primas_devengadas: g.primas_devengadas || 0,
+                        siniestros_riesgo: sinR,
+                        gtos_riesgo: gtosR,
+                        primas_dev_riesgo: devR
+                    };
+                });
+            }
+
+            // CONJUNTOS (4 Grandes Segmentos Oficiales del Mercado)
+            const segDefs = [
+                { key: 'Patrimoniales y Mixtas', preset: 'PATRIMONIALES', short: 'Patrimoniales y Mixtas' },
+                { key: 'Riesgos del Trabajo (ART)', preset: 'ART', short: 'ART Exclusivas' },
+                { key: 'Seguros de Personas', preset: 'PERSONAS', short: 'Seguros de Personas' },
+                { key: 'Seguros de Retiro', preset: 'RETIRO', short: 'Seguros de Retiro' }
+            ];
+            return segDefs.map(sd => {
+                const sub = companies.filter(c => c.tipo_entidad === sd.key);
+                const isRet = sd.key === 'Seguros de Retiro';
+                const sumF = (fn) => sub.reduce((a, b) => a + fn(b), 0);
+                const gtosSum = sumF(c => (c.gtos_produccion !== undefined && c.gtos_explotacion !== undefined) ? ((c.gtos_produccion || 0) + (c.gtos_explotacion || 0)) : (c.gtos_operativos || 0));
+                return {
+                    id: sd.preset,
+                    code: 'CONJ',
+                    name: `Conjunto: ${sd.key}`,
+                    shortName: sd.short,
+                    segment: `${sub.length} aseguradoras`,
+                    badge: `${sub.length} Cías.`,
+                    isLaSegunda: false,
+                    isRetiroOnly: isRet,
+                    inspectCode: null,
+                    drillPreset: sd.preset,
+                    countCompanies: sub.length,
+                    patrimonio_neto: sumF(c => c.patrimonio_neto || 0),
+                    resultado_neto: sumF(c => c.resultado_neto || 0),
+                    resultado_tecnico: sumF(c => c.resultado_tecnico || 0),
+                    resultado_financiero: sumF(c => c.resultado_financiero || 0),
+                    activo: sumF(c => c.activo || 0),
+                    pasivo: sumF(c => c.pasivo || 0),
+                    inversiones: sumF(c => c.inversiones || 0),
+                    primas_devengadas: sumF(c => c.primas_devengadas || 0),
+                    siniestros_riesgo: isRet ? 0 : sumF(c => c.siniestros || 0),
+                    gtos_riesgo: isRet ? 0 : gtosSum,
+                    primas_dev_riesgo: isRet ? 0 : sumF(c => c.primas_devengadas || 0)
+                };
+            });
+        }
+
+        function renderDynamicRankingsTab(pDataArg) {
+            if (!window.INSURANCE_DATA_V2 || !currentPeriod) return;
+            const pData = pDataArg || window.INSURANCE_DATA_V2.periods_data[currentPeriod];
+            if (!pData) return;
+
+            const selCrit = document.getElementById('select-dyn-criterion');
+            if (selCrit && selCrit.value) dynRankingCriterion = selCrit.value;
+            const cfg = DYN_RANKING_CRITERIA[dynRankingCriterion] || DYN_RANKING_CRITERIA.patrimonio_neto;
+            updateDynSortButtonUI();
+
+            const rawEntities = buildDynRankingEntities(pData);
+            const validRows = [];
+            const excludedRows = [];
+
+            rawEntities.forEach(e => {
+                if (cfg.type === 'currency') {
+                    const v = cfg.getVal(e) || 0;
+                    validRows.push({ ...e, valid: true, metricVal: v, refVal: cfg.getRef ? cfg.getRef(e) : 0 });
+                } else {
+                    const r = cfg.evalRatio(e);
+                    if (r.valid && isFinite(r.val)) {
+                        validRows.push({ ...e, valid: true, metricVal: r.val, numVal: r.num, denVal: r.den });
+                    } else {
+                        excludedRows.push({ ...e, valid: false, metricVal: null, reason: r.reason || 'N/C', numVal: r.num, denVal: r.den });
+                    }
+                }
+            });
+
+            validRows.sort((a, b) => dynRankingSortDir === 'desc' ? (b.metricVal - a.metricVal) : (a.metricVal - b.metricVal));
+            validRows.forEach((r, idx) => { r.rank = idx + 1; });
+
+            // Compute Universe Aggregate / Weighted Ratio
+            let aggDisplay = '-';
+            let aggSub = '';
+            const scopeLbl = dynRankingScope === 'GRUPOS' ? 'Subtotal 18 Grupos (VPP)' : (dynRankingScope === 'CONJUNTOS' ? 'Total 4 Conjuntos' : `Total Universo (${rawEntities.length} Cías.)`);
+
+            let totCurrencySum = 0;
+            let totNumSum = 0;
+            let totDenSum = 0;
+            let weightedRatio = null;
+
+            if (cfg.type === 'currency') {
+                totCurrencySum = validRows.reduce((a, b) => a + b.metricVal, 0);
+                aggDisplay = fmtARS(totCurrencySum);
+                aggSub = scopeLbl;
+            } else {
+                // Sum numerator & denominator across valid universe (excluding Retiro on risk-only ratios; including all selected entities on PN/Activo ratios)
+                const poolForAgg = (dynRankingCriterion === 'siniestralidad_dev' || dynRankingCriterion === 'combinado_operativo')
+                    ? rawEntities.filter(x => !x.isRetiroOnly)
+                    : rawEntities;
+                poolForAgg.forEach(x => {
+                    const ev = cfg.evalRatio(x);
+                    totNumSum += (ev.num || 0);
+                    totDenSum += (ev.den || 0);
+                });
+                weightedRatio = totDenSum > 0 ? (totNumSum / totDenSum) * 100 : null;
+                aggDisplay = weightedRatio !== null ? fmtPct(weightedRatio) : 'N/C';
+                aggSub = `Ponderado ${scopeLbl}`;
+            }
+
+            // Update 4 Summary KPI Cards
+            const elAggTitle = document.getElementById('dyn-kpi-agg-title');
+            const elAggVal = document.getElementById('dyn-kpi-agg-val');
+            const elAggSub = document.getElementById('dyn-kpi-agg-sub');
+            if (elAggTitle) elAggTitle.innerText = cfg.type === 'currency' ? 'Suma del Universo' : 'Promedio Ponderado';
+            if (elAggVal) elAggVal.innerText = aggDisplay;
+            if (elAggSub) elAggSub.innerText = aggSub;
+
+            const top1 = validRows[0];
+            const elTop1Title = document.getElementById('dyn-kpi-top1-title');
+            const elTop1Val = document.getElementById('dyn-kpi-top1-val');
+            const elTop1Sub = document.getElementById('dyn-kpi-top1-sub');
+            if (elTop1Title) elTop1Title.innerText = dynRankingSortDir === 'desc' ? 'Posición #1 (Mayor Valor)' : 'Posición #1 (Menor Valor)';
+            if (elTop1Val) elTop1Val.innerText = top1 ? (cfg.type === 'currency' ? fmtARS(top1.metricVal) : fmtPct(top1.metricVal)) : '-';
+            if (elTop1Sub) elTop1Sub.innerText = top1 ? top1.name : 'Sin entidades en el filtro';
+
+            // La Segunda Reference Card
+            const elL2Title = document.getElementById('dyn-kpi-l2-title');
+            const elL2Val = document.getElementById('dyn-kpi-l2-val');
+            const elL2Sub = document.getElementById('dyn-kpi-l2-sub');
+            if (dynRankingScope === 'CONJUNTOS') {
+                const grpL2 = (pData.groups_by_id || {})['la_segunda'];
+                if (elL2Title) elL2Title.innerText = 'Ref. Grupo La Segunda (VPP)';
+                if (grpL2) {
+                    const fakeGrpList = [grpL2];
+                    const savedScope = dynRankingScope;
+                    dynRankingScope = 'GRUPOS';
+                    const l2Ent = buildDynRankingEntities(pData).find(x => x.id === 'la_segunda');
+                    dynRankingScope = savedScope;
+                    if (l2Ent) {
+                        const vTxt = cfg.type === 'currency' ? fmtARS(cfg.getVal(l2Ent)) : (cfg.evalRatio(l2Ent).valid ? fmtPct(cfg.evalRatio(l2Ent).val) : 'N/A');
+                        if (elL2Val) elL2Val.innerText = vTxt;
+                        if (elL2Sub) elL2Sub.innerText = 'Consolidado VPP (4 empresas)';
+                    }
+                }
+            } else {
+                const l2Matches = validRows.filter(x => x.isLaSegunda);
+                if (elL2Title) elL2Title.innerText = dynRankingScope === 'GRUPOS' ? 'Posición Grupo La Segunda' : 'Posición La Segunda';
+                if (l2Matches.length > 0) {
+                    const bestL2 = l2Matches[0];
+                    const bestValTxt = cfg.type === 'currency' ? fmtARS(bestL2.metricVal) : fmtPct(bestL2.metricVal);
+                    if (elL2Val) elL2Val.innerText = `#${bestL2.rank} de ${validRows.length} • ${bestValTxt}`;
+                    if (elL2Sub) {
+                        elL2Sub.innerText = l2Matches.length === 1
+                            ? bestL2.name
+                            : l2Matches.map(m => `${m.code}: #${m.rank}`).join(' | ');
+                    }
+                } else {
+                    if (elL2Val) elL2Val.innerText = 'N/A en este filtro';
+                    if (elL2Sub) elL2Sub.innerText = 'Seleccione el segmento correspondiente';
+                }
+            }
+
+            // Universe Stats Card
+            const elStTitle = document.getElementById('dyn-kpi-stats-title');
+            const elStVal = document.getElementById('dyn-kpi-stats-val');
+            const elStSub = document.getElementById('dyn-kpi-stats-sub');
+            if (['resultado_total', 'resultado_tecnico', 'resultado_financiero', 'roe_patrimonio', 'res_fin_patrimonio'].includes(dynRankingCriterion)) {
+                const posCnt = validRows.filter(r => r.metricVal >= 0).length;
+                const negCnt = validRows.length - posCnt;
+                if (elStTitle) elStTitle.innerText = 'Balance Positivos / Negativos';
+                if (elStVal) elStVal.innerText = `${posCnt} (+) / ${negCnt} (-)`;
+                if (elStSub) elStSub.innerText = `${validRows.length} evaluadas (${excludedRows.length} excl./N/C)`;
+            } else if (dynRankingCriterion === 'combinado_operativo') {
+                const okCnt = validRows.filter(r => r.metricVal <= 100).length;
+                if (elStTitle) elStTitle.innerText = 'Equilibrio Técnico (≤ 100%)';
+                if (elStVal) elStVal.innerText = `${okCnt} de ${validRows.length}`;
+                if (elStSub) elStSub.innerText = `${excludedRows.length} N/A o Prima Dev. ≤ 0`;
+            } else {
+                if (elStTitle) elStTitle.innerText = 'Entidades Evaluadas';
+                if (elStVal) elStVal.innerText = `${validRows.length}`;
+                if (elStSub) elStSub.innerText = excludedRows.length > 0 ? `${excludedRows.length} N/A o N/C al pie` : '100% con indicador computable';
+            }
+
+            // Titles
+            const scopeTitleMap = { EMPRESAS: 'Empresas', GRUPOS: 'Grupos Económicos (VPP)', CONJUNTOS: 'Conjuntos del Mercado' };
+            const chartTitleEl = document.getElementById('chart-dyn-ranking-title');
+            const chartSubEl = document.getElementById('chart-dyn-ranking-subtitle');
+            const tblTitleEl = document.getElementById('tbl-dyn-ranking-title');
+            const tblFormulaEl = document.getElementById('tbl-dyn-ranking-formula');
+
+            const topN = Math.min(15, validRows.length);
+            if (chartTitleEl) chartTitleEl.innerText = `Top ${topN} ${scopeTitleMap[dynRankingScope]} • ${cfg.label} (${dynRankingSortDir === 'desc' ? 'Mayor a Menor' : 'Menor a Mayor'})`;
+            if (chartSubEl) chartSubEl.innerText = cfg.formula;
+            if (tblTitleEl) tblTitleEl.innerText = `Ranking Completo de ${scopeTitleMap[dynRankingScope]} • ${cfg.label}`;
+            if (tblFormulaEl) tblFormulaEl.innerText = cfg.formula;
+
+            // Render Horizontal Bar Chart (Top 15)
+            const ctx = document.getElementById('chart-dyn-ranking');
+            if (ctx) {
+                if (chartInstances['dyn-ranking']) chartInstances['dyn-ranking'].destroy();
+                const chartSlice = validRows.slice(0, 15);
+                const isDark = document.documentElement.classList.contains('dark');
+                const barData = chartSlice.map(r => cfg.type === 'currency' ? (r.metricVal / 1e6) : r.metricVal);
+                const barColors = chartSlice.map(r => {
+                    if (r.isLaSegunda) return '#e20039';
+                    if (r.metricVal < 0) return '#ff593e';
+                    return cfg.type === 'currency' ? '#4183ca' : '#3ac792';
+                });
+
+                chartInstances['dyn-ranking'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartSlice.map(r => `#${r.rank} ${r.shortName}`),
+                        datasets: [{
+                            label: cfg.type === 'currency' ? `${cfg.label} ($M)` : `${cfg.label} (%)`,
+                            data: barData,
+                            backgroundColor: barColors,
+                            borderRadius: 5,
+                            barPercentage: 0.74
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(c) {
+                                        const item = chartSlice[c.dataIndex];
+                                        if (!item) return '';
+                                        if (cfg.type === 'currency') {
+                                            return ` ${cfg.label}: $ ${Math.round(c.raw).toLocaleString('es-AR')} M (${fmtARS(item.metricVal)})`;
+                                        }
+                                        return ` ${cfg.label}: ${Number(c.raw).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { color: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+                                ticks: {
+                                    font: { family: 'JetBrains Mono', size: 10 },
+                                    callback: (v) => cfg.type === 'currency'
+                                        ? ('$ ' + Math.round(v).toLocaleString('es-AR') + ' M')
+                                        : (Number(v).toLocaleString('es-AR', { maximumFractionDigits: 1 }) + '%')
+                                }
+                            },
+                            y: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Sora', size: 10, weight: 'bold' }, color: isDark ? '#cbd5e1' : '#334155' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Render Dynamic Table Headers & Rows
+            const thead = document.getElementById('tbl-dyn-ranking-head');
+            const tbody = document.getElementById('tbl-dyn-ranking-body');
+            if (!thead || !tbody) return;
+
+            const fmtM = (n) => (Number(n || 0) / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+            if (cfg.type === 'currency') {
+                const fourthColHdr = cfg.positiveShare ? 'Part. s/ Universo %' : (cfg.refLabel || 'Referencia ($M)');
+                thead.innerHTML = `
+                    <tr>
+                        <th class="p-3 w-16 text-center font-bold">Pos.</th>
+                        <th class="p-3 font-bold">Entidad / Grupo / Conjunto</th>
+                        <th class="p-3 font-bold">Segmento / Estructura</th>
+                        <th class="p-3 text-right font-bold">${cfg.label} ($M)</th>
+                        <th class="p-3 text-right font-bold">${fourthColHdr}</th>
+                        <th class="p-3 text-center w-24 font-bold">Detalle</th>
+                    </tr>
+                `;
+            } else {
+                thead.innerHTML = `
+                    <tr>
+                        <th class="p-3 w-16 text-center font-bold">Pos.</th>
+                        <th class="p-3 font-bold">Entidad / Grupo / Conjunto</th>
+                        <th class="p-3 font-bold">Segmento / Estructura</th>
+                        <th class="p-3 text-right font-bold">${cfg.numLabel}</th>
+                        <th class="p-3 text-right font-bold">${cfg.denLabel}</th>
+                        <th class="p-3 text-right font-bold">${cfg.label} (%)</th>
+                        <th class="p-3 text-center w-24 font-bold">Detalle</th>
+                    </tr>
+                `;
+            }
+
+            tbody.innerHTML = '';
+
+            // Summary Header Row
+            if (validRows.length > 0) {
+                const trTot = document.createElement('tr');
+                trTot.setAttribute('data-total-row', '1');
+                trTot.className = 'bg-rose-100/70 dark:bg-rose-950/40 border-b-2 border-[#e20039] font-bold text-[#e20039]';
+                if (cfg.type === 'currency') {
+                    const totRef = cfg.positiveShare ? '100,00%' : ('$ ' + fmtM(validRows.reduce((a, b) => a + (b.refVal || 0), 0)));
+                    trTot.innerHTML = `
+                        <td class="p-3 text-center font-mono text-xs">-</td>
+                        <td class="p-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> ${scopeLbl.toUpperCase()}</td>
+                        <td class="p-3 text-xs font-mono">${validRows.length} registros</td>
+                        <td class="p-3 text-right font-mono font-extrabold text-[#e20039]">$ ${fmtM(totCurrencySum)}</td>
+                        <td class="p-3 text-right font-mono font-bold">${totRef}</td>
+                        <td class="p-3 text-center font-mono text-xs">-</td>
+                    `;
+                } else {
+                    trTot.innerHTML = `
+                        <td class="p-3 text-center font-mono text-xs">-</td>
+                        <td class="p-3 uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-calculator"></i> PROMEDIO PONDERADO (${scopeLbl.toUpperCase()})</td>
+                        <td class="p-3 text-xs font-mono">${validRows.length} evaluadas</td>
+                        <td class="p-3 text-right font-mono font-bold">$ ${fmtM(totNumSum)}</td>
+                        <td class="p-3 text-right font-mono font-bold">$ ${fmtM(totDenSum)}</td>
+                        <td class="p-3 text-right font-mono font-extrabold text-[#e20039]">${weightedRatio !== null ? fmtPct(weightedRatio) : 'N/C'}</td>
+                        <td class="p-3 text-center font-mono text-xs">-</td>
+                    `;
+                }
+                tbody.appendChild(trTot);
+            }
+
+            const allDisplayRows = [...validRows, ...excludedRows];
+            if (allDisplayRows.length === 0) {
+                const colSpan = cfg.type === 'currency' ? 6 : 7;
+                tbody.innerHTML = `<tr><td colspan="${colSpan}" class="p-8 text-center text-slate-400 italic">Seleccione al menos un conjunto de empresas arriba para generar el ranking.</td></tr>`;
+                return;
+            }
+
+            allDisplayRows.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = r.isLaSegunda
+                    ? 'bg-rose-50/80 dark:bg-rose-950/30 font-bold border-l-4 border-[#e20039]'
+                    : (r.valid ? 'hover:bg-slate-50 dark:hover:bg-slate-800/40 transition' : 'opacity-65 bg-slate-50/40 dark:bg-slate-900/30');
+
+                const posHtml = r.valid
+                    ? `<span class="font-mono font-bold ${r.rank <= 3 ? 'text-[#e20039]' : 'text-slate-500'}">#${r.rank}</span>`
+                    : `<span class="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono text-slate-500">S/R</span>`;
+
+                const codePrefix = (r.code && r.code !== 'GRP' && r.code !== 'CONJ') ? `<span class="text-[10px] font-mono text-slate-400 mr-1">[${r.code}]</span>` : '';
+                const vppBadge = r.badge ? `<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-[9px] font-mono font-bold">${r.badge}</span>` : '';
+                const actionHtml = r.inspectCode
+                    ? `<button type="button" onclick="inspectCompany('${r.inspectCode}')" class="px-2.5 py-1 rounded-lg subtle-card hover:bg-[#e20039] hover:text-white transition-all text-[11px] font-semibold mx-auto flex items-center gap-1 cursor-pointer" title="Ver Balance"><i class="fas fa-eye"></i><span>Ver</span></button>`
+                    : (r.drillPreset ? `<button type="button" onclick="drilldownDynConjunto('${r.drillPreset}')" class="px-2.5 py-1 rounded-lg subtle-card hover:bg-[#4183ca] hover:text-white transition-all text-[11px] font-semibold mx-auto flex items-center gap-1 cursor-pointer" title="Desglosar Empresas del Conjunto"><i class="fas fa-list-ol"></i><span>Empresas</span></button>` : '-');
+
+                if (cfg.type === 'currency') {
+                    const valCls = r.metricVal < 0 ? 'text-rose-500' : (r.isLaSegunda ? 'text-[#e20039]' : 'txt-primary');
+                    const fourthTxt = cfg.positiveShare
+                        ? (totCurrencySum > 0 && r.metricVal > 0 ? fmtPct((r.metricVal / totCurrencySum) * 100) : '-')
+                        : ('$ ' + fmtM(r.refVal || 0));
+                    tr.innerHTML = `
+                        <td class="p-2.5 text-center">${posHtml}</td>
+                        <td class="p-2.5 font-semibold ${r.isLaSegunda ? 'text-[#e20039] font-bold' : 'txt-primary'}">${r.isLaSegunda ? '<i class="fas fa-shield-halved text-[#e20039] mr-1"></i>' : ''}${codePrefix}${r.name}${vppBadge}</td>
+                        <td class="p-2.5 text-xs txt-muted">${r.segment}</td>
+                        <td class="p-2.5 text-right font-mono font-bold ${valCls}">$ ${fmtM(r.metricVal)}</td>
+                        <td class="p-2.5 text-right font-mono text-slate-600 dark:text-slate-300">${fourthTxt}</td>
+                        <td class="p-2.5 text-center">${actionHtml}</td>
+                    `;
+                } else {
+                    const ratioTxt = r.valid ? fmtPct(r.metricVal) : `<span class="text-[10px] text-slate-400">${r.reason}</span>`;
+                    let ratioCls = 'txt-primary';
+                    if (r.valid) {
+                        if (dynRankingCriterion === 'siniestralidad_dev' || dynRankingCriterion === 'combinado_operativo') {
+                            ratioCls = r.metricVal > 100 ? 'text-rose-500' : 'text-emerald-600 dark:text-emerald-400';
+                        } else if (r.metricVal < 0) {
+                            ratioCls = 'text-rose-500';
+                        } else {
+                            ratioCls = 'text-emerald-600 dark:text-emerald-400';
+                        }
+                        if (r.isLaSegunda) ratioCls = 'text-[#e20039]';
+                    }
+                    tr.innerHTML = `
+                        <td class="p-2.5 text-center">${posHtml}</td>
+                        <td class="p-2.5 font-semibold ${r.isLaSegunda ? 'text-[#e20039] font-bold' : 'txt-primary'}">${r.isLaSegunda ? '<i class="fas fa-shield-halved text-[#e20039] mr-1"></i>' : ''}${codePrefix}${r.name}${vppBadge}</td>
+                        <td class="p-2.5 text-xs txt-muted">${r.segment}</td>
+                        <td class="p-2.5 text-right font-mono">$ ${fmtM(r.numVal)}</td>
+                        <td class="p-2.5 text-right font-mono">$ ${fmtM(r.denVal)}</td>
+                        <td class="p-2.5 text-right font-mono font-bold ${ratioCls}">${ratioTxt}</td>
+                        <td class="p-2.5 text-center">${actionHtml}</td>
+                    `;
+                }
+                tbody.appendChild(tr);
+            });
+
+            // Re-apply active text search if any
+            const searchVal = document.getElementById('filter-dyn-rankings')?.value || '';
+            if (searchVal.trim() !== '') filterDynRankingsTable(searchVal);
         }
 
 
