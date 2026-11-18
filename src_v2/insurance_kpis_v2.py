@@ -41,6 +41,11 @@ def compute_all_companies_summary(df):
         comp_tec_pasivo = get_account_value(df_c, '2.02.00.00.00.00.00.00', exact=True)
         prev = get_account_value(df_c, '2.03.00.00.00.00.00.00', exact=True)
         pn = get_account_value(df_c, '3.00.00.00.00.00.00.00', exact=True)
+        acciones_grupo_econ = (
+            get_account_value(df_c, '1.02.01.02.01.02.00.00', exact=True)
+            + get_account_value(df_c, '1.02.01.02.02.02.00.00', exact=True)
+            + get_account_value(df_c, '1.02.02.01.02.02.00.00', exact=True)
+        )
 
         # ----------------------------------------------------
         # 2. ESTADO DE RESULTADOS OFICIAL (SSN)
@@ -157,6 +162,7 @@ def compute_all_companies_summary(df):
             'activo': activo_tot,
             'disponibilidades': disp,
             'inversiones': inv,
+            'acciones_grupo_economico': acciones_grupo_econ,
             'creditos': cred,
             'premios_a_cobrar': premios_a_cobrar,
             'inmuebles': inm,

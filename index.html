@@ -2267,7 +2267,7 @@
 
                 <h3 class="text-base font-bold txt-primary flex items-center gap-2">
 
-                    <i class="fas fa-building text-[#e20039]"></i> 1. Composición y Cuota de las Empresas del Grupo
+                    <i class="fas fa-building text-[#e20039]"></i> 1. Composición, Resultados y Patrimonio del Grupo (Consolidación VPP)
 
                 </h3>
 
@@ -2275,11 +2275,11 @@
 
                     <!-- Table: Empresas del Grupo -->
 
-                    <div class="lg:col-span-7 subtle-card p-5 rounded-2xl border">
+                    <div class="lg:col-span-8 subtle-card p-5 rounded-2xl border">
 
                         <div class="flex items-center justify-between mb-3">
 
-                            <h4 class="text-xs font-bold txt-muted uppercase tracking-wider">Empresas Consolidadas</h4>
+                            <h4 class="text-xs font-bold txt-muted uppercase tracking-wider">Empresas Consolidadas &bull; Eliminación VPP en Controlante (0317)</h4>
 
                             <button onclick="exportTableToCSV('ls-table-empresas', 'empresas_la_segunda.csv')" class="btn-export" title="Exportar Tabla a CSV">
 
@@ -2297,13 +2297,19 @@
 
                                     <tr>
 
-                                        <th class="py-2.5 px-3">Razón Social / Entidad</th>
+                                        <th class="py-2.5 px-2.5">Razón Social / Entidad</th>
 
-                                        <th class="py-2.5 px-3 text-right">Primas ($M)</th>
+                                        <th class="py-2.5 px-2.5 text-right">Primas ($M)</th>
 
-                                        <th class="py-2.5 px-3 text-right">Siniestralidad %</th>
+                                        <th class="py-2.5 px-2.5 text-right">Res. Téc. ($M)</th>
 
-                                        <th class="py-2.5 px-3 text-right">% s/Grupo</th>
+                                        <th class="py-2.5 px-2.5 text-right">Res. Neto ($M)</th>
+
+                                        <th class="py-2.5 px-2.5 text-right">Pat. Neto ($M)</th>
+
+                                        <th class="py-2.5 px-2.5 text-right">Siniest. %</th>
+
+                                        <th class="py-2.5 px-2.5 text-right">% Primas</th>
 
                                     </tr>
 
@@ -2319,13 +2325,18 @@
 
                         </div>
 
+                        <div class="mt-3 p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-[11px] txt-secondary leading-relaxed" id="ls-vpp-note">
+                            <i class="fas fa-scale-balanced text-amber-600 dark:text-amber-400 mr-1"></i>
+                            <strong>Criterio Contable de Consolidación (VPP / RT 21):</strong> Las primas y resultados técnicos se consolidan sumando las 4 entidades operativas. El <strong>Resultado Neto</strong> y el <strong>Patrimonio Neto</strong> consolidados corresponden a los de la entidad principal (<strong>La Segunda Cooperativa Ltda. — 0317</strong>), dado que ésta ya resume por Valor Patrimonial Proporcional (VPP) los resultados y patrimonios de sus empresas vinculadas (0618, 0117 y 0436), evitando su doble cómputo.
+                        </div>
+
                     </div>
 
 
 
                     <!-- Donut Chart: Empresas -->
 
-                    <div class="lg:col-span-5 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
+                    <div class="lg:col-span-4 subtle-card p-5 rounded-2xl border flex flex-col items-center justify-center">
 
                         <h4 class="text-xs font-bold txt-muted uppercase tracking-wider mb-2">Distribución de Primas por Razón Social</h4>
 
@@ -5369,7 +5380,7 @@
 
                         c.quadrant_label || q.name,
 
-                        isSegmentos ? 'Segmento Consolidado SSN' : (isGrupos ? 'Grupo Consolidado' : (c.tipo_entidad || 'Aseguradora')),
+                        isSegmentos ? 'Segmento Consolidado SSN' : (isGrupos ? (c.consolidation_method === 'vpp_madre' ? `Grupo Consolidado (VPP en ${c.parent_code})` : (c.consolidation_method === 'vpp_parcial' ? 'Grupo Consolidado (Elim. VPP)' : 'Grupo Consolidado')) : (c.tipo_entidad || 'Aseguradora')),
 
                         c.entities_count || 1,
 
@@ -6829,7 +6840,14 @@
 
             if (ratiosPanel) {
                 const isRetEntity = c.tipo_entidad === 'Seguros de Retiro';
+                let vppBanner = '';
+                if (c.consolidation_method === 'vpp_madre') {
+                    vppBanner = `<div class="p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] txt-secondary leading-snug"><strong class="text-amber-700 dark:text-amber-300">Consolidación VPP (Cabecera ${c.parent_code}):</strong> El Resultado Neto y el Patrimonio Neto corresponden a la aseguradora principal, que ya resume por VPP a las vinculadas (eliminado por VPP: Res. ${fmtARS(c.vpp_eliminado_resultado || 0)} • PN ${fmtARS(c.vpp_eliminado_patrimonio || 0)}).</div>`;
+                } else if (c.consolidation_method === 'vpp_parcial') {
+                    vppBanner = `<div class="p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] txt-secondary leading-snug"><strong class="text-amber-700 dark:text-amber-300">Consolidación VPP Parcial:</strong> Eliminada tenencia accionaria cruzada intragrupo (Res. ${fmtARS(c.vpp_eliminado_resultado || 0)} • PN ${fmtARS(c.vpp_eliminado_patrimonio || 0)}).</div>`;
+                }
                 ratiosPanel.innerHTML = `
+                    ${vppBanner}
 
                     <div class="flex justify-between p-2 rounded subtle-card"><span>Pasivo Total:</span><span class="font-mono font-bold">${fmtARS(c.pasivo || 0)}</span></div>
 
@@ -6984,35 +7002,51 @@
             if (tbodyEmpresas) {
 
                 let empHtml = '';
+                const lsGroup = (pData.groups_by_id && pData.groups_by_id['la_segunda']) || null;
                 const nonRetComps = compList.filter(c => c.cod_cia !== '0436' && c.tipo_entidad !== 'Seguros de Retiro');
                 const totSinNonRet = nonRetComps.reduce((a, b) => a + (b.siniestros || 0), 0);
                 const totDevNonRet = nonRetComps.reduce((a, b) => a + (b.primas_devengadas || 0), 0);
                 const grpLossRatio = totDevNonRet > 0 ? (totSinNonRet / totDevNonRet) * 100 : 0;
+                const totResTecGrupo = compList.reduce((a, b) => a + (b.resultado_tecnico || 0), 0);
+                // Consolidación VPP: El Resultado Neto y el Patrimonio Neto del Grupo corresponden a la Cooperativa principal (0317)
+                const consResNetoGrupo = lsGroup ? lsGroup.resultado_neto : (cGen.resultado_neto || 0);
+                const consPnGrupo = lsGroup ? lsGroup.patrimonio_neto : (cGen.patrimonio_neto || 0);
+                const fmtM = (v) => (Number(v || 0) / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
                 compList.forEach(c => {
 
                     const pctGrupo = totGrupo > 0 ? (c.primas_emitidas / totGrupo) * 100 : 0;
                     const isRet = c.cod_cia === '0436' || c.tipo_entidad === 'Seguros de Retiro';
+                    const isParent = c.cod_cia === '0317';
+                    const rtCls = (c.resultado_tecnico || 0) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500';
+                    const rnCls = (c.resultado_neto || 0) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500';
 
                     empHtml += `
 
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
 
-                            <td class="py-2.5 px-3 font-sans font-semibold txt-primary flex items-center gap-2">
+                            <td class="py-2.5 px-2.5 font-sans font-semibold txt-primary flex items-center gap-1.5">
 
                                 <i class="fas fa-building text-[#e20039]"></i>
 
                                 <span>${c.razon_social}</span>
 
                                 <span class="text-[10px] text-slate-400 font-mono">(${c.cod_cia})</span>
+                                ${isParent ? '<span class="px-1.5 py-0.5 rounded bg-rose-100 text-[#e20039] dark:bg-rose-950 dark:text-rose-300 text-[9px] font-bold uppercase">Principal VPP</span>' : '<span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 text-[9px] font-mono">Vinculada</span>'}
 
                             </td>
 
-                            <td class="py-2.5 px-3 text-right font-bold text-[#e20039]">$ ${(c.primas_emitidas / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                            <td class="py-2.5 px-2.5 text-right font-bold text-[#e20039]">$ ${fmtM(c.primas_emitidas)}</td>
 
-                            <td class="py-2.5 px-3 text-right font-mono">${isRet ? 'N/A (Retiro)' : fmtPct(c.loss_ratio)}</td>
+                            <td class="py-2.5 px-2.5 text-right font-mono ${rtCls}">$ ${fmtM(c.resultado_tecnico)}</td>
 
-                            <td class="py-2.5 px-3 text-right font-bold txt-primary">${pctGrupo.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
+                            <td class="py-2.5 px-2.5 text-right font-mono ${rnCls}">$ ${fmtM(c.resultado_neto)}</td>
+
+                            <td class="py-2.5 px-2.5 text-right font-mono txt-primary">$ ${fmtM(c.patrimonio_neto)}</td>
+
+                            <td class="py-2.5 px-2.5 text-right font-mono">${isRet ? 'N/A (Retiro)' : fmtPct(c.loss_ratio)}</td>
+
+                            <td class="py-2.5 px-2.5 text-right font-bold txt-primary">${pctGrupo.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</td>
 
                         </tr>
 
@@ -7020,17 +7054,26 @@
 
                 });
 
+                const totRtCls = totResTecGrupo >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
+                const totRnCls = consResNetoGrupo >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
+
                 empHtml += `
 
                     <tr class="bg-rose-100/70 dark:bg-rose-950/40 border-t-2 border-[#e20039] font-bold">
 
-                        <td class="py-3 px-3 font-sans text-sm text-[#e20039] uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-shield-halved"></i> TOTAL GRUPO LA SEGUNDA</td>
+                        <td class="py-3 px-2.5 font-sans text-xs text-[#e20039] uppercase tracking-wider flex items-center gap-1.5"><i class="fas fa-shield-halved"></i> TOTAL CONSOLIDADO GRUPO (VPP)</td>
 
-                        <td class="py-3 px-3 text-right font-mono text-base text-[#e20039] font-extrabold">$ ${(totGrupo / 1e6).toLocaleString('es-AR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</td>
+                        <td class="py-3 px-2.5 text-right font-mono text-[#e20039] font-extrabold">$ ${fmtM(totGrupo)}</td>
 
-                        <td class="py-3 px-3 text-right font-mono text-[#e20039] font-bold" title="Siniestralidad consolidada de ramos de riesgo (excluye Retiro)">${fmtPct(grpLossRatio)}</td>
+                        <td class="py-3 px-2.5 text-right font-mono font-extrabold ${totRtCls}" title="Suma de resultados técnicos operativos de las 4 aseguradoras">$ ${fmtM(totResTecGrupo)}</td>
 
-                        <td class="py-3 px-3 text-right font-mono text-base text-[#e20039] font-extrabold">100,00%</td>
+                        <td class="py-3 px-2.5 text-right font-mono font-extrabold ${totRnCls}" title="Resultado Neto consolidado por VPP (corresponde a 0317 Cooperativa, sin duplicar vinculadas)">$ ${fmtM(consResNetoGrupo)}</td>
+
+                        <td class="py-3 px-2.5 text-right font-mono font-extrabold txt-primary" title="Patrimonio Neto consolidado por VPP (corresponde a 0317 Cooperativa, sin duplicar vinculadas)">$ ${fmtM(consPnGrupo)}</td>
+
+                        <td class="py-3 px-2.5 text-right font-mono text-[#e20039] font-bold" title="Siniestralidad consolidada de ramos de riesgo (excluye Retiro)">${fmtPct(grpLossRatio)}</td>
+
+                        <td class="py-3 px-2.5 text-right font-mono text-[#e20039] font-extrabold">100,00%</td>
 
                     </tr>
 
@@ -8297,8 +8340,9 @@
             const cB = resolveComparatorEntity(pData, codB);
             if (!cA || !cB) return;
 
-            document.getElementById('comp-th-a').innerText = cA.razon_social;
-            document.getElementById('comp-th-b').innerText = cB.razon_social;
+            const suffixVpp = (ent) => (ent.consolidation_method === 'vpp_madre' || ent.consolidation_method === 'vpp_parcial') ? ' (Consolidado VPP)' : '';
+            document.getElementById('comp-th-a').innerText = cA.razon_social + suffixVpp(cA);
+            document.getElementById('comp-th-b').innerText = cB.razon_social + suffixVpp(cB);
 
             const isRetA = cA.tipo_entidad === 'Seguros de Retiro';
             const isRetB = cB.tipo_entidad === 'Seguros de Retiro';

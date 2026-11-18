@@ -21,20 +21,23 @@ GROUPS_DEFINITIONS = [
         "name": "Grupo Sancor Seguros",
         "short_name": "Sancor Seguros",
         "codes": ["0224", "0626", "0930"],
-        "description": "Sancor Seguros, Prevención ART, Prevención Retiro"
+        "parent_code": "0224",
+        "description": "Sancor Seguros (Controlante VPP), Prevención ART, Prevención Retiro"
     },
     {
         "id": "federacion_patronal",
         "name": "Grupo Federación Patronal",
         "short_name": "Federación Patronal",
         "codes": ["0726", "0425"],
-        "description": "Federación Patronal Seguros (PM+ART), Federación Patronal Retiro"
+        "parent_code": "0726",
+        "description": "Federación Patronal Seguros (Controlante VPP), Federación Patronal Retiro"
     },
     {
         "id": "provincia",
         "name": "Grupo Provincia",
         "short_name": "Provincia",
         "codes": ["0499", "0621", "0532"],
+        "vpp_links": [("0499", ["0532"])],
         "description": "Provincia Seguros, Provincia ART, Provincia Vida"
     },
     {
@@ -42,14 +45,16 @@ GROUPS_DEFINITIONS = [
         "name": "Grupo San Cristóbal",
         "short_name": "San Cristóbal",
         "codes": ["0192", "0620", "0442", "0823"],
-        "description": "San Cristóbal Seguros, Asociart ART, San Cristóbal Retiro, Iúnigo"
+        "parent_code": "0192",
+        "description": "San Cristóbal Seguros (Controlante VPP), Asociart ART, San Cristóbal Retiro, Iúnigo"
     },
     {
         "id": "la_segunda",
         "name": "Grupo Asegurador La Segunda",
         "short_name": "La Segunda",
         "codes": ["0317", "0618", "0117", "0436"],
-        "description": "La Segunda Generales, La Segunda ART, La Segunda Personas, La Segunda Retiro"
+        "parent_code": "0317",
+        "description": "La Segunda Cooperativa (Controlante VPP), La Segunda ART, La Segunda Personas, La Segunda Retiro"
     },
     {
         "id": "la_caja_generali",
@@ -63,6 +68,7 @@ GROUPS_DEFINITIONS = [
         "name": "Grupo Zurich",
         "short_name": "Zurich",
         "codes": ["0228", "0692", "0541", "0039", "0422"],
+        "vpp_links": [("0228", ["0422"])],
         "description": "Zurich Argentina, Zurich Santander, Zurich International Life, Zurich Aseguradora, Zurich Retiro"
     },
     {
@@ -77,13 +83,15 @@ GROUPS_DEFINITIONS = [
         "name": "Grupo Mercantil Andina",
         "short_name": "Mercantil Andina",
         "codes": ["0116", "0959"],
-        "description": "Mercantil Andina, Andina ART"
+        "parent_code": "0116",
+        "description": "Mercantil Andina (Controlante VPP), Andina ART"
     },
     {
         "id": "nacion",
         "name": "Grupo Nación",
         "short_name": "Nación",
         "codes": ["0515", "0534"],
+        "vpp_links": [("0515", ["0534"])],
         "description": "Nación Seguros, Nación Retiro"
     },
     {
@@ -105,6 +113,7 @@ GROUPS_DEFINITIONS = [
         "name": "Grupo Swiss Medical (SMG)",
         "short_name": "Swiss Medical (SMG)",
         "codes": ["0002", "0605", "0580", "0710", "0661"],
+        "vpp_links": [("0580", ["0710", "0661"])],
         "description": "SMG Seguros, Swiss Medical ART, SMG Life, SMG Retiro, Instituto de Salta"
     },
     {
@@ -112,6 +121,7 @@ GROUPS_DEFINITIONS = [
         "name": "Grupo ST",
         "short_name": "Grupo ST",
         "codes": ["0251", "0694", "0294", "0423", "0420"],
+        "vpp_links": [("0423", ["0420"])],
         "description": "Life Seguros, Life Group, Orígenes Seguros, Orígenes Retiro, Genes II Retiro"
     },
     {
@@ -126,6 +136,7 @@ GROUPS_DEFINITIONS = [
         "name": "Grupo Mapfre",
         "short_name": "Mapfre",
         "codes": ["0213", "0699"],
+        "vpp_links": [("0213", ["0699"])],
         "description": "Mapfre Seguros, Mapfre Vida"
     },
     {
@@ -604,10 +615,61 @@ def process_single_period(period_code):
         grp_subramos_list.sort(key=lambda x: x['primas'], reverse=True)
 
         base_g_primas = tot_g_dev if tot_g_dev > 0 else (tot_g_emit if tot_g_emit > 0 else 1.0)
-        # Siniestralidad Neta Devengada excluye aseguradoras exclusivas de retiro en el denominador si no tienen siniestros
+        # Siniestralidad Neta Devengada excluye aseguradoras exclusivas de retiro en numerador y denominador
         dev_non_ret = sum(float(m.get('primas_devengadas', 0.0)) for m in members if m.get('tipo_entidad') != 'Seguros de Retiro')
-        loss_ratio = (tot_g_sin / dev_non_ret * 100.0) if dev_non_ret > 0 else 0.0
+        sin_non_ret = sum(float(m.get('siniestros', 0.0)) for m in members if m.get('tipo_entidad') != 'Seguros de Retiro')
+        loss_ratio = (sin_non_ret / dev_non_ret * 100.0) if dev_non_ret > 0 else 0.0
         mkt_share = (tot_g_emit / tot_emit * 100.0) if tot_emit > 0 else 0.0
+
+        # Consolidación Patrimonial y de Resultados con Eliminación de VPP (RT 21 FACPCE / SSN)
+        # En grupos con aseguradora controlante/principal (ej. La Segunda 0317, Sancor 0224, San Cristóbal 0192,
+        # Federación Patronal 0726, Mercantil Andina 0116), la entidad cabecera ya registra en su Patrimonio Neto y
+        # en su Resultado Financiero/Neto el Valor Patrimonial Proporcional (VPP) de las aseguradoras vinculadas.
+        # Sumar los resultados netos o patrimonios netos de las vinculadas duplicaría el resultado y el capital.
+        members_by_code = {m['cod_cia']: m for m in members}
+        parent_code = gdef.get('parent_code')
+        parent_obj = members_by_code.get(parent_code) if parent_code else None
+        vpp_elim_rn = 0.0
+        vpp_elim_pn = 0.0
+        consolidation_method = "entidad_unica" if len(members) == 1 else "suma_horizontal"
+
+        if parent_obj is not None and len(members) > 1 and float(parent_obj.get('acciones_grupo_economico', 0.0)) > 0:
+            subsidiaries = [m for m in members if m['cod_cia'] != parent_code]
+            vpp_elim_rn = sum(float(s.get('resultado_neto', 0.0)) for s in subsidiaries)
+            tot_ge = sum(max(0.0, float(m.get('acciones_grupo_economico', 0.0))) for m in members)
+            subs_pn = sum(max(0.0, float(s.get('patrimonio_neto', 0.0))) for s in subsidiaries)
+            vpp_elim_pn = min(tot_ge, subs_pn)
+
+            cons_res_neto = float(parent_obj.get('resultado_neto', 0.0))
+            cons_pn = float(parent_obj.get('patrimonio_neto', 0.0))
+            cons_res_fin = tot_g_res_fin - vpp_elim_rn
+            cons_inv = max(0.0, tot_g_inv - vpp_elim_pn)
+            cons_activo = max(0.0, tot_g_activo - vpp_elim_pn)
+            consolidation_method = "vpp_madre"
+        elif gdef.get('vpp_links') and len(members) > 1:
+            for holder_cd, target_cds in gdef.get('vpp_links', []):
+                if holder_cd in members_by_code:
+                    targets_present = [members_by_code[tc] for tc in target_cds if tc in members_by_code]
+                    ge_h = max(0.0, float(members_by_code[holder_cd].get('acciones_grupo_economico', 0.0)))
+                    pn_t = sum(max(0.0, float(t.get('patrimonio_neto', 0.0))) for t in targets_present)
+                    if ge_h > 0 and pn_t > 0:
+                        alpha = min(1.0, ge_h / pn_t)
+                        vpp_elim_pn += alpha * pn_t
+                        vpp_elim_rn += alpha * sum(float(t.get('resultado_neto', 0.0)) for t in targets_present)
+
+            cons_res_neto = tot_g_res_neto - vpp_elim_rn
+            cons_pn = tot_g_pn - vpp_elim_pn
+            cons_res_fin = tot_g_res_fin - vpp_elim_rn
+            cons_inv = max(0.0, tot_g_inv - vpp_elim_pn)
+            cons_activo = max(0.0, tot_g_activo - vpp_elim_pn)
+            if abs(vpp_elim_pn) > 0.01 or abs(vpp_elim_rn) > 0.01:
+                consolidation_method = "vpp_parcial"
+        else:
+            cons_res_neto = tot_g_res_neto
+            cons_pn = tot_g_pn
+            cons_res_fin = tot_g_res_fin
+            cons_inv = tot_g_inv
+            cons_activo = tot_g_activo
 
         members_summary = []
         for m in members:
@@ -616,18 +678,21 @@ def process_single_period(period_code):
                 "cod_cia": m['cod_cia'],
                 "razon_social": m['razon_social'],
                 "tipo_entidad": m['tipo_entidad'],
+                "is_parent": (m['cod_cia'] == parent_code),
                 "primas_emitidas": m_emit,
                 "share_of_group": round((m_emit / tot_g_emit * 100.0), 1) if tot_g_emit > 0 else 0.0,
+                "resultado_tecnico": float(m.get('resultado_tecnico', 0.0)),
                 "resultado_neto": float(m.get('resultado_neto', 0.0)),
+                "patrimonio_neto": float(m.get('patrimonio_neto', 0.0)),
                 "combined_ratio": float(m.get('combined_ratio', 0.0))
             })
         members_summary.sort(key=lambda x: x['primas_emitidas'], reverse=True)
 
         g_m_tec = (tot_g_res_tec / base_g_primas * 100.0) if base_g_primas > 0 else 0.0
-        g_roi = (tot_g_res_fin / tot_g_inv * 100.0) if tot_g_inv > 0 else 0.0
+        g_roi = (cons_res_fin / cons_inv * 100.0) if cons_inv > 0 else 0.0
         g_comb = ((tot_g_sin + tot_g_resc + tot_g_gtos_op) / base_g_primas * 100.0) if base_g_primas > 0 else 100.0
-        g_cob_res = ((tot_g_inv + tot_g_inm + tot_g_disp) / tot_g_comp_tec) if tot_g_comp_tec > 0 else 1.0
-        g_roe = (tot_g_res_neto / tot_g_pn * 100.0) if tot_g_pn > 0 else 0.0
+        g_cob_res = ((cons_inv + tot_g_inm + tot_g_disp) / tot_g_comp_tec) if tot_g_comp_tec > 0 else 1.0
+        g_roe = (cons_res_neto / cons_pn * 100.0) if cons_pn > 0 else 0.0
 
         if g_m_tec >= 0 and g_roi >= 0:
             g_quad = "Q1_LIDERES"
@@ -648,6 +713,11 @@ def process_single_period(period_code):
             "short_name": gdef['short_name'],
             "description": gdef['description'],
             "entities_count": len(members),
+            "consolidation_method": consolidation_method,
+            "parent_code": parent_code if consolidation_method == "vpp_madre" else None,
+            "parent_name": parent_obj['razon_social'] if (consolidation_method == "vpp_madre" and parent_obj) else None,
+            "vpp_eliminado_resultado": round(vpp_elim_rn, 2),
+            "vpp_eliminado_patrimonio": round(vpp_elim_pn, 2),
             "members": members_summary,
             "primas_emitidas": round(tot_g_emit, 2),
             "primas_devengadas": round(tot_g_dev, 2),
@@ -657,15 +727,15 @@ def process_single_period(period_code):
             "gtos_explotacion": round(tot_g_gtos_expl, 2),
             "gtos_operativos": round(tot_g_gtos_op, 2),
             "resultado_tecnico": round(tot_g_res_tec, 2),
-            "resultado_financiero": round(tot_g_res_fin, 2),
-            "resultado_neto": round(tot_g_res_neto, 2),
-            "activo": round(tot_g_activo, 2),
+            "resultado_financiero": round(cons_res_fin, 2),
+            "resultado_neto": round(cons_res_neto, 2),
+            "activo": round(cons_activo, 2),
             "pasivo": round(tot_g_pasivo, 2),
-            "inversiones": round(tot_g_inv, 2),
+            "inversiones": round(cons_inv, 2),
             "disponibilidades": round(tot_g_disp, 2),
             "inmuebles": round(tot_g_inm, 2),
             "compromisos_tecnicos": round(tot_g_comp_tec, 2),
-            "patrimonio_neto": round(tot_g_pn, 2),
+            "patrimonio_neto": round(cons_pn, 2),
             "margen_tecnico": round(g_m_tec, 2),
             "roi_inversiones": round(g_roi, 2),
             "combined_ratio": round(g_comb, 2),
@@ -688,6 +758,10 @@ def process_single_period(period_code):
             "razon_social": g['name'],
             "short_name": g['short_name'],
             "tipo_entidad": "Grupos Aseguradores",
+            "consolidation_method": g['consolidation_method'],
+            "parent_code": g['parent_code'],
+            "vpp_eliminado_resultado": g['vpp_eliminado_resultado'],
+            "vpp_eliminado_patrimonio": g['vpp_eliminado_patrimonio'],
             "x": round(max(-150.0, min(150.0, g['margen_tecnico'])), 2),
             "y": round(max(-60.0, min(120.0, g['roi_inversiones'])), 2),
             "margen_tecnico": g['margen_tecnico'],
