@@ -6845,6 +6845,10 @@
                     const primasM = Math.round(r.prima / 1e6).toLocaleString('es-AR');
 
                     const ciaCode = r.cod_cia || r.id;
+                    const grpObjRk = (cat === 'grupos_aseguradores' && pData.groups_by_id) ? pData.groups_by_id[r.id] : null;
+                    const grpMembersSub = grpObjRk && grpObjRk.members
+                        ? `<div class="text-[10px] font-normal txt-muted mt-0.5">${grpObjRk.members.map(m => `[${m.cod_cia}] ${m.razon_social}`).join(' • ')}</div>`
+                        : '';
 
 
 
@@ -6852,12 +6856,12 @@
 
                         <td class="p-3 text-center font-bold font-mono text-xs text-slate-500">${r.posicion}</td>
 
-                        <td class="p-3 font-semibold ${isLS ? 'text-[#e20039]' : 'txt-primary'} flex items-center gap-2">
-
-                            ${isLS ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
-
-                            <span>${r.entidad}</span>
-
+                        <td class="p-3 font-semibold ${isLS ? 'text-[#e20039]' : 'txt-primary'}">
+                            <div class="flex items-center gap-2">
+                                ${isLS ? '<i class="fas fa-shield-halved text-[#e20039]"></i>' : ''}
+                                <span>${r.entidad}</span>
+                            </div>
+                            ${grpMembersSub}
                         </td>
 
                         <td class="p-3 text-right font-mono font-bold text-[#e20039]">$ ${primasM}</td>
@@ -7147,6 +7151,7 @@
                         code: 'GRP',
                         name: g.name,
                         shortName: g.short_name || g.name,
+                        subtext: (g.members || []).map(m => `[${m.cod_cia}] ${m.razon_social}`).join(' • '),
                         segment: `${g.entities_count} ${g.entities_count === 1 ? 'entidad' : 'entidades'}`,
                         badge: vppTag,
                         isLaSegunda: g.id === 'la_segunda',
@@ -7500,6 +7505,7 @@
 
                 const codePrefix = (r.code && r.code !== 'GRP' && r.code !== 'CONJ') ? `<span class="text-[10px] font-mono text-slate-400 mr-1">[${r.code}]</span>` : '';
                 const vppBadge = r.badge ? `<span class="ml-1.5 px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 text-[9px] font-mono font-bold">${r.badge}</span>` : '';
+                const subLineHtml = r.subtext ? `<div class="text-[10px] font-normal txt-muted mt-0.5 leading-snug">${r.subtext}</div>` : '';
                 const actionHtml = r.inspectCode
                     ? `<button type="button" onclick="inspectCompany('${r.inspectCode}')" class="px-2.5 py-1 rounded-lg subtle-card hover:bg-[#e20039] hover:text-white transition-all text-[11px] font-semibold mx-auto flex items-center gap-1 cursor-pointer" title="Ver Balance"><i class="fas fa-eye"></i><span>Ver</span></button>`
                     : (r.drillPreset ? `<button type="button" onclick="drilldownDynConjunto('${r.drillPreset}')" class="px-2.5 py-1 rounded-lg subtle-card hover:bg-[#4183ca] hover:text-white transition-all text-[11px] font-semibold mx-auto flex items-center gap-1 cursor-pointer" title="Desglosar Empresas del Conjunto"><i class="fas fa-list-ol"></i><span>Empresas</span></button>` : '-');
@@ -7511,7 +7517,7 @@
                         : ('$ ' + fmtM(r.refVal || 0));
                     tr.innerHTML = `
                         <td class="p-2.5 text-center">${posHtml}</td>
-                        <td class="p-2.5 font-semibold ${r.isLaSegunda ? 'text-[#e20039] font-bold' : 'txt-primary'}">${r.isLaSegunda ? '<i class="fas fa-shield-halved text-[#e20039] mr-1"></i>' : ''}${codePrefix}${r.name}${vppBadge}</td>
+                        <td class="p-2.5 font-semibold ${r.isLaSegunda ? 'text-[#e20039] font-bold' : 'txt-primary'}"><div>${r.isLaSegunda ? '<i class="fas fa-shield-halved text-[#e20039] mr-1"></i>' : ''}${codePrefix}${r.name}${vppBadge}</div>${subLineHtml}</td>
                         <td class="p-2.5 text-xs txt-muted">${r.segment}</td>
                         <td class="p-2.5 text-right font-mono font-bold ${valCls}">$ ${fmtM(r.metricVal)}</td>
                         <td class="p-2.5 text-right font-mono text-slate-600 dark:text-slate-300">${fourthTxt}</td>
@@ -7532,7 +7538,7 @@
                     }
                     tr.innerHTML = `
                         <td class="p-2.5 text-center">${posHtml}</td>
-                        <td class="p-2.5 font-semibold ${r.isLaSegunda ? 'text-[#e20039] font-bold' : 'txt-primary'}">${r.isLaSegunda ? '<i class="fas fa-shield-halved text-[#e20039] mr-1"></i>' : ''}${codePrefix}${r.name}${vppBadge}</td>
+                        <td class="p-2.5 font-semibold ${r.isLaSegunda ? 'text-[#e20039] font-bold' : 'txt-primary'}"><div>${r.isLaSegunda ? '<i class="fas fa-shield-halved text-[#e20039] mr-1"></i>' : ''}${codePrefix}${r.name}${vppBadge}</div>${subLineHtml}</td>
                         <td class="p-2.5 text-xs txt-muted">${r.segment}</td>
                         <td class="p-2.5 text-right font-mono">$ ${fmtM(r.numVal)}</td>
                         <td class="p-2.5 text-right font-mono">$ ${fmtM(r.denVal)}</td>
@@ -7715,10 +7721,15 @@
             if (ratiosPanel) {
                 const isRetEntity = c.tipo_entidad === 'Seguros de Retiro';
                 let vppBanner = '';
+                const membersNote = (c.members && c.members.length > 0)
+                    ? `<div class="p-2 rounded-lg subtle-card border text-[10px] txt-secondary leading-snug"><strong>Empresas consolidadas (${c.members.length}):</strong> ${c.members.map(m => `[${m.cod_cia}] ${m.razon_social}`).join(' • ')}</div>`
+                    : '';
                 if (c.consolidation_method === 'vpp_madre') {
-                    vppBanner = `<div class="p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] txt-secondary leading-snug"><strong class="text-amber-700 dark:text-amber-300">Consolidación VPP (Cabecera ${c.parent_code}):</strong> El Resultado Neto y el Patrimonio Neto corresponden a la aseguradora principal, que ya resume por VPP a las vinculadas (eliminado por VPP: Res. ${fmtARS(c.vpp_eliminado_resultado || 0)} • PN ${fmtARS(c.vpp_eliminado_patrimonio || 0)}).</div>`;
+                    vppBanner = `${membersNote}<div class="p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] txt-secondary leading-snug"><strong class="text-amber-700 dark:text-amber-300">Consolidación VPP (Cabecera ${c.parent_code}):</strong> El Resultado Neto y el Patrimonio Neto corresponden a la aseguradora principal, que ya resume por VPP a las vinculadas (eliminado por VPP: Res. ${fmtARS(c.vpp_eliminado_resultado || 0)} • PN ${fmtARS(c.vpp_eliminado_patrimonio || 0)}).</div>`;
                 } else if (c.consolidation_method === 'vpp_parcial') {
-                    vppBanner = `<div class="p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] txt-secondary leading-snug"><strong class="text-amber-700 dark:text-amber-300">Consolidación VPP Parcial:</strong> Eliminada tenencia accionaria cruzada intragrupo (Res. ${fmtARS(c.vpp_eliminado_resultado || 0)} • PN ${fmtARS(c.vpp_eliminado_patrimonio || 0)}).</div>`;
+                    vppBanner = `${membersNote}<div class="p-2.5 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-[11px] txt-secondary leading-snug"><strong class="text-amber-700 dark:text-amber-300">Consolidación VPP Parcial:</strong> Eliminada tenencia accionaria cruzada intragrupo (Res. ${fmtARS(c.vpp_eliminado_resultado || 0)} • PN ${fmtARS(c.vpp_eliminado_patrimonio || 0)}).</div>`;
+                } else if (membersNote) {
+                    vppBanner = membersNote;
                 }
                 ratiosPanel.innerHTML = `
                     ${vppBanner}
